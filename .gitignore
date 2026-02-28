@@ -173,7 +173,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Brain Tumor Segmentation datasets
-Datasets/BraTS-GLI
-Datasets/BraTS-MEN-RT
-Datasets/BraTS-PEDs
+BraTS-2024-Complete/BraTS-GLI
+BraTS-2024-Complete/BraTS-MEN-RT
+BraTS-2024-Complete/BraTS-PEDs
+BraTS-2024-Complete
