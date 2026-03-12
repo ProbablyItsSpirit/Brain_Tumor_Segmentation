@@ -1,0 +1,37 @@
+data_root: /content/BraTS-2024-Complete
+
+datasets:
+	GLI:
+		folder: BraTS-GLI
+		splits:
+			- train
+		image_keywords:
+			- t1ce
+			- t1c
+		label_keywords:
+			- seg
+
+	PED:
+		folder: BraTS-PED
+		splits:
+			- train
+		image_keywords:
+			- t1ce
+			- t1c
+		label_keywords:
+			- seg
+
+	MEN:
+		folder: BraTS-MEN-RT
+		splits:
+			- train
+		image_keywords:
+			- t1ce
+			- t1c
+		label_keywords:
+			- gtv
+			- seg
+
+# Set to an integer (for example 50) for quick smoke tests.
+# Keep null to load all available cases from configured splits.
+max_cases_per_dataset: null
