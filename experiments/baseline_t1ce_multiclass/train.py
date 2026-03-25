@@ -240,6 +240,12 @@ def prepare_batch(batch: Dict[str, torch.Tensor], device: torch.device) -> tuple
 	return images, labels
 
 
+def prepare_labels_for_dicece(labels: torch.Tensor) -> torch.Tensor:
+	if labels.ndim == 4:
+		return labels.unsqueeze(1)
+	return labels
+
+
 def run_model_forward_check(loader: DataLoader) -> None:
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	model = build_model().to(device)
@@ -251,7 +257,7 @@ def run_model_forward_check(loader: DataLoader) -> None:
 	print(f"model output shape: {tuple(outputs.shape)}")
 
 	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
-	loss = loss_fn(outputs, labels)
+	loss = loss_fn(outputs, prepare_labels_for_dicece(labels))
 	print(f"loss: {loss.item():.6f}")
 
 
@@ -274,7 +280,7 @@ def run_stage_a_one_epoch_training(
 
 		optimizer.zero_grad(set_to_none=True)
 		outputs = model(images)
-		loss = loss_fn(outputs, labels)
+		loss = loss_fn(outputs, prepare_labels_for_dicece(labels))
 		loss.backward()
 		optimizer.step()
 
