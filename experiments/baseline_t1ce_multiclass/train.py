@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
@@ -265,7 +266,7 @@ def run_stage_a_one_epoch_training(
 	loader: DataLoader,
 	learning_rate: float,
 	log_every: int,
-) -> None:
+) -> Dict[str, Any]:
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	model = build_model().to(device)
 	loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
@@ -274,6 +275,8 @@ def run_stage_a_one_epoch_training(
 	model.train()
 	running_loss = 0.0
 	total_steps = len(loader)
+	first_step_loss = None
+	last_step_loss = None
 
 	for step, batch in enumerate(loader, start=1):
 		images, labels = prepare_batch(batch, device)
@@ -285,6 +288,9 @@ def run_stage_a_one_epoch_training(
 		optimizer.step()
 
 		loss_value = float(loss.item())
+		if first_step_loss is None:
+			first_step_loss = loss_value
+		last_step_loss = loss_value
 		running_loss += loss_value
 
 		if step == 1 or step % log_every == 0 or step == total_steps:
@@ -292,6 +298,60 @@ def run_stage_a_one_epoch_training(
 
 	epoch_loss = running_loss / max(total_steps, 1)
 	print(f"[epoch 1] mean loss: {epoch_loss:.6f}")
+
+	return {
+		"model": model,
+		"optimizer": optimizer,
+		"epoch": 1,
+		"mean_loss": epoch_loss,
+		"first_step_loss": first_step_loss,
+		"last_step_loss": last_step_loss,
+		"total_steps": total_steps,
+		"device": str(device),
+	}
+
+
+def save_stage_a_outputs(
+	training_state: Dict[str, Any],
+	cfg: Dict[str, Any],
+	config_dir: Path,
+	train_samples: int,
+	test_samples: int,
+) -> None:
+	checkpoint_dir = resolve_path(config_dir, cfg["training"]["checkpoint_dir"])
+	checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+	checkpoint_path = checkpoint_dir / "stage_a_latest.pt"
+	torch.save(
+		{
+			"epoch": training_state["epoch"],
+			"model_state_dict": training_state["model"].state_dict(),
+			"optimizer_state_dict": training_state["optimizer"].state_dict(),
+			"mean_loss": training_state["mean_loss"],
+			"first_step_loss": training_state["first_step_loss"],
+			"last_step_loss": training_state["last_step_loss"],
+			"total_steps": training_state["total_steps"],
+			"config": cfg,
+		},
+		checkpoint_path,
+	)
+
+	metrics_path = checkpoint_dir / "stage_a_metrics.json"
+	metrics_payload = {
+		"epoch": training_state["epoch"],
+		"mean_loss": training_state["mean_loss"],
+		"first_step_loss": training_state["first_step_loss"],
+		"last_step_loss": training_state["last_step_loss"],
+		"total_steps": training_state["total_steps"],
+		"device": training_state["device"],
+		"train_samples": train_samples,
+		"test_samples": test_samples,
+	}
+	with metrics_path.open("w", encoding="utf-8") as f:
+		json.dump(metrics_payload, f, indent=2)
+
+	print(f"Saved checkpoint: {checkpoint_path}")
+	print(f"Saved metrics: {metrics_path}")
 
 
 def main() -> None:
@@ -339,10 +399,17 @@ def main() -> None:
 	run_model_forward_check(train_loader)
 
 	print("\nRunning Stage A: 1-epoch minimal training loop...")
-	run_stage_a_one_epoch_training(
+	training_state = run_stage_a_one_epoch_training(
 		loader=train_loader,
 		learning_rate=float(cfg["training"]["learning_rate"]),
 		log_every=int(cfg["training"].get("log_every", 20)),
+	)
+	save_stage_a_outputs(
+		training_state=training_state,
+		cfg=cfg,
+		config_dir=config_path.parent,
+		train_samples=len(train_files),
+		test_samples=len(test_files),
 	)
 
 	print("Data pipeline check completed.")
