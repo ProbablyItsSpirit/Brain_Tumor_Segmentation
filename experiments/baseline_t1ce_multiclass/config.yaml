@@ -1,37 +1,57 @@
-data_root: /content/BraTS-2024-Complete
+experiment_name: baseline_t1ce_multiclass
+seed: 42
 
-datasets:
-	GLI:
-		folder: BraTS-GLI
-		splits:
-			- train
-		image_keywords:
-			- t1ce
-			- t1c
-		label_keywords:
-			- seg
+data:
+  root: /content/drive/MyDrive/BraTS_Project/BraTS-2024-Complete
+  patient_lists_dir: /content/drive/MyDrive/BraTS_Project/patient_lists
+  modality: t1c
+  label_mapping:
+    0: 0
+    1: 1
+    2: 2
+    3: 3
+    4: 3
+  datasets:
+    GLI:
+      folder: BraTS-GLI
+      image_suffix: -t1c.nii.gz
+      label_suffix: -seg.nii.gz
+      list_files:
+        train: gli_train.txt
+        test: gli_val.txt
+    PED:
+      folder: BraTS-PED
+      image_suffix: -t1c.nii.gz
+      label_suffix: -seg.nii.gz
+      list_files:
+        train: ped_train.txt
+        test: ped_val.txt
+    MEN:
+      folder: BraTS-MEN-RT
+      image_suffix: _t1c.nii.gz
+      label_suffix: _gtv.nii.gz
+      list_files:
+        train: men_train.txt
+        test: men_val.txt
 
-	PED:
-		folder: BraTS-PED
-		splits:
-			- train
-		image_keywords:
-			- t1ce
-			- t1c
-		label_keywords:
-			- seg
+splits:
+  train:
+    GLI: train
+  test:
+    PED: train
+    MEN: train
 
-	MEN:
-		folder: BraTS-MEN-RT
-		splits:
-			- train
-		image_keywords:
-			- t1ce
-			- t1c
-		label_keywords:
-			- gtv
-			- seg
+patch:
+  size: [128, 128, 128]
+  num_samples: 1
 
-# Set to an integer (for example 50) for quick smoke tests.
-# Keep null to load all available cases from configured splits.
-max_cases_per_dataset: null
+dataloader:
+  batch_size: 2
+  num_workers: 2
+  shuffle: true
+
+training:
+  learning_rate: 0.0002
+  epochs: 100
+  val_interval: 1
+  checkpoint_dir: checkpoints/baseline_t1ce_multiclass
