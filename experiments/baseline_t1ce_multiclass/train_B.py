@@ -32,6 +32,17 @@ def parse_args() -> argparse.Namespace:
         default=str(Path(__file__).with_name("config.yaml")),
         help="Path to experiment config file",
     )
+    parser.add_argument(
+        "--resume-checkpoint",
+        type=str,
+        default="",
+        help="Optional checkpoint path to resume from (e.g., stage_b_latest.pt)",
+    )
+    parser.add_argument(
+        "--reset-optimizer",
+        action="store_true",
+        help="If set, optimizer state from resume checkpoint is ignored",
+    )
     return parser.parse_args()
 
 
@@ -288,6 +299,8 @@ def run_stage_b_training(
     config_dir: Path,
     train_samples: int,
     test_samples: int,
+    resume_checkpoint: str = "",
+    reset_optimizer: bool = False,
 ) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model().to(device)
@@ -308,10 +321,42 @@ def run_stage_b_training(
 
     best_mean_loss = float("inf")
     history: List[Dict[str, Any]] = []
+    start_epoch = 1
+
+    if history_path.exists():
+        with history_path.open("r", encoding="utf-8") as f:
+            loaded_history = json.load(f)
+            if isinstance(loaded_history, list):
+                history = loaded_history
+                if history:
+                    best_mean_loss = float(min(item["mean_loss"] for item in history))
+
+    if resume_checkpoint:
+        resume_path = resolve_path(config_dir, resume_checkpoint)
+        if not resume_path.exists():
+            raise FileNotFoundError(f"Resume checkpoint not found: {resume_path}")
+
+        state = torch.load(resume_path, map_location=device)
+        model.load_state_dict(state["model_state_dict"])
+
+        if (not reset_optimizer) and ("optimizer_state_dict" in state):
+            optimizer.load_state_dict(state["optimizer_state_dict"])
+
+        last_epoch = int(state.get("epoch", 0))
+        start_epoch = last_epoch + 1
+        best_mean_loss = min(best_mean_loss, float(state.get("mean_loss", float("inf"))))
+        print(f"Resuming from checkpoint: {resume_path}")
+        print(f"Resumed at epoch {last_epoch}; continuing from epoch {start_epoch}")
+
+    if start_epoch > num_epochs:
+        print(
+            f"Nothing to train: start_epoch ({start_epoch}) is greater than configured epochs ({num_epochs})."
+        )
+        return
 
     print(f"Checkpoint directory: {checkpoint_dir}")
 
-    for epoch in range(1, num_epochs + 1):
+    for epoch in range(start_epoch, num_epochs + 1):
         model.train()
         running_loss = 0.0
         total_steps = len(loader)
@@ -431,6 +476,8 @@ def main() -> None:
         config_dir=config_path.parent,
         train_samples=len(train_files),
         test_samples=len(test_files),
+        resume_checkpoint=args.resume_checkpoint,
+        reset_optimizer=args.reset_optimizer,
     )
 
     print("Stage B training completed.")

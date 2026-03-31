@@ -1,0 +1,340 @@
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Union
+
+import numpy as np
+import torch
+import yaml
+from monai.data import DataLoader, Dataset
+from monai.networks.nets import UNet
+from monai.transforms import (
+	Compose,
+	EnsureChannelFirstd,
+	EnsureTyped,
+	Lambdad,
+	LoadImaged,
+	NormalizeIntensityd,
+)
+from monai.utils import set_determinism
+
+
+def parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(description="Run inference using a trained Stage B checkpoint")
+	parser.add_argument(
+		"--config",
+		type=str,
+		default=str(Path(__file__).with_name("config.yaml")),
+		help="Path to experiment config file",
+	)
+	parser.add_argument(
+		"--checkpoint",
+		type=str,
+		required=True,
+		help="Path to checkpoint file (e.g., stage_b_best.pt)",
+	)
+	parser.add_argument(
+		"--output-dir",
+		type=str,
+		default="results/inference_stage_b",
+		help="Directory to save predictions and metrics",
+	)
+	return parser.parse_args()
+
+
+def load_config(config_path: Path) -> Dict[str, Any]:
+	with config_path.open("r", encoding="utf-8") as f:
+		return yaml.safe_load(f)
+
+
+def resolve_path(base_dir: Path, raw_path: str) -> Path:
+	path = Path(raw_path)
+	if path.is_absolute():
+		return path
+	return (base_dir / path).resolve()
+
+
+def read_case_ids(list_file: Path) -> List[str]:
+	case_ids: List[str] = []
+	with list_file.open("r", encoding="utf-8") as f:
+		for line in f:
+			case_id = line.strip()
+			if case_id and not case_id.startswith("#"):
+				case_ids.append(case_id)
+	return case_ids
+
+
+def remap_labels(label: np.ndarray, mapping: Dict[int, int]) -> np.ndarray:
+	remapped = np.array(label, copy=True)
+	for src, dst in mapping.items():
+		remapped[label == src] = dst
+	return remapped.astype(np.int64)
+
+
+def find_case_dir(dataset_root: Path, case_id: str) -> Path | None:
+	candidates = [
+		dataset_root / "train" / case_id,
+		dataset_root / "val" / case_id,
+		dataset_root / "train_additional" / case_id,
+	]
+	for candidate in candidates:
+		if candidate.exists():
+			return candidate
+	return None
+
+
+def get_required_source_splits(cfg: Dict[str, Any]) -> Dict[str, set[str]]:
+	required: Dict[str, set[str]] = {}
+	for split_cfg in cfg["splits"].values():
+		if isinstance(split_cfg, list):
+			for dataset_name in split_cfg:
+				required.setdefault(dataset_name, set()).add("train")
+		elif isinstance(split_cfg, dict):
+			for dataset_name, source_split in split_cfg.items():
+				required.setdefault(dataset_name, set()).add(str(source_split))
+		else:
+			raise ValueError("Each split entry must be a list or dataset->source-split mapping")
+	return required
+
+
+def build_dataset_dicts(
+	cfg: Dict[str, Any],
+	config_dir: Path,
+) -> Dict[str, Dict[str, List[Dict[str, str]]]]:
+	data_cfg = cfg["data"]
+	data_root = resolve_path(config_dir, data_cfg["root"])
+	patient_lists_dir = resolve_path(config_dir, data_cfg["patient_lists_dir"])
+	modality = data_cfg["modality"]
+	required_source_splits = get_required_source_splits(cfg)
+
+	all_dataset_dicts: Dict[str, Dict[str, List[Dict[str, str]]]] = {}
+
+	for dataset_name, dataset_info in data_cfg["datasets"].items():
+		dataset_root = data_root / dataset_info["folder"]
+		image_suffix = dataset_info.get("image_suffix", f"-{modality}.nii.gz")
+		label_suffix = dataset_info["label_suffix"]
+		list_files = dataset_info["list_files"]
+
+		all_dataset_dicts[dataset_name] = {}
+		dataset_required_splits = required_source_splits.get(dataset_name, {"train"})
+
+		for split_name in dataset_required_splits:
+			if split_name not in list_files:
+				raise ValueError(
+					f"Missing list file config for dataset '{dataset_name}' split '{split_name}'"
+				)
+
+			all_dataset_dicts[dataset_name][split_name] = []
+			list_path = patient_lists_dir / list_files[split_name]
+			case_ids = read_case_ids(list_path)
+			missing_count = 0
+
+			for case_id in case_ids:
+				case_dir = find_case_dir(dataset_root, case_id)
+				if case_dir is None:
+					missing_count += 1
+					continue
+
+				image_path = case_dir / f"{case_id}{image_suffix}"
+				label_path = case_dir / f"{case_id}{label_suffix}"
+
+				if not image_path.exists() or not label_path.exists():
+					missing_count += 1
+					continue
+
+				all_dataset_dicts[dataset_name][split_name].append(
+					{
+						"image": str(image_path),
+						"label": str(label_path),
+						"dataset": dataset_name,
+						"case_id": case_id,
+					}
+				)
+
+			print(
+				f"{dataset_name} {split_name}: "
+				f"{len(all_dataset_dicts[dataset_name][split_name])} cases loaded"
+				f" (missing/skipped: {missing_count})"
+			)
+
+	return all_dataset_dicts
+
+
+def select_split_files(
+	all_dataset_dicts: Dict[str, Dict[str, List[Dict[str, str]]]],
+	split_datasets: Union[List[str], Dict[str, str]],
+	split_name: str,
+) -> List[Dict[str, str]]:
+	files: List[Dict[str, str]] = []
+	if isinstance(split_datasets, list):
+		for dataset_name in split_datasets:
+			if dataset_name not in all_dataset_dicts:
+				raise ValueError(f"Unknown dataset '{dataset_name}' in splits.{split_name}")
+			if "train" not in all_dataset_dicts[dataset_name]:
+				raise ValueError(
+					f"Dataset '{dataset_name}' does not have required source split 'train'"
+				)
+			files.extend(all_dataset_dicts[dataset_name]["train"])
+	elif isinstance(split_datasets, dict):
+		for dataset_name, source_split in split_datasets.items():
+			if dataset_name not in all_dataset_dicts:
+				raise ValueError(f"Unknown dataset '{dataset_name}' in splits.{split_name}")
+			if source_split not in all_dataset_dicts[dataset_name]:
+				raise ValueError(
+					f"Unknown source split '{source_split}' for dataset '{dataset_name}'"
+				)
+			files.extend(all_dataset_dicts[dataset_name][source_split])
+	else:
+		raise ValueError(
+			f"splits.{split_name} must be a list of datasets or a dataset->split mapping"
+		)
+	return files
+
+
+def build_inference_transforms(cfg: Dict[str, Any]) -> Compose:
+	mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+	return Compose(
+		[
+			LoadImaged(keys=["image", "label"]),
+			EnsureChannelFirstd(keys=["image", "label"]),
+			NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+			Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
+			EnsureTyped(keys="image", dtype=torch.float32),
+			EnsureTyped(keys="label", dtype=torch.int64),
+		]
+	)
+
+
+def build_model() -> UNet:
+	return UNet(
+		spatial_dims=3,
+		in_channels=1,
+		out_channels=4,
+		channels=(16, 32, 64, 128, 256),
+		strides=(2, 2, 2, 2),
+		num_res_units=2,
+	)
+
+
+def extract_case_id(case_id_field: Any) -> str:
+	if isinstance(case_id_field, (list, tuple)):
+		return str(case_id_field[0])
+	return str(case_id_field)
+
+
+def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> float:
+	pred_c = (pred == class_id).float()
+	target_c = (target == class_id).float()
+	denominator = pred_c.sum() + target_c.sum()
+	if denominator.item() == 0:
+		return 1.0
+	intersection = (pred_c * target_c).sum()
+	return float((2.0 * intersection / denominator).item())
+
+
+def compute_case_metrics(pred: torch.Tensor, target: torch.Tensor, num_classes: int = 4) -> Dict[str, Any]:
+	per_class: Dict[str, float] = {}
+	class_values: List[float] = []
+	for class_id in range(1, num_classes):
+		d = dice_for_class(pred, target, class_id)
+		per_class[f"dice_class_{class_id}"] = d
+		class_values.append(d)
+
+	mean_dice_no_bg = float(np.mean(class_values)) if class_values else 0.0
+	return {
+		"mean_dice_no_bg": mean_dice_no_bg,
+		**per_class,
+	}
+
+
+def load_checkpoint(model: UNet, checkpoint_path: Path, device: torch.device) -> None:
+	state = torch.load(checkpoint_path, map_location=device)
+	if isinstance(state, dict) and "model_state_dict" in state:
+		model.load_state_dict(state["model_state_dict"])
+	else:
+		model.load_state_dict(state)
+
+
+def main() -> None:
+	args = parse_args()
+	config_path = Path(args.config).resolve()
+	checkpoint_path = Path(args.checkpoint).resolve()
+
+	if not checkpoint_path.exists():
+		raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
+
+	cfg = load_config(config_path)
+	set_determinism(seed=int(cfg.get("seed", 42)))
+
+	output_dir = resolve_path(config_path.parent, args.output_dir)
+	output_dir.mkdir(parents=True, exist_ok=True)
+	pred_dir = output_dir / "predictions"
+	pred_dir.mkdir(parents=True, exist_ok=True)
+
+	all_dataset_dicts = build_dataset_dicts(cfg, config_path.parent)
+	test_files = select_split_files(
+		all_dataset_dicts,
+		split_datasets=cfg["splits"]["test"],
+		split_name="test",
+	)
+
+	print(f"\nTotal test samples for inference: {len(test_files)}")
+	if len(test_files) == 0:
+		raise RuntimeError("No test samples found for inference.")
+
+	test_ds = Dataset(data=test_files, transform=build_inference_transforms(cfg))
+	test_loader = DataLoader(
+		test_ds,
+		batch_size=1,
+		shuffle=False,
+		num_workers=int(cfg["dataloader"].get("num_workers", 0)),
+		pin_memory=torch.cuda.is_available(),
+		persistent_workers=int(cfg["dataloader"].get("num_workers", 0)) > 0,
+	)
+
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	model = build_model().to(device)
+	load_checkpoint(model, checkpoint_path, device)
+	model.eval()
+
+	all_case_metrics: List[Dict[str, Any]] = []
+
+	with torch.no_grad():
+		for batch in test_loader:
+			case_id = extract_case_id(batch["case_id"])
+
+			images = batch["image"].to(device)
+			labels = batch["label"].to(device)
+			if labels.ndim == 5 and labels.shape[1] == 1:
+				labels = labels.squeeze(1)
+
+			logits = model(images)
+			preds = torch.argmax(logits, dim=1)
+
+			pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
+			np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
+
+			metrics = compute_case_metrics(preds[0], labels[0], num_classes=4)
+			all_case_metrics.append({"case_id": case_id, **metrics})
+
+	mean_dice_values = [m["mean_dice_no_bg"] for m in all_case_metrics]
+	summary = {
+		"checkpoint": str(checkpoint_path),
+		"num_cases": len(all_case_metrics),
+		"mean_dice_no_bg": float(np.mean(mean_dice_values)) if mean_dice_values else 0.0,
+		"cases": all_case_metrics,
+	}
+
+	summary_path = output_dir / "inference_metrics.json"
+	with summary_path.open("w", encoding="utf-8") as f:
+		json.dump(summary, f, indent=2)
+
+	print(f"\nInference completed. Predictions saved to: {pred_dir}")
+	print(f"Metrics saved to: {summary_path}")
+	print(f"Mean Dice (classes 1-3): {summary['mean_dice_no_bg']:.6f}")
+
+
+if __name__ == "__main__":
+	main()
