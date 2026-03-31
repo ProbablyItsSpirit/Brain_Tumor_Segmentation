@@ -1,0 +1,102 @@
+[
+  {
+    "epoch": 1,
+    "mean_loss": 0.9974082660586855,
+    "best_mean_loss_so_far": 0.9974082660586855,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 2,
+    "mean_loss": 0.6395340355345118,
+    "best_mean_loss_so_far": 0.6395340355345118,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 3,
+    "mean_loss": 0.5796262102635662,
+    "best_mean_loss_so_far": 0.5796262102635662,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 4,
+    "mean_loss": 0.5406073581716724,
+    "best_mean_loss_so_far": 0.5406073581716724,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 5,
+    "mean_loss": 0.5133395864916495,
+    "best_mean_loss_so_far": 0.5133395864916495,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 6,
+    "mean_loss": 0.4957588814777746,
+    "best_mean_loss_so_far": 0.4957588814777746,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 7,
+    "mean_loss": 0.4817885648638341,
+    "best_mean_loss_so_far": 0.4817885648638341,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 8,
+    "mean_loss": 0.4699983603967544,
+    "best_mean_loss_so_far": 0.4699983603967544,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 9,
+    "mean_loss": 0.46157826600842056,
+    "best_mean_loss_so_far": 0.46157826600842056,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  },
+  {
+    "epoch": 10,
+    "mean_loss": 0.45449795556494693,
+    "best_mean_loss_so_far": 0.45449795556494693,
+    "is_best": true,
+    "device": "cuda",
+    "train_samples": 1621,
+    "test_samples": 757,
+    "total_steps": 811
+  }
+]
