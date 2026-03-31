@@ -10,6 +10,8 @@ import torch
 import yaml
 from monai.data import DataLoader, Dataset
 from monai.networks.nets import UNet
+from monai.transforms import DivisiblePadd
+
 from monai.transforms import (
 	Compose,
 	EnsureChannelFirstd,
@@ -20,6 +22,7 @@ from monai.transforms import (
 )
 from monai.utils import set_determinism
 
+DivisiblePadd(keys=["image"], k=32) 
 
 def parse_args() -> argparse.Namespace:
 	parser = argparse.ArgumentParser(description="Run inference using a trained Stage B checkpoint")
