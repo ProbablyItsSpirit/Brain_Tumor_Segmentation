@@ -106,6 +106,20 @@ def build_dataset_dicts(
 	data_cfg = cfg["data"]
 	data_root = resolve_path(config_dir, data_cfg["root"])
 	patient_lists_dir = resolve_path(config_dir, data_cfg["patient_lists_dir"])
+	repo_root = config_dir.parent.parent.resolve()
+	default_data_root = repo_root / "BraTS-2024-Complete"
+	default_patient_lists_dir = repo_root / "patient_lists"
+
+	if not data_root.exists() and default_data_root.exists():
+		print(f"[path override] data.root not found: {data_root}")
+		print(f"[path override] using local repo data root: {default_data_root}")
+		data_root = default_data_root
+
+	if not patient_lists_dir.exists() and default_patient_lists_dir.exists():
+		print(f"[path override] data.patient_lists_dir not found: {patient_lists_dir}")
+		print(f"[path override] using local repo patient lists: {default_patient_lists_dir}")
+		patient_lists_dir = default_patient_lists_dir
+
 	modality = data_cfg["modality"]
 	required_source_splits = get_required_source_splits(cfg)
 

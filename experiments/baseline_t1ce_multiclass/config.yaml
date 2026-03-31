@@ -2,8 +2,8 @@ experiment_name: baseline_t1ce_multiclass
 seed: 42
 
 data:
-  root: /content/drive/MyDrive/BraTS_Project/BraTS-2024-Complete
-  patient_lists_dir: /content/drive/MyDrive/BraTS_Project/patient_lists
+  root: ../../BraTS-2024-Complete
+  patient_lists_dir: ../../patient_lists
   modality: t1c
   label_mapping:
     0: 0

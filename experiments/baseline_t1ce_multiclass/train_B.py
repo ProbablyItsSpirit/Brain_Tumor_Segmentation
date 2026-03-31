@@ -58,6 +58,25 @@ def resolve_path(base_dir: Path, raw_path: str) -> Path:
     return (base_dir / path).resolve()
 
 
+def apply_local_path_overrides(cfg: Dict[str, Any], config_dir: Path) -> None:
+    data_cfg = cfg["data"]
+    repo_root = config_dir.parent.parent
+
+    current_data_root = resolve_path(config_dir, data_cfg["root"])
+    if not current_data_root.exists():
+        fallback_data_root = repo_root / "BraTS-2024-Complete"
+        if fallback_data_root.exists():
+            data_cfg["root"] = str(fallback_data_root)
+            print(f"[path override] data.root -> {fallback_data_root}")
+
+    current_lists_root = resolve_path(config_dir, data_cfg["patient_lists_dir"])
+    if not current_lists_root.exists():
+        fallback_lists_root = repo_root / "patient_lists"
+        if fallback_lists_root.exists():
+            data_cfg["patient_lists_dir"] = str(fallback_lists_root)
+            print(f"[path override] data.patient_lists_dir -> {fallback_lists_root}")
+
+
 def read_case_ids(list_file: Path) -> List[str]:
     case_ids: List[str] = []
     with list_file.open("r", encoding="utf-8") as f:
@@ -429,6 +448,7 @@ def main() -> None:
     args = parse_args()
     config_path = Path(args.config).resolve()
     cfg = load_config(config_path)
+    apply_local_path_overrides(cfg, config_path.parent)
 
     set_determinism(seed=int(cfg.get("seed", 42)))
 
