@@ -9,8 +9,8 @@ import numpy as np
 import torch
 import yaml
 from monai.data import DataLoader, Dataset
+from monai.inferers import sliding_window_inference
 from monai.networks.nets import UNet
-from monai.transforms import DivisiblePadd
 
 from monai.transforms import (
 	Compose,
@@ -21,8 +21,6 @@ from monai.transforms import (
 	NormalizeIntensityd,
 )
 from monai.utils import set_determinism
-
-DivisiblePadd(keys=["image"], k=32) 
 
 def parse_args() -> argparse.Namespace:
 	parser = argparse.ArgumentParser(description="Run inference using a trained Stage B checkpoint")
@@ -69,10 +67,16 @@ def read_case_ids(list_file: Path) -> List[str]:
 	return case_ids
 
 
-def remap_labels(label: np.ndarray, mapping: Dict[int, int]) -> np.ndarray:
-	remapped = np.array(label, copy=True)
+def remap_labels(label: Any, mapping: Dict[int, int]):
+	if torch.is_tensor(label):
+		remapped = label.clone()
+		for src, dst in mapping.items():
+			remapped[label == src] = dst
+		return remapped.to(dtype=torch.int64)
+
+	remapped = np.asarray(label).copy()
 	for src, dst in mapping.items():
-		remapped[label == src] = dst
+		remapped[remapped == src] = dst
 	return remapped.astype(np.int64)
 
 
@@ -327,7 +331,14 @@ def main() -> None:
 			if labels.ndim == 5 and labels.shape[1] == 1:
 				labels = labels.squeeze(1)
 
-			logits = model(images)
+			roi_size = tuple(cfg["patch"]["size"])
+			logits = sliding_window_inference(
+				inputs=images,
+				roi_size=roi_size,
+				sw_batch_size=1,
+				predictor=model,
+				overlap=0.25,
+			)
 			preds = torch.argmax(logits, dim=1)
 
 			pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
