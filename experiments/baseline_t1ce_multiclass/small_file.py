@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import copy
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -85,7 +86,12 @@ def main() -> None:
     output_dir = resolve_path(config_path.parent, args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    all_dataset_dicts = build_dataset_dicts(cfg, config_path.parent)
+    # Force-load GLI test source split for this quick sanity script,
+    # independent of the main experiment's cross-dataset test mapping.
+    quick_cfg = copy.deepcopy(cfg)
+    quick_cfg["splits"]["test"] = {"GLI": "test"}
+
+    all_dataset_dicts = build_dataset_dicts(quick_cfg, config_path.parent)
     gli_test_files = select_split_files(
         all_dataset_dicts,
         split_datasets={"GLI": "test"},
