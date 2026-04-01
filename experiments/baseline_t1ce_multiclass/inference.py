@@ -40,7 +40,18 @@ def parse_args() -> argparse.Namespace:
 		"--output-dir",
 		type=str,
 		default="results/inference_stage_b",
-		help="Directory to save predictions and metrics",
+		help="Directory to save inference metrics and optional predictions",
+	)
+	parser.add_argument(
+		"--save-predictions",
+		action="store_true",
+		help="If set, save per-case prediction volumes (.npy). Disabled by default to avoid large disk usage.",
+	)
+	parser.add_argument(
+		"--max-cases",
+		type=int,
+		default=0,
+		help="Optional cap on number of test cases to run (0 means all)",
 	)
 	return parser.parse_args()
 
@@ -292,7 +303,8 @@ def main() -> None:
 	output_dir = resolve_path(config_path.parent, args.output_dir)
 	output_dir.mkdir(parents=True, exist_ok=True)
 	pred_dir = output_dir / "predictions"
-	pred_dir.mkdir(parents=True, exist_ok=True)
+	if args.save_predictions:
+		pred_dir.mkdir(parents=True, exist_ok=True)
 
 	all_dataset_dicts = build_dataset_dicts(cfg, config_path.parent)
 	test_files = select_split_files(
@@ -300,6 +312,8 @@ def main() -> None:
 		split_datasets=cfg["splits"]["test"],
 		split_name="test",
 	)
+	if args.max_cases > 0:
+		test_files = test_files[: args.max_cases]
 
 	print(f"\nTotal test samples for inference: {len(test_files)}")
 	if len(test_files) == 0:
@@ -341,8 +355,9 @@ def main() -> None:
 			)
 			preds = torch.argmax(logits, dim=1)
 
-			pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
-			np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
+			if args.save_predictions:
+				pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
+				np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
 			metrics = compute_case_metrics(preds[0], labels[0], num_classes=4)
 			all_case_metrics.append({"case_id": case_id, **metrics})
@@ -359,7 +374,11 @@ def main() -> None:
 	with summary_path.open("w", encoding="utf-8") as f:
 		json.dump(summary, f, indent=2)
 
-	print(f"\nInference completed. Predictions saved to: {pred_dir}")
+	print("\nInference completed.")
+	if args.save_predictions:
+		print(f"Predictions saved to: {pred_dir}")
+	else:
+		print("Predictions were not saved (use --save-predictions to enable).")
 	print(f"Metrics saved to: {summary_path}")
 	print(f"Mean Dice (classes 1-3): {summary['mean_dice_no_bg']:.6f}")
 
