@@ -98,10 +98,21 @@ def main() -> None:
         split_name="test",
     )
 
+    if len(gli_test_files) == 0:
+        print("[small_file] No usable GLI test cases found. Falling back to GLI train cases.")
+        quick_cfg_fallback = copy.deepcopy(cfg)
+        quick_cfg_fallback["splits"]["test"] = {"GLI": "train"}
+        all_dataset_dicts = build_dataset_dicts(quick_cfg_fallback, config_path.parent)
+        gli_test_files = select_split_files(
+            all_dataset_dicts,
+            split_datasets={"GLI": "train"},
+            split_name="test",
+        )
+
     num_cases = max(1, int(args.num_cases))
     test_files = gli_test_files[:num_cases]
     if len(test_files) == 0:
-        raise RuntimeError("No GLI test cases found.")
+        raise RuntimeError("No usable GLI cases found in test or train splits.")
 
     print(f"Running quick GLI inference on {len(test_files)} case(s).")
 
