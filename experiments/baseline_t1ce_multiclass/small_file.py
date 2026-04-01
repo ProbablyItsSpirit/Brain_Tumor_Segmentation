@@ -14,6 +14,7 @@ from monai.inferers import sliding_window_inference
 from monai.utils import set_determinism
 
 from inference import (
+    apply_label_setup,
     build_dataset_dicts,
     build_inference_transforms,
     build_model,
@@ -54,19 +55,26 @@ def parse_args() -> argparse.Namespace:
         default="results/small_file_gli10",
         help="Directory to save small-run metrics and plot",
     )
+    parser.add_argument(
+        "--label-setup",
+        type=str,
+        choices=["4c", "3c"],
+        default="4c",
+        help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
+    )
     return parser.parse_args()
 
 
-def save_plot(case_metrics: List[Dict[str, Any]], plot_path: Path) -> None:
+def save_plot(case_metrics: List[Dict[str, Any]], plot_path: Path, title: str) -> None:
     case_ids = [m["case_id"] for m in case_metrics]
     mean_dice = [m["mean_dice_no_bg"] for m in case_metrics]
 
     plt.figure(figsize=(12, 4))
     plt.bar(range(len(mean_dice)), mean_dice)
     plt.xticks(range(len(case_ids)), case_ids, rotation=60, ha="right", fontsize=8)
-    plt.ylabel("Mean Dice (classes 1-3)")
+    plt.ylabel("Mean Dice (foreground classes)")
     plt.xlabel("Case ID")
-    plt.title("GLI Quick Eval (10 cases)")
+    plt.title(title)
     plt.tight_layout()
     plt.savefig(plot_path, dpi=160)
     plt.close()
@@ -81,6 +89,8 @@ def main() -> None:
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
     cfg = load_config(config_path)
+    num_classes = apply_label_setup(cfg, args.label_setup)
+    print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
     set_determinism(seed=int(cfg.get("seed", 42)))
 
     output_dir = resolve_path(config_path.parent, args.output_dir)
@@ -127,7 +137,7 @@ def main() -> None:
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model().to(device)
+    model = build_model(out_channels=num_classes).to(device)
     load_checkpoint(model, checkpoint_path, device)
     model.eval()
 
@@ -151,12 +161,13 @@ def main() -> None:
             )
             preds = torch.argmax(logits, dim=1)
 
-            metrics = compute_case_metrics(preds[0], labels[0], num_classes=4)
+            metrics = compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
             all_case_metrics.append({"case_id": case_id, **metrics})
 
     mean_dice_values = [m["mean_dice_no_bg"] for m in all_case_metrics]
     summary = {
         "checkpoint": str(checkpoint_path),
+        "label_setup": args.label_setup,
         "num_cases": len(all_case_metrics),
         "mean_dice_no_bg": float(np.mean(mean_dice_values)) if mean_dice_values else 0.0,
         "cases": all_case_metrics,
@@ -167,11 +178,15 @@ def main() -> None:
         json.dump(summary, f, indent=2)
 
     plot_path = output_dir / "small_file_plot.png"
-    save_plot(all_case_metrics, plot_path)
+    save_plot(
+        all_case_metrics,
+        plot_path,
+        title=f"GLI Quick Eval ({len(all_case_metrics)} cases, {args.label_setup})",
+    )
 
     print(f"Metrics saved to: {metrics_path}")
     print(f"Plot saved to: {plot_path}")
-    print(f"Quick-run Mean Dice (classes 1-3): {summary['mean_dice_no_bg']:.6f}")
+    print(f"Quick-run Mean Dice (foreground classes): {summary['mean_dice_no_bg']:.6f}")
 
 
 if __name__ == "__main__":

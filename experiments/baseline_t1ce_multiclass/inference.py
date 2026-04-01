@@ -53,6 +53,13 @@ def parse_args() -> argparse.Namespace:
 		default=0,
 		help="Optional cap on number of test cases to run (0 means all)",
 	)
+	parser.add_argument(
+		"--label-setup",
+		type=str,
+		choices=["4c", "3c"],
+		default="4c",
+		help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
+	)
 	return parser.parse_args()
 
 
@@ -89,6 +96,26 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
 	for src, dst in mapping.items():
 		remapped[remapped == src] = dst
 	return remapped.astype(np.int64)
+
+
+def apply_label_setup(cfg: Dict[str, Any], label_setup: str) -> int:
+	if label_setup == "3c":
+		cfg["data"]["label_mapping"] = {
+			0: 0,
+			1: 1,
+			2: 2,
+			3: 2,
+			4: 2,
+		}
+	else:
+		cfg["data"]["label_mapping"] = {
+			0: 0,
+			1: 1,
+			2: 2,
+			3: 3,
+			4: 3,
+		}
+	return int(max(cfg["data"]["label_mapping"].values())) + 1
 
 
 def find_case_dir(dataset_root: Path, case_id: str) -> Path | None:
@@ -239,11 +266,11 @@ def build_inference_transforms(cfg: Dict[str, Any]) -> Compose:
 	)
 
 
-def build_model() -> UNet:
+def build_model(out_channels: int) -> UNet:
 	return UNet(
 		spatial_dims=3,
 		in_channels=1,
-		out_channels=4,
+		out_channels=out_channels,
 		channels=(16, 32, 64, 128, 256),
 		strides=(2, 2, 2, 2),
 		num_res_units=2,
@@ -330,7 +357,10 @@ def main() -> None:
 	)
 
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-	model = build_model().to(device)
+	num_classes = apply_label_setup(cfg, args.label_setup)
+	print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
+
+	model = build_model(out_channels=num_classes).to(device)
 	load_checkpoint(model, checkpoint_path, device)
 	model.eval()
 
@@ -359,7 +389,7 @@ def main() -> None:
 				pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
 				np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
-			metrics = compute_case_metrics(preds[0], labels[0], num_classes=4)
+			metrics = compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
 			all_case_metrics.append({"case_id": case_id, **metrics})
 
 	mean_dice_values = [m["mean_dice_no_bg"] for m in all_case_metrics]

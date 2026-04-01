@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -9,7 +10,8 @@ import numpy as np
 import torch
 import yaml
 from monai.data import DataLoader, Dataset
-from monai.losses import DiceCELoss
+from monai.inferers import sliding_window_inference
+from monai.losses import DiceCELoss, DiceFocalLoss
 from monai.networks.nets import UNet
 from monai.transforms import (
     Compose,
@@ -43,6 +45,45 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="If set, optimizer state from resume checkpoint is ignored",
     )
+    parser.add_argument(
+        "--max-val-cases",
+        type=int,
+        default=30,
+        help="Max number of validation cases to evaluate each epoch (0 means all)",
+    )
+    parser.add_argument(
+        "--train-mode",
+        type=str,
+        choices=["gli", "mixed"],
+        default="gli",
+        help="gli: train only on GLI | mixed: train on GLI+PED+MEN",
+    )
+    parser.add_argument(
+        "--loss-type",
+        type=str,
+        choices=["dicece", "dicefocal"],
+        default="dicece",
+        help="Loss function type for class imbalance handling",
+    )
+    parser.add_argument(
+        "--class-weights",
+        type=str,
+        default="",
+        help="Optional comma-separated class weights for 4 classes, e.g. 0.05,0.2,0.25,0.5",
+    )
+    parser.add_argument(
+        "--checkpoint-suffix",
+        type=str,
+        default="",
+        help="Optional suffix appended to checkpoint_dir for side-by-side experiment runs",
+    )
+    parser.add_argument(
+        "--label-setup",
+        type=str,
+        choices=["4c", "3c"],
+        default="4c",
+        help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
+    )
     return parser.parse_args()
 
 
@@ -75,6 +116,33 @@ def apply_local_path_overrides(cfg: Dict[str, Any], config_dir: Path) -> None:
         if fallback_lists_root.exists():
             data_cfg["patient_lists_dir"] = str(fallback_lists_root)
             print(f"[path override] data.patient_lists_dir -> {fallback_lists_root}")
+
+
+def apply_label_setup(cfg: Dict[str, Any], label_setup: str) -> int:
+    if label_setup == "3c":
+        cfg["data"]["label_mapping"] = {
+            0: 0,
+            1: 1,
+            2: 2,
+            3: 2,
+            4: 2,
+        }
+        weights = cfg.get("training", {}).get("loss", {}).get("class_weights")
+        if isinstance(weights, list) and len(weights) == 4:
+            cfg["training"]["loss"]["class_weights"] = [
+                float(weights[0]),
+                float(weights[1]),
+                float(max(weights[2], weights[3])),
+            ]
+    else:
+        cfg["data"]["label_mapping"] = {
+            0: 0,
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 3,
+        }
+    return int(max(cfg["data"]["label_mapping"].values())) + 1
 
 
 def read_case_ids(list_file: Path) -> List[str]:
@@ -218,6 +286,8 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
     patch_size = tuple(cfg["patch"]["size"])
     num_samples = int(cfg["patch"].get("num_samples", 1))
+    pos = float(cfg["patch"].get("pos", 3))
+    neg = float(cfg["patch"].get("neg", 1))
 
     return Compose(
         [
@@ -231,13 +301,27 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
                 keys=["image", "label"],
                 label_key="label",
                 spatial_size=patch_size,
-                pos=1,
-                neg=1,
+                pos=pos,
+                neg=neg,
                 num_samples=num_samples,
                 image_key="image",
                 image_threshold=0,
             ),
             SqueezeDimd(keys="label", dim=0),
+        ]
+    )
+
+
+def build_eval_transforms(cfg: Dict[str, Any]) -> Compose:
+    mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+    return Compose(
+        [
+            LoadImaged(keys=["image", "label"]),
+            EnsureChannelFirstd(keys=["image", "label"]),
+            NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+            Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
+            EnsureTyped(keys="image", dtype=torch.float32),
+            EnsureTyped(keys="label", dtype=torch.int64),
         ]
     )
 
@@ -252,11 +336,11 @@ def verify_batch(loader: DataLoader) -> None:
     print(f"label unique values: {torch.unique(label).tolist()}")
 
 
-def build_model() -> UNet:
+def build_model(out_channels: int) -> UNet:
     return UNet(
         spatial_dims=3,
         in_channels=1,
-        out_channels=4,
+        out_channels=out_channels,
         channels=(16, 32, 64, 128, 256),
         strides=(2, 2, 2, 2),
         num_res_units=2,
@@ -277,9 +361,118 @@ def prepare_labels_for_dicece(labels: torch.Tensor) -> torch.Tensor:
     return labels
 
 
-def run_model_forward_check(loader: DataLoader) -> None:
+def parse_class_weights(raw: str, num_classes: int) -> List[float] | None:
+    if not raw.strip():
+        return None
+    weights = [float(x.strip()) for x in raw.split(",") if x.strip()]
+    if len(weights) != num_classes:
+        raise ValueError(
+            f"--class-weights must provide exactly {num_classes} values for classes 0..{num_classes - 1}"
+        )
+    return weights
+
+
+def build_loss_function(
+    loss_type: str,
+    class_weights: List[float] | None,
+    num_classes: int,
+    cfg: Dict[str, Any],
+    device: torch.device,
+):
+    loss_cfg = cfg.get("training", {}).get("loss", {})
+
+    configured_weights = loss_cfg.get("class_weights")
+    if class_weights is None and isinstance(configured_weights, list):
+        class_weights = [float(x) for x in configured_weights]
+
+    weight_tensor = None
+    if class_weights is not None:
+        if len(class_weights) != num_classes:
+            raise ValueError(
+                f"Class weights must have {num_classes} values for classes 0..{num_classes - 1}"
+            )
+        weight_tensor = torch.tensor(class_weights, dtype=torch.float32, device=device)
+
+    lambda_dice = float(loss_cfg.get("lambda_dice", 0.5))
+    lambda_ce = float(loss_cfg.get("lambda_ce", 0.5))
+    lambda_focal = float(loss_cfg.get("lambda_focal", 0.5))
+    focal_gamma = float(loss_cfg.get("focal_gamma", 2.0))
+
+    if loss_type == "dicefocal":
+        return DiceFocalLoss(
+            to_onehot_y=True,
+            softmax=True,
+            gamma=focal_gamma,
+            focal_weight=weight_tensor,
+            lambda_dice=lambda_dice,
+            lambda_focal=lambda_focal,
+        )
+
+    return DiceCELoss(
+        to_onehot_y=True,
+        softmax=True,
+        ce_weight=weight_tensor,
+        lambda_ce=lambda_ce,
+        lambda_dice=lambda_dice,
+    )
+
+
+def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> float:
+    pred_c = (pred == class_id).float()
+    target_c = (target == class_id).float()
+    denominator = pred_c.sum() + target_c.sum()
+    if denominator.item() == 0:
+        return 1.0
+    intersection = (pred_c * target_c).sum()
+    return float((2.0 * intersection / denominator).item())
+
+
+def evaluate_on_validation(
+    model: UNet,
+    val_loader: DataLoader,
+    device: torch.device,
+    patch_size: tuple[int, int, int],
+    num_classes: int,
+) -> Dict[str, float]:
+    model_was_training = model.training
+    model.eval()
+
+    case_scores: List[float] = []
+    class_scores: Dict[int, List[float]] = {cid: [] for cid in range(1, num_classes)}
+    with torch.no_grad():
+        for batch in val_loader:
+            images = batch["image"].to(device, non_blocking=True)
+            labels = batch["label"].to(device, non_blocking=True)
+            if labels.ndim == 5 and labels.shape[1] == 1:
+                labels = labels.squeeze(1)
+
+            logits = sliding_window_inference(
+                inputs=images,
+                roi_size=patch_size,
+                sw_batch_size=1,
+                predictor=model,
+                overlap=0.25,
+            )
+            preds = torch.argmax(logits, dim=1)
+
+            per_class = [dice_for_class(preds[0], labels[0], class_id) for class_id in range(1, num_classes)]
+            case_scores.append(float(np.mean(per_class)))
+            for cid, val in zip(range(1, num_classes), per_class):
+                class_scores[cid].append(val)
+
+    if model_was_training:
+        model.train()
+
+    mean_case = float(np.mean(case_scores)) if case_scores else 0.0
+    out: Dict[str, float] = {"mean_dice_no_bg": mean_case}
+    for cid in range(1, num_classes):
+        out[f"dice_class_{cid}"] = float(np.mean(class_scores[cid])) if class_scores[cid] else 0.0
+    return out
+
+
+def run_model_forward_check(loader: DataLoader, loss_fn, out_channels: int) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model().to(device)
+    model = build_model(out_channels=out_channels).to(device)
 
     batch = next(iter(loader))
     images, labels = prepare_batch(batch, device)
@@ -287,7 +480,6 @@ def run_model_forward_check(loader: DataLoader) -> None:
     outputs = model(images)
     print(f"model output shape: {tuple(outputs.shape)}")
 
-    loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
     loss = loss_fn(outputs, prepare_labels_for_dicece(labels))
     print(f"loss: {loss.item():.6f}")
 
@@ -298,6 +490,7 @@ def save_stage_b_checkpoint(
     model: UNet,
     optimizer: torch.optim.Optimizer,
     epoch_mean_loss: float,
+    val_mean_dice: float | None,
     cfg: Dict[str, Any],
 ) -> None:
     torch.save(
@@ -306,6 +499,7 @@ def save_stage_b_checkpoint(
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "mean_loss": epoch_mean_loss,
+            "val_mean_dice": val_mean_dice,
             "config": cfg,
         },
         checkpoint_path,
@@ -314,20 +508,27 @@ def save_stage_b_checkpoint(
 
 def run_stage_b_training(
     loader: DataLoader,
+    val_loader: DataLoader | None,
     cfg: Dict[str, Any],
     config_dir: Path,
     train_samples: int,
     test_samples: int,
+    val_samples: int,
+    loss_type: str,
+    class_weights: List[float] | None,
+    num_classes: int,
     resume_checkpoint: str = "",
     reset_optimizer: bool = False,
 ) -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model().to(device)
-    loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
+    model = build_model(out_channels=num_classes).to(device)
+    loss_fn = build_loss_function(loss_type, class_weights, num_classes, cfg, device)
 
     learning_rate = float(cfg["training"]["learning_rate"])
     num_epochs = int(cfg["training"].get("epochs", 10))
     log_every = int(cfg["training"].get("log_every", 20))
+    val_interval = int(cfg["training"].get("val_interval", 1))
+    patch_size = tuple(cfg["patch"]["size"])
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
@@ -339,6 +540,7 @@ def run_stage_b_training(
     history_path = checkpoint_dir / "stage_b_metrics_history.json"
 
     best_mean_loss = float("inf")
+    best_val_mean_dice = float("-inf")
     history: List[Dict[str, Any]] = []
     start_epoch = 1
 
@@ -349,6 +551,9 @@ def run_stage_b_training(
                 history = loaded_history
                 if history:
                     best_mean_loss = float(min(item["mean_loss"] for item in history))
+                    val_values = [item.get("val_mean_dice") for item in history if item.get("val_mean_dice") is not None]
+                    if val_values:
+                        best_val_mean_dice = float(max(val_values))
 
     if resume_checkpoint:
         resume_path = resolve_path(config_dir, resume_checkpoint)
@@ -364,6 +569,8 @@ def run_stage_b_training(
         last_epoch = int(state.get("epoch", 0))
         start_epoch = last_epoch + 1
         best_mean_loss = min(best_mean_loss, float(state.get("mean_loss", float("inf"))))
+        if state.get("val_mean_dice") is not None:
+            best_val_mean_dice = max(best_val_mean_dice, float(state["val_mean_dice"]))
         print(f"Resuming from checkpoint: {resume_path}")
         print(f"Resumed at epoch {last_epoch}; continuing from epoch {start_epoch}")
 
@@ -401,16 +608,43 @@ def run_stage_b_training(
         epoch_mean_loss = running_loss / max(total_steps, 1)
         print(f"[epoch {epoch}/{num_epochs}] mean loss: {epoch_mean_loss:.6f}")
 
+        should_validate = val_loader is not None and val_samples > 0 and val_interval > 0 and (epoch % val_interval == 0)
+        val_metrics = None
+        val_mean_dice = None
+        if should_validate:
+            val_metrics = evaluate_on_validation(
+                model=model,
+                val_loader=val_loader,
+                device=device,
+                patch_size=patch_size,
+                num_classes=num_classes,
+            )
+            val_mean_dice = val_metrics["mean_dice_no_bg"]
+            print(f"[epoch {epoch}/{num_epochs}] val mean Dice (foreground classes): {val_mean_dice:.6f}")
+            class_line = ", ".join(
+                [f"C{cid}={val_metrics.get(f'dice_class_{cid}', 0.0):.4f}" for cid in range(1, num_classes)]
+            )
+            print(f"[epoch {epoch}/{num_epochs}] val per-class Dice: {class_line}")
+
         save_stage_b_checkpoint(
             checkpoint_path=latest_ckpt_path,
             epoch=epoch,
             model=model,
             optimizer=optimizer,
             epoch_mean_loss=epoch_mean_loss,
+            val_mean_dice=val_mean_dice,
             cfg=cfg,
         )
 
-        is_best = epoch_mean_loss < best_mean_loss
+        if val_mean_dice is not None:
+            is_best = val_mean_dice > best_val_mean_dice
+            if is_best:
+                best_val_mean_dice = val_mean_dice
+            selection_metric = "val_mean_dice"
+        else:
+            is_best = epoch_mean_loss < best_mean_loss
+            selection_metric = "mean_loss"
+
         if is_best:
             best_mean_loss = epoch_mean_loss
             save_stage_b_checkpoint(
@@ -419,6 +653,7 @@ def run_stage_b_training(
                 model=model,
                 optimizer=optimizer,
                 epoch_mean_loss=epoch_mean_loss,
+                val_mean_dice=val_mean_dice,
                 cfg=cfg,
             )
 
@@ -427,10 +662,17 @@ def run_stage_b_training(
                 "epoch": epoch,
                 "mean_loss": epoch_mean_loss,
                 "best_mean_loss_so_far": best_mean_loss,
+                "val_mean_dice": val_mean_dice,
+                "best_val_mean_dice_so_far": None if best_val_mean_dice == float("-inf") else best_val_mean_dice,
+                "val_per_class_dice": None
+                if val_metrics is None
+                else {f"dice_class_{cid}": val_metrics.get(f"dice_class_{cid}", 0.0) for cid in range(1, num_classes)},
+                "selection_metric": selection_metric,
                 "is_best": is_best,
                 "device": str(device),
                 "train_samples": train_samples,
                 "test_samples": test_samples,
+                "val_samples": val_samples,
                 "total_steps": total_steps,
             }
         )
@@ -450,9 +692,22 @@ def main() -> None:
     cfg = load_config(config_path)
     apply_local_path_overrides(cfg, config_path.parent)
 
+    num_classes = apply_label_setup(cfg, args.label_setup)
+
+    if args.train_mode == "mixed":
+        cfg["splits"]["train"] = {"GLI": "train", "PED": "train", "MEN": "train"}
+
+    if args.checkpoint_suffix:
+        base_ckpt_dir = str(cfg["training"]["checkpoint_dir"]).rstrip("/\\")
+        cfg["training"]["checkpoint_dir"] = f"{base_ckpt_dir}_{args.checkpoint_suffix}"
+
     set_determinism(seed=int(cfg.get("seed", 42)))
 
-    all_dataset_dicts = build_dataset_dicts(cfg, config_path.parent)
+    cfg_for_loading = copy.deepcopy(cfg)
+    if "val" not in cfg_for_loading["splits"]:
+        cfg_for_loading["splits"]["val"] = {"GLI": "test"}
+
+    all_dataset_dicts = build_dataset_dicts(cfg_for_loading, config_path.parent)
     train_files = select_split_files(
         all_dataset_dicts,
         split_datasets=cfg["splits"]["train"],
@@ -464,8 +719,34 @@ def main() -> None:
         split_name="test",
     )
 
+    if "val" in cfg["splits"]:
+        val_mapping = cfg["splits"]["val"]
+    else:
+        val_mapping = {"GLI": "test"}
+
+    val_files = select_split_files(
+        all_dataset_dicts,
+        split_datasets=val_mapping,
+        split_name="val",
+    )
+
+    if len(val_files) == 0:
+        print("[train_B] No usable validation cases in configured val split. Falling back to GLI train.")
+        val_files = select_split_files(
+            all_dataset_dicts,
+            split_datasets={"GLI": "train"},
+            split_name="val",
+        )
+
+    if args.max_val_cases > 0:
+        val_files = val_files[: args.max_val_cases]
+
     print(f"\nTotal train samples: {len(train_files)}")
     print(f"Total test samples: {len(test_files)}")
+    print(f"Total val samples (used for checkpoint selection): {len(val_files)}")
+    print(f"Training mode: {args.train_mode}")
+    print(f"Loss type: {args.loss_type}")
+    print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
 
     if len(train_files) == 0:
         raise RuntimeError("No training samples were found. Check data.root and patient lists.")
@@ -486,16 +767,37 @@ def main() -> None:
     print("\nVerifying one training batch...")
     verify_batch(train_loader)
 
+    parsed_class_weights = parse_class_weights(args.class_weights, num_classes)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    sanity_loss_fn = build_loss_function(args.loss_type, parsed_class_weights, num_classes, cfg, device)
+
     print("\nVerifying model forward pass and loss...")
-    run_model_forward_check(train_loader)
+    run_model_forward_check(train_loader, sanity_loss_fn, out_channels=num_classes)
+
+    val_loader = None
+    if len(val_files) > 0:
+        val_ds = Dataset(data=val_files, transform=build_eval_transforms(cfg))
+        val_loader = DataLoader(
+            val_ds,
+            batch_size=1,
+            shuffle=False,
+            num_workers=num_workers,
+            pin_memory=torch.cuda.is_available(),
+            persistent_workers=num_workers > 0,
+        )
 
     print("\nRunning Stage B: multi-epoch baseline training...")
     run_stage_b_training(
         loader=train_loader,
+        val_loader=val_loader,
         cfg=cfg,
         config_dir=config_path.parent,
         train_samples=len(train_files),
         test_samples=len(test_files),
+        val_samples=len(val_files),
+        loss_type=args.loss_type,
+        class_weights=parsed_class_weights,
+        num_classes=num_classes,
         resume_checkpoint=args.resume_checkpoint,
         reset_optimizer=args.reset_optimizer,
     )

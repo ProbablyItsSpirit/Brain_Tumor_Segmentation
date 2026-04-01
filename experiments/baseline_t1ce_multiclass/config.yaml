@@ -44,6 +44,8 @@ splits:
 patch:
   size: [128, 128, 128]
   num_samples: 1
+  pos: 3
+  neg: 1
 
 dataloader:
   batch_size: 2
@@ -56,3 +58,9 @@ training:
   val_interval: 1
   checkpoint_dir: checkpoints/baseline_t1ce_multiclass
   log_every: 20
+  loss:
+    lambda_ce: 0.5
+    lambda_dice: 0.5
+    lambda_focal: 0.5
+    focal_gamma: 2.0
+    class_weights: [0.05, 0.2, 0.25, 0.5]
