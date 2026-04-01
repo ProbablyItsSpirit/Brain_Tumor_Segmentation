@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import inspect
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -155,10 +156,16 @@ def read_case_ids(list_file: Path) -> List[str]:
     return case_ids
 
 
-def remap_labels(label: np.ndarray, mapping: Dict[int, int]) -> np.ndarray:
-    remapped = np.array(label, copy=True)
+def remap_labels(label: Any, mapping: Dict[int, int]):
+    if torch.is_tensor(label):
+        remapped = label.clone()
+        for src, dst in mapping.items():
+            remapped[label == src] = dst
+        return remapped.to(dtype=torch.int64)
+
+    remapped = np.asarray(label).copy()
     for src, dst in mapping.items():
-        remapped[label == src] = dst
+        remapped[remapped == src] = dst
     return remapped.astype(np.int64)
 
 
@@ -399,22 +406,35 @@ def build_loss_function(
     focal_gamma = float(loss_cfg.get("focal_gamma", 2.0))
 
     if loss_type == "dicefocal":
-        return DiceFocalLoss(
-            to_onehot_y=True,
-            softmax=True,
-            gamma=focal_gamma,
-            focal_weight=weight_tensor,
-            lambda_dice=lambda_dice,
-            lambda_focal=lambda_focal,
-        )
+        focal_kwargs = {
+            "to_onehot_y": True,
+            "softmax": True,
+            "gamma": focal_gamma,
+            "lambda_dice": lambda_dice,
+            "lambda_focal": lambda_focal,
+        }
+        if weight_tensor is not None:
+            focal_sig = inspect.signature(DiceFocalLoss.__init__)
+            if "focal_weight" in focal_sig.parameters:
+                focal_kwargs["focal_weight"] = weight_tensor
+            elif "weight" in focal_sig.parameters:
+                focal_kwargs["weight"] = weight_tensor
+        return DiceFocalLoss(**focal_kwargs)
 
-    return DiceCELoss(
-        to_onehot_y=True,
-        softmax=True,
-        ce_weight=weight_tensor,
-        lambda_ce=lambda_ce,
-        lambda_dice=lambda_dice,
-    )
+    dicece_kwargs = {
+        "to_onehot_y": True,
+        "softmax": True,
+        "lambda_ce": lambda_ce,
+        "lambda_dice": lambda_dice,
+    }
+    if weight_tensor is not None:
+        dicece_sig = inspect.signature(DiceCELoss.__init__)
+        if "ce_weight" in dicece_sig.parameters:
+            dicece_kwargs["ce_weight"] = weight_tensor
+        elif "weight" in dicece_sig.parameters:
+            dicece_kwargs["weight"] = weight_tensor
+
+    return DiceCELoss(**dicece_kwargs)
 
 
 def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> float:
