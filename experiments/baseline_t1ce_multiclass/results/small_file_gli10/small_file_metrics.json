@@ -1,0 +1,77 @@
+{
+  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass/stage_b_best.pt",
+  "num_cases": 10,
+  "mean_dice_no_bg": 0.5416830327361823,
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02243-101",
+      "mean_dice_no_bg": 0.8130601247151693,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.6096740365028381,
+      "dice_class_3": 0.8295063376426697
+    },
+    {
+      "case_id": "BraTS-GLI-02093-105",
+      "mean_dice_no_bg": 0.898505965868632,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.7692949771881104,
+      "dice_class_3": 0.9262229204177856
+    },
+    {
+      "case_id": "BraTS-GLI-03031-100",
+      "mean_dice_no_bg": 0.4481466809908549,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.5711228251457214,
+      "dice_class_3": 0.7733172178268433
+    },
+    {
+      "case_id": "BraTS-GLI-00533-101",
+      "mean_dice_no_bg": 0.33204256494839984,
+      "dice_class_1": 0.453911691904068,
+      "dice_class_2": 0.36665236949920654,
+      "dice_class_3": 0.17556363344192505
+    },
+    {
+      "case_id": "BraTS-GLI-02763-101",
+      "mean_dice_no_bg": 0.7038326859474182,
+      "dice_class_1": 0.5,
+      "dice_class_2": 0.7818573713302612,
+      "dice_class_3": 0.8296406865119934
+    },
+    {
+      "case_id": "BraTS-GLI-02123-101",
+      "mean_dice_no_bg": 0.0865689863761266,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.07119707763195038,
+      "dice_class_3": 0.18850988149642944
+    },
+    {
+      "case_id": "BraTS-GLI-02685-100",
+      "mean_dice_no_bg": 0.39062609399358433,
+      "dice_class_1": 0.05370694771409035,
+      "dice_class_2": 0.6902478337287903,
+      "dice_class_3": 0.4279235005378723
+    },
+    {
+      "case_id": "BraTS-GLI-02938-101",
+      "mean_dice_no_bg": 0.3994043866793315,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.6648416519165039,
+      "dice_class_3": 0.5333715081214905
+    },
+    {
+      "case_id": "BraTS-GLI-02845-101",
+      "mean_dice_no_bg": 0.778854767481486,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.7786619067192078,
+      "dice_class_3": 0.5579023957252502
+    },
+    {
+      "case_id": "BraTS-GLI-02773-100",
+      "mean_dice_no_bg": 0.5657880703608195,
+      "dice_class_1": 0.5265582799911499,
+      "dice_class_2": 0.6482726335525513,
+      "dice_class_3": 0.5225332975387573
+    }
+  ]
+}
