@@ -1,0 +1,5306 @@
+{
+  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass/stage_b_best.pt",
+  "num_cases": 757,
+  "mean_dice_no_bg": 0.003196365430191407,
+  "cases": [
+    {
+      "case_id": "BraTS-PED-00043-000",
+      "mean_dice_no_bg": 0.0056333063791195554,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.016899919137358665,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00068-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00124-000",
+      "mean_dice_no_bg": 0.0029867092768351236,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.008960127830505371,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00253-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00102-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00252-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00148-000",
+      "mean_dice_no_bg": 0.00022965046809986234,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.000688951404299587,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00195-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00085-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00221-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00248-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00249-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00123-000",
+      "mean_dice_no_bg": 0.003900228999555111,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.011700686998665333,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00053-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00206-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00014-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00029-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00266-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00024-000",
+      "mean_dice_no_bg": 0.0902370810508728,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.2707112431526184,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00254-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00158-000",
+      "mean_dice_no_bg": 0.3333333333333333,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00258-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00033-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00180-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00125-000",
+      "mean_dice_no_bg": 0.0002788622514344752,
+      "dice_class_1": 0.0008365867543034256,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00160-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00179-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00154-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00196-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00209-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00128-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00238-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00132-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00164-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00074-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00244-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00261-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00239-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00255-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00117-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00169-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00193-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00019-000",
+      "mean_dice_no_bg": 0.011769384378567338,
+      "dice_class_1": 0.0034746609162539244,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.03183349221944809
+    },
+    {
+      "case_id": "BraTS-PED-00188-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00114-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00002-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00070-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00194-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00034-000",
+      "mean_dice_no_bg": 0.018234048504382372,
+      "dice_class_1": 0.004684129264205694,
+      "dice_class_2": 0.028235293924808502,
+      "dice_class_3": 0.02178272232413292
+    },
+    {
+      "case_id": "BraTS-PED-00036-000",
+      "mean_dice_no_bg": 0.00036999344592913985,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0005720278131775558,
+      "dice_class_3": 0.0005379525246098638
+    },
+    {
+      "case_id": "BraTS-PED-00108-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00163-000",
+      "mean_dice_no_bg": 0.0003823276686792572,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0011469830060377717,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00214-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00217-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00112-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00056-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00222-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00191-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00197-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00062-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00262-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00119-000",
+      "mean_dice_no_bg": 8.206138348517318e-05,
+      "dice_class_1": 0.00024618415045551956,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00175-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00263-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00149-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00006-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00170-000",
+      "mean_dice_no_bg": 0.02244188925639416,
+      "dice_class_1": 0.00037668837467208505,
+      "dice_class_2": 0.06646250933408737,
+      "dice_class_3": 0.00048647006042301655
+    },
+    {
+      "case_id": "BraTS-PED-00101-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00071-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00005-000",
+      "mean_dice_no_bg": 0.00506729818880558,
+      "dice_class_1": 0.006442166864871979,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.008759727701544762
+    },
+    {
+      "case_id": "BraTS-PED-00200-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00030-000",
+      "mean_dice_no_bg": 0.0033255424350500107,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.009976627305150032,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00168-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00116-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00139-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00020-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00061-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00097-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00259-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00042-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00144-000",
+      "mean_dice_no_bg": 0.006033746525645256,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.018101239576935768,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00167-000",
+      "mean_dice_no_bg": 0.0005478865544622143,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.001643659663386643
+    },
+    {
+      "case_id": "BraTS-PED-00166-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00162-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00107-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00025-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00236-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00031-000",
+      "mean_dice_no_bg": 0.00046300321506957215,
+      "dice_class_1": 3.9893086068332195e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0013491165591403842
+    },
+    {
+      "case_id": "BraTS-PED-00099-000",
+      "mean_dice_no_bg": 0.02861139471254622,
+      "dice_class_1": 0.0008099688566289842,
+      "dice_class_2": 0.03434152528643608,
+      "dice_class_3": 0.05068268999457359
+    },
+    {
+      "case_id": "BraTS-PED-00136-000",
+      "mean_dice_no_bg": 0.00241076464105087,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.006987648084759712,
+      "dice_class_3": 0.00024464583839289844
+    },
+    {
+      "case_id": "BraTS-PED-00018-000",
+      "mean_dice_no_bg": 0.008761509011189142,
+      "dice_class_1": 0.0018079220317304134,
+      "dice_class_2": 0.007758116815239191,
+      "dice_class_3": 0.016718488186597824
+    },
+    {
+      "case_id": "BraTS-PED-00223-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00165-000",
+      "mean_dice_no_bg": 0.0023381227316955724,
+      "dice_class_1": 0.007014368195086718,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00096-000",
+      "mean_dice_no_bg": 0.00472611246126083,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0137510159984231,
+      "dice_class_3": 0.00042732138535939157
+    },
+    {
+      "case_id": "BraTS-PED-00044-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00234-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00207-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00176-000",
+      "mean_dice_no_bg": 0.0010303106779853504,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.003090932033956051,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00049-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00039-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00127-000",
+      "mean_dice_no_bg": 0.0025286592232684293,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.007585977669805288,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00032-000",
+      "mean_dice_no_bg": 0.0006738868736041089,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0016674818471074104,
+      "dice_class_3": 0.00035417877370491624
+    },
+    {
+      "case_id": "BraTS-PED-00017-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00220-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00201-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00202-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00210-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00027-000",
+      "mean_dice_no_bg": 0.0010905125333617132,
+      "dice_class_1": 0.0032715376000851393,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00184-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00079-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00142-000",
+      "mean_dice_no_bg": 0.0019645672291517258,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.005893701687455177,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00204-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00067-000",
+      "mean_dice_no_bg": 0.001016425031896991,
+      "dice_class_1": 0.001750547089613974,
+      "dice_class_2": 0.0011079077376052737,
+      "dice_class_3": 0.00019082026847172529
+    },
+    {
+      "case_id": "BraTS-PED-00092-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00076-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00227-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00098-000",
+      "mean_dice_no_bg": 0.17599791090469807,
+      "dice_class_1": 0.0002779901260510087,
+      "dice_class_2": 0.5277157425880432,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00172-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00171-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00218-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00192-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00247-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00245-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00040-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00231-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00026-000",
+      "mean_dice_no_bg": 0.00023321438735971847,
+      "dice_class_1": 0.0006996431620791554,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00256-000",
+      "mean_dice_no_bg": 0.0003910942080741127,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0011732826242223382,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00235-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00121-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00075-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00152-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00145-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00082-000",
+      "mean_dice_no_bg": 0.00045361355296336114,
+      "dice_class_1": 0.0002539521374274045,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.001106888521462679
+    },
+    {
+      "case_id": "BraTS-PED-00052-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00241-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00016-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00073-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00050-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00141-000",
+      "mean_dice_no_bg": 0.007874485105276108,
+      "dice_class_1": 0.012274730950593948,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.011348724365234375
+    },
+    {
+      "case_id": "BraTS-PED-00051-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00224-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00060-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00013-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00126-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00151-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00133-000",
+      "mean_dice_no_bg": 0.00680235637507091,
+      "dice_class_1": 0.0005884949350729585,
+      "dice_class_2": 0.01981857419013977,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00203-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00001-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00233-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00185-000",
+      "mean_dice_no_bg": 0.049456228812535606,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.1483686864376068,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00064-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00211-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00093-000",
+      "mean_dice_no_bg": 0.00044655543752014637,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0013396663125604391,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00083-000",
+      "mean_dice_no_bg": 0.001154435643305381,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0034633069299161434,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00156-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00047-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00055-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00159-000",
+      "mean_dice_no_bg": 7.143583206925541e-05,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.00021430749620776623
+    },
+    {
+      "case_id": "BraTS-PED-00104-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00105-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00146-000",
+      "mean_dice_no_bg": 0.040648005825156965,
+      "dice_class_1": 0.002255394821986556,
+      "dice_class_2": 0.11968862265348434,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00035-000",
+      "mean_dice_no_bg": 0.016327353815237682,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.04898206144571304,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00130-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00260-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00048-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00063-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00115-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00183-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00028-000",
+      "mean_dice_no_bg": 0.006851487870638569,
+      "dice_class_1": 0.0020325202494859695,
+      "dice_class_2": 0.017376579344272614,
+      "dice_class_3": 0.0011453640181571245
+    },
+    {
+      "case_id": "BraTS-PED-00015-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00208-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00041-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00103-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00228-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00155-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00230-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00057-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00187-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00069-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00122-000",
+      "mean_dice_no_bg": 0.007122295384760946,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.020682938396930695,
+      "dice_class_3": 0.0006839477573521435
+    },
+    {
+      "case_id": "BraTS-PED-00046-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00212-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00054-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00173-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00088-000",
+      "mean_dice_no_bg": 0.0649402563770612,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.11836865544319153,
+      "dice_class_3": 0.0764521136879921
+    },
+    {
+      "case_id": "BraTS-PED-00205-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00110-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00120-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00182-000",
+      "mean_dice_no_bg": 0.11159494519233704,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.3347848355770111,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00153-000",
+      "mean_dice_no_bg": 0.014267219851414362,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.04280165955424309,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00045-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00216-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00077-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00003-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00059-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00021-000",
+      "mean_dice_no_bg": 0.01450923333565394,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.04352770000696182,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00037-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00243-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00066-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00089-000",
+      "mean_dice_no_bg": 0.0014327074556301038,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0032872511073946953,
+      "dice_class_3": 0.001010871259495616
+    },
+    {
+      "case_id": "BraTS-PED-00161-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00174-000",
+      "mean_dice_no_bg": 0.33335203179619083,
+      "dice_class_1": 1.0,
+      "dice_class_2": 5.609538857243024e-05,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00199-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00150-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00190-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00038-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00009-000",
+      "mean_dice_no_bg": 0.015652734820226517,
+      "dice_class_1": 0.00022705084120389074,
+      "dice_class_2": 0.0016131495358422399,
+      "dice_class_3": 0.04511800408363342
+    },
+    {
+      "case_id": "BraTS-PED-00095-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00134-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00008-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00065-000",
+      "mean_dice_no_bg": 0.3333333333333333,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00094-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00140-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00229-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00242-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00226-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00129-000",
+      "mean_dice_no_bg": 0.005482557695358992,
+      "dice_class_1": 0.00995155144482851,
+      "dice_class_2": 0.005785116460174322,
+      "dice_class_3": 0.0007110051810741425
+    },
+    {
+      "case_id": "BraTS-PED-00137-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00213-000",
+      "mean_dice_no_bg": 0.3333333333333333,
+      "dice_class_1": 1.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00147-000",
+      "mean_dice_no_bg": 0.0021053065235416093,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.006315919570624828,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00078-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00143-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00087-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00004-000",
+      "mean_dice_no_bg": 0.001591084321262315,
+      "dice_class_1": 0.000345871172612533,
+      "dice_class_2": 0.004427381791174412,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00240-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00072-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00186-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00215-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00022-000",
+      "mean_dice_no_bg": 0.0009658605170746645,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0028975815512239933,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00118-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00178-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00091-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00080-000",
+      "mean_dice_no_bg": 0.005083891252676646,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.015251673758029938,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00264-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00189-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00198-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00109-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00010-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00237-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00113-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00246-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00225-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00081-000",
+      "mean_dice_no_bg": 0.01788685340822364,
+      "dice_class_1": 0.0006276479107327759,
+      "dice_class_2": 0.02104536071419716,
+      "dice_class_3": 0.03198755159974098
+    },
+    {
+      "case_id": "BraTS-PED-00257-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00058-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00177-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00251-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00232-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00084-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00138-000",
+      "mean_dice_no_bg": 0.0005471164962121596,
+      "dice_class_1": 0.0007037443574517965,
+      "dice_class_2": 0.00013900917838327587,
+      "dice_class_3": 0.0007985959528014064
+    },
+    {
+      "case_id": "BraTS-PED-00219-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00086-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00106-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00265-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00131-000",
+      "mean_dice_no_bg": 0.020659430883824825,
+      "dice_class_1": 0.048064857721328735,
+      "dice_class_2": 0.01391343493014574,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00135-000",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-PED-00100-000",
+      "mean_dice_no_bg": 0.0026937417375544706,
+      "dice_class_1": 0.003975813742727041,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.004105411469936371
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0002-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0003-1",
+      "mean_dice_no_bg": 0.008299000561237335,
+      "dice_class_1": 0.024897001683712006,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0004-1",
+      "mean_dice_no_bg": 0.0006250310689210892,
+      "dice_class_1": 0.0018750932067632675,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0005-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0006-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0007-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0009-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0011-1",
+      "mean_dice_no_bg": 0.0003999200028677781,
+      "dice_class_1": 0.0011997600086033344,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0015-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0016-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0017-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0018-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0020-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0022-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0023-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0024-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0026-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0028-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0029-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0030-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0031-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0033-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0035-1",
+      "mean_dice_no_bg": 0.00026886985870078206,
+      "dice_class_1": 0.0008066095761023462,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0037-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0041-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0044-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0045-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0046-1",
+      "mean_dice_no_bg": 0.00016392098041251302,
+      "dice_class_1": 0.000491762941237539,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0048-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0051-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0052-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0053-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0054-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0055-1",
+      "mean_dice_no_bg": 0.0035573861872156463,
+      "dice_class_1": 0.010672158561646938,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0056-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0057-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0058-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0059-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0060-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0062-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0063-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0064-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0065-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0066-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0067-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0068-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0069-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0070-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0071-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0072-1",
+      "mean_dice_no_bg": 0.0016779798703889053,
+      "dice_class_1": 0.005033939611166716,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0073-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0074-1",
+      "mean_dice_no_bg": 0.00041662948206067085,
+      "dice_class_1": 0.0012498884461820126,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0075-1",
+      "mean_dice_no_bg": 0.0006301197378585736,
+      "dice_class_1": 0.0018903592135757208,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0076-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0077-1",
+      "mean_dice_no_bg": 0.003429963563879331,
+      "dice_class_1": 0.010289890691637993,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0078-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0079-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0080-1",
+      "mean_dice_no_bg": 0.0008735465817153454,
+      "dice_class_1": 0.002620639745146036,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0081-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0082-1",
+      "mean_dice_no_bg": 0.0017515608730415504,
+      "dice_class_1": 0.005254682619124651,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0084-1",
+      "mean_dice_no_bg": 0.0036265080173810325,
+      "dice_class_1": 0.010879524052143097,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0085-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0086-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0087-1",
+      "mean_dice_no_bg": 0.0036402990420659385,
+      "dice_class_1": 0.010920897126197815,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0088-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0089-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0090-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0091-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0092-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0093-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0094-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0097-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0099-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0100-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0101-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0102-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0103-1",
+      "mean_dice_no_bg": 0.012660517046848932,
+      "dice_class_1": 0.0379815511405468,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0104-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0105-1",
+      "mean_dice_no_bg": 0.00045430023844043416,
+      "dice_class_1": 0.0013629007153213024,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0106-1",
+      "mean_dice_no_bg": 0.02313836415608724,
+      "dice_class_1": 0.06941509246826172,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0107-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0109-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0110-1",
+      "mean_dice_no_bg": 2.9554103093687445e-06,
+      "dice_class_1": 8.866230928106233e-06,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0112-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0113-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0114-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0116-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0117-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0119-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0120-1",
+      "mean_dice_no_bg": 0.030364371836185455,
+      "dice_class_1": 0.09109311550855637,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0122-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0124-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0125-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0126-1",
+      "mean_dice_no_bg": 4.742426972370595e-05,
+      "dice_class_1": 0.00014227280917111784,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0127-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0128-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0129-1",
+      "mean_dice_no_bg": 6.903693429194391e-05,
+      "dice_class_1": 0.00020711080287583172,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0130-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0131-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0132-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0134-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0135-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0136-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0137-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0140-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0141-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0142-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0143-1",
+      "mean_dice_no_bg": 0.00045647747659434873,
+      "dice_class_1": 0.0013694324297830462,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0144-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0145-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0146-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0147-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0148-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0149-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0150-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0151-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0152-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0153-1",
+      "mean_dice_no_bg": 0.0007102272938936949,
+      "dice_class_1": 0.0021306818816810846,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0154-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0155-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0156-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0157-1",
+      "mean_dice_no_bg": 0.003973168320953846,
+      "dice_class_1": 0.011919504962861538,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0158-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0159-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0160-1",
+      "mean_dice_no_bg": 0.0006910252850502729,
+      "dice_class_1": 0.002073075855150819,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0161-1",
+      "mean_dice_no_bg": 0.00017076501778016487,
+      "dice_class_1": 0.0005122950533404946,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0163-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0164-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0165-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0166-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0167-1",
+      "mean_dice_no_bg": 0.0008971240216245254,
+      "dice_class_1": 0.002691372064873576,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0168-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0170-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0171-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0172-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0173-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0174-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0175-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0176-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0177-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0178-1",
+      "mean_dice_no_bg": 0.0039488368978103,
+      "dice_class_1": 0.0118465106934309,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0179-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0180-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0181-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0184-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0185-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0186-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0187-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0188-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0189-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0190-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0191-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0192-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0193-1",
+      "mean_dice_no_bg": 0.0039487071335315704,
+      "dice_class_1": 0.011846121400594711,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0194-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0195-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0196-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0197-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0198-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0199-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0200-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0201-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0202-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0203-1",
+      "mean_dice_no_bg": 5.979180665841947e-06,
+      "dice_class_1": 1.793754199752584e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0206-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0208-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0209-1",
+      "mean_dice_no_bg": 0.00022943424604212245,
+      "dice_class_1": 0.0006883027381263673,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0210-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0211-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0212-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0214-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0215-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0216-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0217-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0219-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0220-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0221-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0222-1",
+      "mean_dice_no_bg": 0.027353689074516296,
+      "dice_class_1": 0.08206106722354889,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0223-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0224-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0225-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0226-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0227-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0229-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0230-1",
+      "mean_dice_no_bg": 2.3330961994361132e-05,
+      "dice_class_1": 6.99928859830834e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0231-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0232-1",
+      "mean_dice_no_bg": 0.0005002000834792852,
+      "dice_class_1": 0.0015006002504378557,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0233-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0234-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0235-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0236-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0237-1",
+      "mean_dice_no_bg": 0.0005215317942202091,
+      "dice_class_1": 0.0015645953826606274,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0238-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0241-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0242-1",
+      "mean_dice_no_bg": 0.00022909507000197968,
+      "dice_class_1": 0.000687285210005939,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0245-1",
+      "mean_dice_no_bg": 0.00038765324279665947,
+      "dice_class_1": 0.0011629597283899784,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0246-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0247-1",
+      "mean_dice_no_bg": 0.02474654217561086,
+      "dice_class_1": 0.07423962652683258,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0249-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0250-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0251-1",
+      "mean_dice_no_bg": 0.0009513924984882275,
+      "dice_class_1": 0.0028541774954646826,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0252-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0254-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0255-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0256-1",
+      "mean_dice_no_bg": 0.0003981050103902817,
+      "dice_class_1": 0.001194315031170845,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0257-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0258-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0260-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0261-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0262-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0263-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0264-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0267-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0268-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0270-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0271-1",
+      "mean_dice_no_bg": 0.006992194180687268,
+      "dice_class_1": 0.020976582542061806,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0273-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0274-1",
+      "mean_dice_no_bg": 0.00019967812113463879,
+      "dice_class_1": 0.0005990343634039164,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0275-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0279-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0280-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0281-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0282-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0283-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0284-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0285-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0286-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0287-1",
+      "mean_dice_no_bg": 0.0023996690288186073,
+      "dice_class_1": 0.007199007086455822,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0288-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0289-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0290-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0291-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0294-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0295-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0296-1",
+      "mean_dice_no_bg": 0.001133929705247283,
+      "dice_class_1": 0.003401789115741849,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0297-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0298-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0299-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0300-1",
+      "mean_dice_no_bg": 0.008848357945680618,
+      "dice_class_1": 0.026545073837041855,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0301-1",
+      "mean_dice_no_bg": 1.2090217448227728e-05,
+      "dice_class_1": 3.6270652344683185e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0302-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0303-1",
+      "mean_dice_no_bg": 0.00043779002347340185,
+      "dice_class_1": 0.0013133700704202056,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0304-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0305-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0306-1",
+      "mean_dice_no_bg": 0.0010436309191087882,
+      "dice_class_1": 0.0031308927573263645,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0309-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0310-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0311-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0312-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0313-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0314-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0315-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0316-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0317-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0318-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0319-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0320-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0321-1",
+      "mean_dice_no_bg": 0.0002564694344376524,
+      "dice_class_1": 0.0007694083033129573,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0322-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0323-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0325-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0326-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0327-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0330-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0332-1",
+      "mean_dice_no_bg": 0.0004556034303580721,
+      "dice_class_1": 0.0013668102910742164,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0334-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0335-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0336-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0337-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0338-1",
+      "mean_dice_no_bg": 5.2402664247589804e-05,
+      "dice_class_1": 0.00015720799274276942,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0339-1",
+      "mean_dice_no_bg": 0.001186566272129615,
+      "dice_class_1": 0.0035596988163888454,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0340-1",
+      "mean_dice_no_bg": 0.0010077288995186489,
+      "dice_class_1": 0.0030231866985559464,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0342-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0343-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0344-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0347-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0348-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0349-1",
+      "mean_dice_no_bg": 0.0011827320947001378,
+      "dice_class_1": 0.0035481962841004133,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0350-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0351-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0354-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0355-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0356-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0358-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0360-1",
+      "mean_dice_no_bg": 0.001449503314991792,
+      "dice_class_1": 0.004348509944975376,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0361-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0363-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0364-1",
+      "mean_dice_no_bg": 0.0003978708215678732,
+      "dice_class_1": 0.0011936124647036195,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0365-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0367-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0369-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0370-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0371-1",
+      "mean_dice_no_bg": 0.00018233617690081397,
+      "dice_class_1": 0.0005470085307024419,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0372-1",
+      "mean_dice_no_bg": 0.0005837430168564121,
+      "dice_class_1": 0.0017512290505692363,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0373-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0374-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0375-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0376-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0377-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0378-1",
+      "mean_dice_no_bg": 2.459661482134834e-05,
+      "dice_class_1": 7.378984446404502e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0380-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0382-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0383-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0384-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0385-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0387-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0388-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0390-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0391-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0392-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0393-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0394-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0395-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0396-1",
+      "mean_dice_no_bg": 3.0717720316412546e-05,
+      "dice_class_1": 9.215316094923764e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0397-1",
+      "mean_dice_no_bg": 0.010179582983255386,
+      "dice_class_1": 0.03053874894976616,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0398-1",
+      "mean_dice_no_bg": 0.010861328492561976,
+      "dice_class_1": 0.03258398547768593,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0400-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0401-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0402-1",
+      "mean_dice_no_bg": 0.0014681086565057437,
+      "dice_class_1": 0.004404325969517231,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0403-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0404-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0405-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0406-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0409-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0410-1",
+      "mean_dice_no_bg": 0.0010846767108887434,
+      "dice_class_1": 0.00325403013266623,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0411-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0412-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0413-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0414-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0415-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0416-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0417-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0418-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0419-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0420-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0421-1",
+      "mean_dice_no_bg": 1.5315108612412587e-05,
+      "dice_class_1": 4.594532583723776e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0422-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0423-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0424-1",
+      "mean_dice_no_bg": 0.004448833564917247,
+      "dice_class_1": 0.01334650069475174,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0425-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0426-1",
+      "mean_dice_no_bg": 0.010310566673676172,
+      "dice_class_1": 0.03093170002102852,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0428-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0429-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0430-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0431-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0433-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0434-1",
+      "mean_dice_no_bg": 0.00017496664077043533,
+      "dice_class_1": 0.000524899922311306,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0435-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0436-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0438-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0439-1",
+      "mean_dice_no_bg": 0.0011339073535054922,
+      "dice_class_1": 0.0034017220605164766,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0440-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0441-1",
+      "mean_dice_no_bg": 0.0003074625468192001,
+      "dice_class_1": 0.0009223876404576004,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0442-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0443-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0444-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0445-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0447-1",
+      "mean_dice_no_bg": 0.00012958123503873745,
+      "dice_class_1": 0.00038874370511621237,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0448-1",
+      "mean_dice_no_bg": 0.0002082305921552082,
+      "dice_class_1": 0.0006246917764656246,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0449-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0450-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0451-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0452-1",
+      "mean_dice_no_bg": 5.1860493840649724e-05,
+      "dice_class_1": 0.00015558148152194917,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0453-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0454-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0455-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0456-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0457-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0458-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0459-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0460-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0462-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0463-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0464-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0465-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0466-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0467-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0468-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0469-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0470-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0471-1",
+      "mean_dice_no_bg": 0.0006677429967870315,
+      "dice_class_1": 0.0020032289903610945,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0473-1",
+      "mean_dice_no_bg": 0.003645426593720913,
+      "dice_class_1": 0.010936279781162739,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0475-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0476-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0478-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0479-1",
+      "mean_dice_no_bg": 0.00037619149467597407,
+      "dice_class_1": 0.0011285744840279222,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0481-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0482-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0483-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0484-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0485-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0486-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0488-1",
+      "mean_dice_no_bg": 0.0013638013042509556,
+      "dice_class_1": 0.004091403912752867,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0489-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0490-1",
+      "mean_dice_no_bg": 0.0031127712378899255,
+      "dice_class_1": 0.009338313713669777,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0491-1",
+      "mean_dice_no_bg": 2.9514078050851822e-05,
+      "dice_class_1": 8.854223415255547e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0493-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0495-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0497-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0498-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0500-1",
+      "mean_dice_no_bg": 0.0019331765361130238,
+      "dice_class_1": 0.005799529608339071,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0501-1",
+      "mean_dice_no_bg": 0.004194602059821288,
+      "dice_class_1": 0.012583806179463863,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0502-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0503-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0505-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0506-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0507-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0508-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0509-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0510-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0513-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0514-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0516-1",
+      "mean_dice_no_bg": 3.2792260753922164e-05,
+      "dice_class_1": 9.83767822617665e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0517-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0519-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0520-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0522-1",
+      "mean_dice_no_bg": 0.0007067534606903791,
+      "dice_class_1": 0.0021202603820711374,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0523-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0524-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0525-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0526-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0528-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0529-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0531-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0532-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0533-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0534-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0536-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0537-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0539-1",
+      "mean_dice_no_bg": 0.00031823874451220036,
+      "dice_class_1": 0.0009547162335366011,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0542-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0543-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0544-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0545-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0546-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0547-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0548-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0549-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0550-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0551-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0553-1",
+      "mean_dice_no_bg": 0.0023927909011642137,
+      "dice_class_1": 0.0071783727034926414,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0554-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0555-1",
+      "mean_dice_no_bg": 0.00013031014047252634,
+      "dice_class_1": 0.00039093042141757905,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0557-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0558-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0559-1",
+      "mean_dice_no_bg": 0.0002796186017803848,
+      "dice_class_1": 0.0008388558053411543,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0560-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0561-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0562-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0564-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0565-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0566-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0567-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0568-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0569-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0570-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0572-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0573-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0574-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0575-1",
+      "mean_dice_no_bg": 0.00034076941665261984,
+      "dice_class_1": 0.0010223082499578595,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0577-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0578-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0579-1",
+      "mean_dice_no_bg": 0.0011328801823159058,
+      "dice_class_1": 0.0033986405469477177,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0580-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0581-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0582-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0583-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0584-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0585-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0586-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0587-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0588-1",
+      "mean_dice_no_bg": 0.010283823435505232,
+      "dice_class_1": 0.030851470306515694,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0589-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0591-1",
+      "mean_dice_no_bg": 0.00025368134568755824,
+      "dice_class_1": 0.0007610440370626748,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0592-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0593-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0594-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0596-1",
+      "mean_dice_no_bg": 1.754986321126732e-05,
+      "dice_class_1": 5.264958963380195e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0598-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0599-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0600-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0601-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0603-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0605-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0607-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0608-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0609-1",
+      "mean_dice_no_bg": 0.0001821813639253378,
+      "dice_class_1": 0.0005465440917760134,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0610-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0611-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0612-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0614-1",
+      "mean_dice_no_bg": 3.0262548534665257e-05,
+      "dice_class_1": 9.078764560399577e-05,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0615-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0616-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0617-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0618-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0619-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0620-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0621-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0623-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    },
+    {
+      "case_id": "BraTS-MEN-RT-0625-1",
+      "mean_dice_no_bg": 0.0,
+      "dice_class_1": 0.0,
+      "dice_class_2": 0.0,
+      "dice_class_3": 0.0
+    }
+  ]
+}
