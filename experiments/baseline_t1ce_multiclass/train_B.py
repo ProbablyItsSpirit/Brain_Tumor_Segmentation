@@ -22,6 +22,7 @@ from monai.transforms import (
     LoadImaged,
     NormalizeIntensityd,
     RandCropByPosNegLabeld,
+    SpatialPadd,
     SqueezeDimd,
 )
 from monai.utils import set_determinism
@@ -304,6 +305,9 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
             Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
             EnsureTyped(keys="image", dtype=torch.float32),
             EnsureTyped(keys="label", dtype=torch.int64),
+            # Some mixed-dataset volumes are shallower than patch depth (e.g., 108 < 128).
+            # Pad first so random crop ROI is always valid.
+            SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
             RandCropByPosNegLabeld(
                 keys=["image", "label"],
                 label_key="label",
