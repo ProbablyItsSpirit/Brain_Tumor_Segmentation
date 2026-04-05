@@ -1,77 +1,78 @@
 {
-  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass/stage_b_best.pt",
+  "checkpoint": "D:\\Brain_Tumor_Segmentation\\experiments\\baseline_t1ce_multiclass\\checkpoints\\baseline_t1ce_multiclass_mixed_dicefocal_3to1\\stage_b_best.pt",
+  "label_setup": "4c",
   "num_cases": 10,
-  "mean_dice_no_bg": 0.5416830327361823,
+  "mean_dice_no_bg": 0.5305362425744533,
   "cases": [
     {
       "case_id": "BraTS-GLI-02243-101",
-      "mean_dice_no_bg": 0.8130601247151693,
+      "mean_dice_no_bg": 0.7979988853136698,
       "dice_class_1": 1.0,
-      "dice_class_2": 0.6096740365028381,
-      "dice_class_3": 0.8295063376426697
+      "dice_class_2": 0.5989149212837219,
+      "dice_class_3": 0.7950817346572876
     },
     {
       "case_id": "BraTS-GLI-02093-105",
-      "mean_dice_no_bg": 0.898505965868632,
+      "mean_dice_no_bg": 0.8828940391540527,
       "dice_class_1": 1.0,
-      "dice_class_2": 0.7692949771881104,
-      "dice_class_3": 0.9262229204177856
+      "dice_class_2": 0.7368365526199341,
+      "dice_class_3": 0.9118455648422241
     },
     {
       "case_id": "BraTS-GLI-03031-100",
-      "mean_dice_no_bg": 0.4481466809908549,
+      "mean_dice_no_bg": 0.4000858465830485,
       "dice_class_1": 0.0,
-      "dice_class_2": 0.5711228251457214,
-      "dice_class_3": 0.7733172178268433
+      "dice_class_2": 0.48495304584503174,
+      "dice_class_3": 0.7153044939041138
     },
     {
       "case_id": "BraTS-GLI-00533-101",
-      "mean_dice_no_bg": 0.33204256494839984,
-      "dice_class_1": 0.453911691904068,
-      "dice_class_2": 0.36665236949920654,
-      "dice_class_3": 0.17556363344192505
+      "mean_dice_no_bg": 0.336935818195343,
+      "dice_class_1": 0.4718753397464752,
+      "dice_class_2": 0.3500490188598633,
+      "dice_class_3": 0.18888309597969055
     },
     {
       "case_id": "BraTS-GLI-02763-101",
-      "mean_dice_no_bg": 0.7038326859474182,
-      "dice_class_1": 0.5,
-      "dice_class_2": 0.7818573713302612,
-      "dice_class_3": 0.8296406865119934
+      "mean_dice_no_bg": 0.6993217666943868,
+      "dice_class_1": 0.523809552192688,
+      "dice_class_2": 0.7400591969490051,
+      "dice_class_3": 0.8340965509414673
     },
     {
       "case_id": "BraTS-GLI-02123-101",
-      "mean_dice_no_bg": 0.0865689863761266,
+      "mean_dice_no_bg": 0.11732443173726399,
       "dice_class_1": 0.0,
-      "dice_class_2": 0.07119707763195038,
-      "dice_class_3": 0.18850988149642944
+      "dice_class_2": 0.1528908610343933,
+      "dice_class_3": 0.19908243417739868
     },
     {
       "case_id": "BraTS-GLI-02685-100",
-      "mean_dice_no_bg": 0.39062609399358433,
-      "dice_class_1": 0.05370694771409035,
-      "dice_class_2": 0.6902478337287903,
-      "dice_class_3": 0.4279235005378723
+      "mean_dice_no_bg": 0.4154416546225548,
+      "dice_class_1": 0.08430609852075577,
+      "dice_class_2": 0.7175790071487427,
+      "dice_class_3": 0.4444398581981659
     },
     {
       "case_id": "BraTS-GLI-02938-101",
-      "mean_dice_no_bg": 0.3994043866793315,
+      "mean_dice_no_bg": 0.3470260997613271,
       "dice_class_1": 0.0,
-      "dice_class_2": 0.6648416519165039,
-      "dice_class_3": 0.5333715081214905
+      "dice_class_2": 0.5935724377632141,
+      "dice_class_3": 0.4475058615207672
     },
     {
       "case_id": "BraTS-GLI-02845-101",
-      "mean_dice_no_bg": 0.778854767481486,
+      "mean_dice_no_bg": 0.7421761254469553,
       "dice_class_1": 1.0,
-      "dice_class_2": 0.7786619067192078,
-      "dice_class_3": 0.5579023957252502
+      "dice_class_2": 0.7942769527435303,
+      "dice_class_3": 0.4322514235973358
     },
     {
       "case_id": "BraTS-GLI-02773-100",
-      "mean_dice_no_bg": 0.5657880703608195,
-      "dice_class_1": 0.5265582799911499,
-      "dice_class_2": 0.6482726335525513,
-      "dice_class_3": 0.5225332975387573
+      "mean_dice_no_bg": 0.5661577582359314,
+      "dice_class_1": 0.5000683665275574,
+      "dice_class_2": 0.6326962113380432,
+      "dice_class_3": 0.5657086968421936
     }
   ]
 }

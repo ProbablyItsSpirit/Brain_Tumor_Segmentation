@@ -62,6 +62,12 @@ def parse_args() -> argparse.Namespace:
         default="4c",
         help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
     )
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=0,
+        help="DataLoader workers. Use 0 on Windows/Python 3.14 to avoid pickling issues.",
+    )
     return parser.parse_args()
 
 
@@ -131,9 +137,9 @@ def main() -> None:
         test_ds,
         batch_size=1,
         shuffle=False,
-        num_workers=int(cfg["dataloader"].get("num_workers", 0)),
+        num_workers=int(args.num_workers),
         pin_memory=torch.cuda.is_available(),
-        persistent_workers=int(cfg["dataloader"].get("num_workers", 0)) > 0,
+        persistent_workers=int(args.num_workers) > 0,
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from functools import partial
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Union
@@ -96,6 +97,10 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
 	for src, dst in mapping.items():
 		remapped[remapped == src] = dst
 	return remapped.astype(np.int64)
+
+
+def remap_with_mapping(label: Any, mapping: Dict[int, int]):
+	return remap_labels(label, mapping)
 
 
 def apply_label_setup(cfg: Dict[str, Any], label_setup: str) -> int:
@@ -254,12 +259,13 @@ def select_split_files(
 
 def build_inference_transforms(cfg: Dict[str, Any]) -> Compose:
 	mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+	label_mapper = partial(remap_with_mapping, mapping=mapping)
 	return Compose(
 		[
 			LoadImaged(keys=["image", "label"]),
 			EnsureChannelFirstd(keys=["image", "label"]),
 			NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
-			Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
+			Lambdad(keys="label", func=label_mapper),
 			EnsureTyped(keys="image", dtype=torch.float32),
 			EnsureTyped(keys="label", dtype=torch.int64),
 		]
@@ -283,27 +289,34 @@ def extract_case_id(case_id_field: Any) -> str:
 	return str(case_id_field)
 
 
-def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> float:
+def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> tuple[float | None, bool]:
 	pred_c = (pred == class_id).float()
 	target_c = (target == class_id).float()
-	denominator = pred_c.sum() + target_c.sum()
-	if denominator.item() == 0:
-		return 1.0
+	target_sum = target_c.sum()
+	if target_sum.item() == 0:
+		return None, False
+
+	denominator = pred_c.sum() + target_sum
 	intersection = (pred_c * target_c).sum()
-	return float((2.0 * intersection / denominator).item())
+	return float((2.0 * intersection / denominator).item()), True
 
 
 def compute_case_metrics(pred: torch.Tensor, target: torch.Tensor, num_classes: int = 4) -> Dict[str, Any]:
-	per_class: Dict[str, float] = {}
+	per_class: Dict[str, Any] = {}
+	valid_count_per_class: Dict[str, int] = {}
 	class_values: List[float] = []
 	for class_id in range(1, num_classes):
-		d = dice_for_class(pred, target, class_id)
-		per_class[f"dice_class_{class_id}"] = d
-		class_values.append(d)
+		d, is_valid = dice_for_class(pred, target, class_id)
+		per_class[f"dice_class_{class_id}"] = None if d is None else d
+		valid_count_per_class[f"class_{class_id}"] = 1 if is_valid else 0
+		if is_valid and d is not None:
+			class_values.append(d)
 
 	mean_dice_no_bg = float(np.mean(class_values)) if class_values else 0.0
 	return {
 		"mean_dice_no_bg": mean_dice_no_bg,
+		"valid_class_count": len(class_values),
+		"valid_count_per_class": valid_count_per_class,
 		**per_class,
 	}
 
@@ -325,6 +338,8 @@ def main() -> None:
 		raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
 	cfg = load_config(config_path)
+	num_classes = apply_label_setup(cfg, args.label_setup)
+	print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
 	set_determinism(seed=int(cfg.get("seed", 42)))
 
 	output_dir = resolve_path(config_path.parent, args.output_dir)
@@ -357,14 +372,12 @@ def main() -> None:
 	)
 
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-	num_classes = apply_label_setup(cfg, args.label_setup)
-	print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
-
 	model = build_model(out_channels=num_classes).to(device)
 	load_checkpoint(model, checkpoint_path, device)
 	model.eval()
 
 	all_case_metrics: List[Dict[str, Any]] = []
+	support_sums: Dict[str, int] = {f"class_{cid}": 0 for cid in range(1, num_classes)}
 
 	with torch.no_grad():
 		for batch in test_loader:
@@ -390,6 +403,8 @@ def main() -> None:
 				np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
 			metrics = compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
+			for key, value in metrics.get("valid_count_per_class", {}).items():
+				support_sums[key] = support_sums.get(key, 0) + int(value)
 			all_case_metrics.append({"case_id": case_id, **metrics})
 
 	mean_dice_values = [m["mean_dice_no_bg"] for m in all_case_metrics]
@@ -397,6 +412,7 @@ def main() -> None:
 		"checkpoint": str(checkpoint_path),
 		"num_cases": len(all_case_metrics),
 		"mean_dice_no_bg": float(np.mean(mean_dice_values)) if mean_dice_values else 0.0,
+		"valid_count_per_class": support_sums,
 		"cases": all_case_metrics,
 	}
 

@@ -4,6 +4,7 @@ import argparse
 import copy
 import inspect
 import json
+from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
@@ -85,6 +86,25 @@ def parse_args() -> argparse.Namespace:
         choices=["4c", "3c"],
         default="4c",
         help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
+    )
+    parser.add_argument(
+        "--val-mode",
+        type=str,
+        choices=["mixed", "gli", "config"],
+        default="mixed",
+        help="Validation source: mixed(GLI+PED+MEN), gli(GLI only), or config(use splits.val)",
+    )
+    parser.add_argument(
+        "--overfit-cases",
+        type=int,
+        default=0,
+        help="If >0, train/validate on a tiny subset for pipeline debugging",
+    )
+    parser.add_argument(
+        "--overfit-epochs",
+        type=int,
+        default=0,
+        help="Optional epoch override for overfit mode (default 60 when overfit-cases > 0)",
     )
     return parser.parse_args()
 
@@ -168,6 +188,10 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
     for src, dst in mapping.items():
         remapped[remapped == src] = dst
     return remapped.astype(np.int64)
+
+
+def remap_with_mapping(label: Any, mapping: Dict[int, int]):
+    return remap_labels(label, mapping)
 
 
 def find_case_dir(dataset_root: Path, case_id: str) -> Path | None:
@@ -292,6 +316,7 @@ def select_split_files(
 
 def build_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+    label_mapper = partial(remap_with_mapping, mapping=mapping)
     patch_size = tuple(cfg["patch"]["size"])
     num_samples = int(cfg["patch"].get("num_samples", 1))
     pos = float(cfg["patch"].get("pos", 3))
@@ -302,7 +327,7 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
             NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
-            Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
+            Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),
             EnsureTyped(keys="label", dtype=torch.int64),
             # Some mixed-dataset volumes are shallower than patch depth (e.g., 108 < 128).
@@ -325,12 +350,13 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
 
 def build_eval_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+    label_mapper = partial(remap_with_mapping, mapping=mapping)
     return Compose(
         [
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
             NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
-            Lambdad(keys="label", func=lambda x: remap_labels(x, mapping)),
+            Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),
             EnsureTyped(keys="label", dtype=torch.int64),
         ]
@@ -441,14 +467,16 @@ def build_loss_function(
     return DiceCELoss(**dicece_kwargs)
 
 
-def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> float:
+def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> tuple[float | None, bool]:
     pred_c = (pred == class_id).float()
     target_c = (target == class_id).float()
-    denominator = pred_c.sum() + target_c.sum()
-    if denominator.item() == 0:
-        return 1.0
+    target_sum = target_c.sum()
+    if target_sum.item() == 0:
+        return None, False
+
+    denominator = pred_c.sum() + target_sum
     intersection = (pred_c * target_c).sum()
-    return float((2.0 * intersection / denominator).item())
+    return float((2.0 * intersection / denominator).item()), True
 
 
 def evaluate_on_validation(
@@ -457,12 +485,13 @@ def evaluate_on_validation(
     device: torch.device,
     patch_size: tuple[int, int, int],
     num_classes: int,
-) -> Dict[str, float]:
+) -> Dict[str, Any]:
     model_was_training = model.training
     model.eval()
 
     case_scores: List[float] = []
     class_scores: Dict[int, List[float]] = {cid: [] for cid in range(1, num_classes)}
+    valid_count_per_class: Dict[int, int] = {cid: 0 for cid in range(1, num_classes)}
     with torch.no_grad():
         for batch in val_loader:
             images = batch["image"].to(device, non_blocking=True)
@@ -479,10 +508,16 @@ def evaluate_on_validation(
             )
             preds = torch.argmax(logits, dim=1)
 
-            per_class = [dice_for_class(preds[0], labels[0], class_id) for class_id in range(1, num_classes)]
-            case_scores.append(float(np.mean(per_class)))
-            for cid, val in zip(range(1, num_classes), per_class):
-                class_scores[cid].append(val)
+            case_valid_values: List[float] = []
+            for cid in range(1, num_classes):
+                d, is_valid = dice_for_class(preds[0], labels[0], cid)
+                if is_valid and d is not None:
+                    class_scores[cid].append(d)
+                    valid_count_per_class[cid] += 1
+                    case_valid_values.append(d)
+
+            if case_valid_values:
+                case_scores.append(float(np.mean(case_valid_values)))
 
     if model_was_training:
         model.train()
@@ -491,6 +526,8 @@ def evaluate_on_validation(
     out: Dict[str, float] = {"mean_dice_no_bg": mean_case}
     for cid in range(1, num_classes):
         out[f"dice_class_{cid}"] = float(np.mean(class_scores[cid])) if class_scores[cid] else 0.0
+    out["valid_case_count"] = len(case_scores)
+    out["valid_count_per_class"] = {f"class_{cid}": valid_count_per_class[cid] for cid in range(1, num_classes)}
     return out
 
 
@@ -649,6 +686,11 @@ def run_stage_b_training(
                 [f"C{cid}={val_metrics.get(f'dice_class_{cid}', 0.0):.4f}" for cid in range(1, num_classes)]
             )
             print(f"[epoch {epoch}/{num_epochs}] val per-class Dice: {class_line}")
+            print(
+                f"[epoch {epoch}/{num_epochs}] valid supports: "
+                f"{val_metrics.get('valid_count_per_class', {})}, "
+                f"valid_cases={val_metrics.get('valid_case_count', 0)}"
+            )
 
         save_stage_b_checkpoint(
             checkpoint_path=latest_ckpt_path,
@@ -691,6 +733,8 @@ def run_stage_b_training(
                 "val_per_class_dice": None
                 if val_metrics is None
                 else {f"dice_class_{cid}": val_metrics.get(f"dice_class_{cid}", 0.0) for cid in range(1, num_classes)},
+                "valid_case_count": None if val_metrics is None else val_metrics.get("valid_case_count", 0),
+                "valid_count_per_class": None if val_metrics is None else val_metrics.get("valid_count_per_class", {}),
                 "selection_metric": selection_metric,
                 "is_best": is_best,
                 "device": str(device),
@@ -721,6 +765,12 @@ def main() -> None:
     if args.train_mode == "mixed":
         cfg["splits"]["train"] = {"GLI": "train", "PED": "train", "MEN": "train"}
 
+    if args.overfit_cases > 0:
+        # Keep overfit experiments short by default unless user overrides.
+        cfg["training"]["epochs"] = int(args.overfit_epochs) if args.overfit_epochs > 0 else 60
+    elif args.overfit_epochs > 0:
+        cfg["training"]["epochs"] = int(args.overfit_epochs)
+
     if args.checkpoint_suffix:
         base_ckpt_dir = str(cfg["training"]["checkpoint_dir"]).rstrip("/\\")
         cfg["training"]["checkpoint_dir"] = f"{base_ckpt_dir}_{args.checkpoint_suffix}"
@@ -728,7 +778,11 @@ def main() -> None:
     set_determinism(seed=int(cfg.get("seed", 42)))
 
     cfg_for_loading = copy.deepcopy(cfg)
-    if "val" not in cfg_for_loading["splits"]:
+    if args.val_mode == "mixed":
+        cfg_for_loading["splits"]["val"] = {"GLI": "test", "PED": "train", "MEN": "train"}
+    elif args.val_mode == "gli":
+        cfg_for_loading["splits"]["val"] = {"GLI": "test"}
+    elif "val" not in cfg_for_loading["splits"]:
         cfg_for_loading["splits"]["val"] = {"GLI": "test"}
 
     all_dataset_dicts = build_dataset_dicts(cfg_for_loading, config_path.parent)
@@ -743,7 +797,11 @@ def main() -> None:
         split_name="test",
     )
 
-    if "val" in cfg["splits"]:
+    if args.val_mode == "mixed":
+        val_mapping = {"GLI": "test", "PED": "train", "MEN": "train"}
+    elif args.val_mode == "gli":
+        val_mapping = {"GLI": "test"}
+    elif "val" in cfg["splits"]:
         val_mapping = cfg["splits"]["val"]
     else:
         val_mapping = {"GLI": "test"}
@@ -762,6 +820,12 @@ def main() -> None:
             split_name="val",
         )
 
+    if args.overfit_cases > 0:
+        overfit_n = min(args.overfit_cases, len(train_files))
+        train_files = train_files[:overfit_n]
+        val_files = train_files.copy()
+        print(f"[overfit mode] Using {len(train_files)} train cases and same set for validation.")
+
     if args.max_val_cases > 0:
         val_files = val_files[: args.max_val_cases]
 
@@ -771,6 +835,8 @@ def main() -> None:
     print(f"Training mode: {args.train_mode}")
     print(f"Loss type: {args.loss_type}")
     print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
+    print(f"Validation mode: {args.val_mode}")
+    print(f"Configured epochs: {cfg['training'].get('epochs')}")
 
     if len(train_files) == 0:
         raise RuntimeError("No training samples were found. Check data.root and patient lists.")
