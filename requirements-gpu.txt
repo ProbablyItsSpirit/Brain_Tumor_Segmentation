@@ -13,10 +13,10 @@
 
 # CUDA-enabled PyTorch build
 # Keep these aligned with requirements.txt base versions.
-torch==2.0.1+cu118
-torchvision==0.15.2+cu118
+torch
+torchvision
 
 # Optional CUDA runtime libraries commonly needed on Linux environments.
 # On Windows, these are usually bundled with the wheel/driver setup and may be skipped.
-nvidia-cuda-runtime-cu11>=11.8.89
-nvidia-cudnn-cu11>=8.5.0.96
+nvidia-cuda-runtime-cu11
+nvidia-cudnn-cu11
