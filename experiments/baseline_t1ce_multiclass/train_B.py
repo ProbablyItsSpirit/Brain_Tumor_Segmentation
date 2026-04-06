@@ -22,6 +22,8 @@ from monai.transforms import (
     Lambdad,
     LoadImaged,
     NormalizeIntensityd,
+    Orientationd,
+    RandCropByLabelClassesd,
     RandCropByPosNegLabeld,
     SpatialPadd,
     SqueezeDimd,
@@ -321,11 +323,41 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
     num_samples = int(cfg["patch"].get("num_samples", 1))
     pos = float(cfg["patch"].get("pos", 3))
     neg = float(cfg["patch"].get("neg", 1))
+    sampling_mode = str(cfg["patch"].get("sampling", "label_classes")).lower()
+    num_classes = int(max(mapping.values())) + 1
+    class_ratios_cfg = cfg["patch"].get("class_ratios", [0, 1, 1, 1])
+    class_ratios = [float(x) for x in class_ratios_cfg]
+    if len(class_ratios) < num_classes:
+        class_ratios = class_ratios + [class_ratios[-1] if class_ratios else 1.0] * (num_classes - len(class_ratios))
+    elif len(class_ratios) > num_classes:
+        class_ratios = class_ratios[:num_classes]
+
+    if sampling_mode == "label_classes":
+        crop_transform = RandCropByLabelClassesd(
+            keys=["image", "label"],
+            label_key="label",
+            spatial_size=patch_size,
+            ratios=class_ratios,
+            num_classes=num_classes,
+            num_samples=num_samples,
+        )
+    else:
+        crop_transform = RandCropByPosNegLabeld(
+            keys=["image", "label"],
+            label_key="label",
+            spatial_size=patch_size,
+            pos=pos,
+            neg=neg,
+            num_samples=num_samples,
+            image_key="image",
+            image_threshold=0,
+        )
 
     return Compose(
         [
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
+            Orientationd(keys=["image", "label"], axcodes="RAS"),
             NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
             Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),
@@ -333,16 +365,7 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
             # Some mixed-dataset volumes are shallower than patch depth (e.g., 108 < 128).
             # Pad first so random crop ROI is always valid.
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            RandCropByPosNegLabeld(
-                keys=["image", "label"],
-                label_key="label",
-                spatial_size=patch_size,
-                pos=pos,
-                neg=neg,
-                num_samples=num_samples,
-                image_key="image",
-                image_threshold=0,
-            ),
+            crop_transform,
             SqueezeDimd(keys="label", dim=0),
         ]
     )
@@ -355,6 +378,7 @@ def build_eval_transforms(cfg: Dict[str, Any]) -> Compose:
         [
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
+            Orientationd(keys=["image", "label"], axcodes="RAS"),
             NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
             Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),

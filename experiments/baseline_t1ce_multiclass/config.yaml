@@ -44,6 +44,8 @@ splits:
 patch:
   size: [128, 128, 128]
   num_samples: 1
+  sampling: label_classes
+  class_ratios: [0, 2, 2, 2]
   pos: 3
   neg: 1
 

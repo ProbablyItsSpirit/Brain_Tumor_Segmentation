@@ -14,7 +14,8 @@ from monai.transforms import (
     EnsureTyped,
     LoadImaged,
     NormalizeIntensityd,
-    RandCropByPosNegLabeld,
+    Orientationd,
+    RandCropByLabelClassesd,
     SpatialPadd,
 )
 
@@ -44,6 +45,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-patches", type=int, default=6)
     parser.add_argument("--pos", type=float, default=3.0)
     parser.add_argument("--neg", type=float, default=1.0)
+    parser.add_argument(
+        "--ratios",
+        type=str,
+        default="0,2,2,2",
+        help="Class sampling ratios as CSV for [bg,c1,c2,c3], e.g. 0,1,1,1",
+    )
+    parser.add_argument(
+        "--bad-threshold",
+        type=float,
+        default=0.001,
+        help="If foreground voxel ratio is below this, patch is flagged as bad",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument(
@@ -79,24 +92,23 @@ def collect_cases_for_dataset(repo_root: Path, dataset_name: str) -> list[dict[s
     return cases
 
 
-def get_transforms(patch_size: tuple[int, int, int], pos: float, neg: float) -> Compose:
+def get_transforms(patch_size: tuple[int, int, int], ratios: list[float]) -> Compose:
     return Compose(
         [
             LoadImaged(keys=["image", "label"]),
             EnsureChannelFirstd(keys=["image", "label"]),
+            Orientationd(keys=["image", "label"], axcodes="RAS"),
             NormalizeIntensityd(keys=["image"], nonzero=True, channel_wise=True),
             EnsureTyped(keys=["image"], dtype=torch.float32),
             EnsureTyped(keys=["label"], dtype=torch.int64),
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            RandCropByPosNegLabeld(
+            RandCropByLabelClassesd(
                 keys=["image", "label"],
                 label_key="label",
                 spatial_size=patch_size,
-                pos=pos,
-                neg=neg,
+                ratios=ratios,
+                num_classes=4,
                 num_samples=1,
-                image_key="image",
-                image_threshold=0,
             ),
         ]
     )
@@ -109,22 +121,39 @@ def to_3d(t: torch.Tensor | np.ndarray) -> np.ndarray:
     return arr
 
 
-def save_patch(image: torch.Tensor, label: torch.Tensor, save_path: Path) -> None:
+def save_patch(
+    image: torch.Tensor,
+    label: torch.Tensor,
+    full_image: np.ndarray,
+    full_label: np.ndarray,
+    save_path: Path,
+) -> None:
     image_3d = to_3d(image)
     label_3d = to_3d(label)
 
-    z = image_3d.shape[2] // 2
+    z_patch = image_3d.shape[2] // 2
+    z_full = full_image.shape[2] // 2
 
-    plt.figure(figsize=(9, 4))
+    plt.figure(figsize=(14, 8))
 
-    plt.subplot(1, 2, 1)
-    plt.imshow(image_3d[:, :, z], cmap="gray")
-    plt.title("Image")
+    plt.subplot(2, 2, 1)
+    plt.imshow(full_image[:, :, z_full], cmap="gray")
+    plt.title("Full Image (mid-z)")
     plt.axis("off")
 
-    plt.subplot(1, 2, 2)
-    plt.imshow(label_3d[:, :, z], cmap="nipy_spectral")
-    plt.title(f"Label | unique: {np.unique(label_3d).tolist()}")
+    plt.subplot(2, 2, 2)
+    plt.imshow(full_label[:, :, z_full], cmap="nipy_spectral")
+    plt.title(f"Full Label | unique: {np.unique(full_label).tolist()}")
+    plt.axis("off")
+
+    plt.subplot(2, 2, 3)
+    plt.imshow(image_3d[:, :, z_patch], cmap="gray")
+    plt.title("Sampled Patch (image)")
+    plt.axis("off")
+
+    plt.subplot(2, 2, 4)
+    plt.imshow(label_3d[:, :, z_patch], cmap="nipy_spectral")
+    plt.title(f"Sampled Patch (label) | unique: {np.unique(label_3d).tolist()}")
     plt.axis("off")
 
     plt.tight_layout()
@@ -137,8 +166,8 @@ def process_dataset(
     data: list[dict[str, str]],
     save_dir: Path,
     patch_size: tuple[int, int, int],
-    pos: float,
-    neg: float,
+    ratios: list[float],
+    bad_threshold: float,
     num_patches: int,
     num_workers: int,
 ) -> None:
@@ -150,7 +179,7 @@ def process_dataset(
     random.shuffle(data)
     selected = data[: min(num_patches, len(data))]
 
-    transforms = get_transforms(patch_size=patch_size, pos=pos, neg=neg)
+    transforms = get_transforms(patch_size=patch_size, ratios=ratios)
     ds = Dataset(data=selected, transform=transforms)
     loader = DataLoader(
         ds,
@@ -173,11 +202,28 @@ def process_dataset(
 
         tumor_ratio = float((lbl > 0).sum().item() / lbl.numel())
         unique = torch.unique(lbl)
+        status = "BAD PATCH" if tumor_ratio < bad_threshold else "OK"
 
-        print(f"{name} | Patch {i} | Case: {case_id} | Tumor %: {tumor_ratio:.4f} | Labels: {unique.tolist()}")
+        print(
+            f"{name} | Patch {i} | Case: {case_id} | Tumor %: {tumor_ratio:.4f} | "
+            f"Labels: {unique.tolist()} | {status}"
+        )
+
+        if tumor_ratio < bad_threshold:
+            print("  BAD PATCH (almost empty foreground)")
+
+        full_case = next((x for x in selected if x["case_id"] == case_id), selected[i])
+        full_image = nib_load(full_case["image"])
+        full_label = nib_load(full_case["label"])
 
         save_path = save_folder / f"{name}_patch_{i}_{case_id}.png"
-        save_patch(img, lbl, save_path)
+        save_patch(img, lbl, full_image=full_image, full_label=full_label, save_path=save_path)
+
+
+def nib_load(path: str) -> np.ndarray:
+    import nibabel as nib
+
+    return nib.load(path).get_fdata()
 
 
 def main() -> None:
@@ -193,6 +239,9 @@ def main() -> None:
     save_dir.mkdir(parents=True, exist_ok=True)
 
     patch_size = tuple(args.patch_size)
+    ratios = [float(x.strip()) for x in args.ratios.split(",") if x.strip()]
+    if len(ratios) != 4:
+        raise ValueError("--ratios must contain 4 values: bg,c1,c2,c3")
 
     for dataset_name in ["GLI", "PED", "MEN"]:
         data = collect_cases_for_dataset(repo_root=repo_root, dataset_name=dataset_name)
@@ -201,8 +250,8 @@ def main() -> None:
             data=data,
             save_dir=save_dir,
             patch_size=patch_size,
-            pos=args.pos,
-            neg=args.neg,
+            ratios=ratios,
+            bad_threshold=float(args.bad_threshold),
             num_patches=args.num_patches,
             num_workers=args.num_workers,
         )
