@@ -1,5 +1,8 @@
-# Brain Tumor Segmentation - Project Requirements
+# Brain Tumor Segmentation - Base Requirements (CPU-compatible)
 # Recommended Python: 3.10 - 3.12
+#
+# For NVIDIA GPU training, install this file first, then install
+# requirements-gpu.txt in the same repo.
 
 # Core
 numpy==1.24.3

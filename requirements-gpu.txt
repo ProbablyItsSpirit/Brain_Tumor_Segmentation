@@ -1,0 +1,22 @@
+# Brain Tumor Segmentation - NVIDIA GPU Requirements
+# Use with Python 3.10-3.12
+#
+# Install order:
+# 1) pip install -r requirements.txt
+# 2) pip install -r requirements-gpu.txt
+#
+# NOTE:
+# - This file assumes CUDA 11.8 compatible driver/runtime.
+# - If you have a different CUDA target, install the matching torch/vision builds.
+
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+# CUDA-enabled PyTorch build
+# Keep these aligned with requirements.txt base versions.
+torch==2.0.1+cu118
+torchvision==0.15.2+cu118
+
+# Optional CUDA runtime libraries commonly needed on Linux environments.
+# On Windows, these are usually bundled with the wheel/driver setup and may be skipped.
+nvidia-cuda-runtime-cu11>=11.8.89
+nvidia-cudnn-cu11>=8.5.0.96
