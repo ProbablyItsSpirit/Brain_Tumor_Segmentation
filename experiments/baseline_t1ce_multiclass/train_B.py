@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Union
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 import yaml
 from monai.data import DataLoader, Dataset
 from monai.inferers import sliding_window_inference
@@ -23,8 +24,6 @@ from monai.transforms import (
     LoadImaged,
     NormalizeIntensityd,
     Orientationd,
-    RandCropByLabelClassesd,
-    RandCropByPosNegLabeld,
     SpatialPadd,
     SqueezeDimd,
 )
@@ -59,9 +58,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--train-mode",
         type=str,
-        choices=["gli", "mixed"],
-        default="gli",
-        help="gli: train only on GLI | mixed: train on GLI+PED+MEN",
+        choices=["gli", "mixed", "gli_ped"],
+        default="mixed",
+        help="gli: GLI only | mixed: GLI+PED+MEN | gli_ped: GLI+PED only",
     )
     parser.add_argument(
         "--loss-type",
@@ -86,7 +85,7 @@ def parse_args() -> argparse.Namespace:
         "--label-setup",
         type=str,
         choices=["4c", "3c"],
-        default="4c",
+        default="3c",
         help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
     )
     parser.add_argument(
@@ -320,38 +319,135 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
     label_mapper = partial(remap_with_mapping, mapping=mapping)
     patch_size = tuple(cfg["patch"]["size"])
-    num_samples = int(cfg["patch"].get("num_samples", 1))
-    pos = float(cfg["patch"].get("pos", 3))
-    neg = float(cfg["patch"].get("neg", 1))
-    sampling_mode = str(cfg["patch"].get("sampling", "label_classes")).lower()
-    num_classes = int(max(mapping.values())) + 1
-    class_ratios_cfg = cfg["patch"].get("class_ratios", [0, 1, 1, 1])
-    class_ratios = [float(x) for x in class_ratios_cfg]
-    if len(class_ratios) < num_classes:
-        class_ratios = class_ratios + [class_ratios[-1] if class_ratios else 1.0] * (num_classes - len(class_ratios))
-    elif len(class_ratios) > num_classes:
-        class_ratios = class_ratios[:num_classes]
+    men_patch_size = tuple(cfg["patch"].get("size_men", [96, 96, 96]))
+    min_fg_ratio = float(cfg["patch"].get("min_fg_ratio", 0.005))
+    max_sample_tries = int(cfg["patch"].get("max_sample_tries", 10))
+    tumor_center_prob = float(cfg["patch"].get("tumor_center_prob", 0.7))
+    tumor_margin = int(cfg["patch"].get("tumor_margin", 20))
 
-    if sampling_mode == "label_classes":
-        crop_transform = RandCropByLabelClassesd(
-            keys=["image", "label"],
-            label_key="label",
-            spatial_size=patch_size,
-            ratios=class_ratios,
-            num_classes=num_classes,
-            num_samples=num_samples,
-        )
-    else:
-        crop_transform = RandCropByPosNegLabeld(
-            keys=["image", "label"],
-            label_key="label",
-            spatial_size=patch_size,
-            pos=pos,
-            neg=neg,
-            num_samples=num_samples,
-            image_key="image",
-            image_threshold=0,
-        )
+    class DatasetAwarePatchSampler:
+        def __init__(
+            self,
+            default_patch_size: tuple[int, int, int],
+            men_patch_size: tuple[int, int, int],
+            min_fg_ratio: float,
+            max_tries: int,
+            tumor_center_prob: float,
+            tumor_margin: int,
+        ) -> None:
+            self.default_patch_size = default_patch_size
+            self.men_patch_size = men_patch_size
+            self.min_fg_ratio = min_fg_ratio
+            self.max_tries = max_tries
+            self.tumor_center_prob = tumor_center_prob
+            self.tumor_margin = tumor_margin
+
+        @staticmethod
+        def _pad_to_size(t: torch.Tensor, target_size: tuple[int, int, int]) -> torch.Tensor:
+            # t shape expected: [C, D, H, W]
+            _, d, h, w = t.shape
+            td, th, tw = target_size
+            pd = max(0, td - d)
+            ph = max(0, th - h)
+            pw = max(0, tw - w)
+            if pd == 0 and ph == 0 and pw == 0:
+                return t
+            # Pad order for 3D tensors in F.pad: (W_left, W_right, H_left, H_right, D_left, D_right)
+            return F.pad(t, (0, pw, 0, ph, 0, pd), mode="constant", value=0)
+
+        @staticmethod
+        def _random_crop_coords(shape: tuple[int, int, int], patch: tuple[int, int, int]) -> tuple[int, int, int]:
+            d, h, w = shape
+            pd, ph, pw = patch
+            z1 = np.random.randint(0, max(d - pd, 0) + 1) if d > pd else 0
+            y1 = np.random.randint(0, max(h - ph, 0) + 1) if h > ph else 0
+            x1 = np.random.randint(0, max(w - pw, 0) + 1) if w > pw else 0
+            return z1, y1, x1
+
+        def _tumor_center_coords(self, label_3d: torch.Tensor, patch: tuple[int, int, int]) -> tuple[int, int, int]:
+            fg = torch.nonzero(label_3d > 0, as_tuple=False)
+            if fg.numel() == 0:
+                return self._random_crop_coords(tuple(label_3d.shape), patch)
+
+            zmin = int(fg[:, 0].min().item())
+            ymin = int(fg[:, 1].min().item())
+            xmin = int(fg[:, 2].min().item())
+            zmax = int(fg[:, 0].max().item())
+            ymax = int(fg[:, 1].max().item())
+            xmax = int(fg[:, 2].max().item())
+
+            d, h, w = label_3d.shape
+            zmin = max(0, zmin - self.tumor_margin)
+            ymin = max(0, ymin - self.tumor_margin)
+            xmin = max(0, xmin - self.tumor_margin)
+            zmax = min(d - 1, zmax + self.tumor_margin)
+            ymax = min(h - 1, ymax + self.tumor_margin)
+            xmax = min(w - 1, xmax + self.tumor_margin)
+
+            cz = np.random.randint(zmin, zmax + 1)
+            cy = np.random.randint(ymin, ymax + 1)
+            cx = np.random.randint(xmin, xmax + 1)
+
+            pd, ph, pw = patch
+            z1 = max(0, min(cz - pd // 2, d - pd))
+            y1 = max(0, min(cy - ph // 2, h - ph))
+            x1 = max(0, min(cx - pw // 2, w - pw))
+            return z1, y1, x1
+
+        @staticmethod
+        def _crop(img: torch.Tensor, lbl: torch.Tensor, z1: int, y1: int, x1: int, patch: tuple[int, int, int]) -> tuple[torch.Tensor, torch.Tensor]:
+            pd, ph, pw = patch
+            z2, y2, x2 = z1 + pd, y1 + ph, x1 + pw
+            return img[:, z1:z2, y1:y2, x1:x2], lbl[:, z1:z2, y1:y2, x1:x2]
+
+        def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+            d = dict(data)
+            img = d["image"]
+            lbl = d["label"]
+            dataset_name = str(d.get("dataset", ""))
+
+            patch = self.men_patch_size if dataset_name == "MEN" else self.default_patch_size
+
+            img = self._pad_to_size(img, patch)
+            lbl = self._pad_to_size(lbl, patch)
+
+            best_img = None
+            best_lbl = None
+            best_ratio = -1.0
+
+            for _ in range(self.max_tries):
+                use_tumor_center = np.random.rand() < self.tumor_center_prob
+                if use_tumor_center:
+                    z1, y1, x1 = self._tumor_center_coords(lbl[0], patch)
+                else:
+                    z1, y1, x1 = self._random_crop_coords(tuple(lbl[0].shape), patch)
+
+                c_img, c_lbl = self._crop(img, lbl, z1, y1, x1, patch)
+                fg_ratio = float((c_lbl > 0).float().mean().item())
+
+                if fg_ratio > best_ratio:
+                    best_ratio = fg_ratio
+                    best_img = c_img
+                    best_lbl = c_lbl
+
+                if fg_ratio >= self.min_fg_ratio:
+                    d["image"] = c_img
+                    d["label"] = c_lbl
+                    return d
+
+            # Fallback: best patch from retries, even if below threshold.
+            d["image"] = best_img if best_img is not None else img
+            d["label"] = best_lbl if best_lbl is not None else lbl
+            return d
+
+    sampler = DatasetAwarePatchSampler(
+        default_patch_size=patch_size,
+        men_patch_size=men_patch_size,
+        min_fg_ratio=min_fg_ratio,
+        max_tries=max_sample_tries,
+        tumor_center_prob=tumor_center_prob,
+        tumor_margin=tumor_margin,
+    )
 
     return Compose(
         [
@@ -362,10 +458,7 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
             Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),
             EnsureTyped(keys="label", dtype=torch.int64),
-            # Some mixed-dataset volumes are shallower than patch depth (e.g., 108 < 128).
-            # Pad first so random crop ROI is always valid.
-            SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            crop_transform,
+            sampler,
             SqueezeDimd(keys="label", dim=0),
         ]
     )
@@ -788,6 +881,8 @@ def main() -> None:
 
     if args.train_mode == "mixed":
         cfg["splits"]["train"] = {"GLI": "train", "PED": "train", "MEN": "train"}
+    elif args.train_mode == "gli_ped":
+        cfg["splits"]["train"] = {"GLI": "train", "PED": "train"}
 
     if args.overfit_cases > 0:
         # Keep overfit experiments short by default unless user overrides.
