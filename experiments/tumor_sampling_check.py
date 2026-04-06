@@ -7,7 +7,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from monai.data import DataLoader, Dataset
 from monai.transforms import (
     Compose,
     EnsureChannelFirstd,
@@ -15,7 +14,6 @@ from monai.transforms import (
     LoadImaged,
     NormalizeIntensityd,
     Orientationd,
-    RandCropByLabelClassesd,
     SpatialPadd,
 )
 
@@ -43,13 +41,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check tumor-focused patch sampling quality")
     parser.add_argument("--patch-size", type=int, nargs=3, default=[128, 128, 128])
     parser.add_argument("--num-patches", type=int, default=6)
-    parser.add_argument("--pos", type=float, default=3.0)
-    parser.add_argument("--neg", type=float, default=1.0)
+    parser.add_argument("--margin", type=int, default=20, help="Tumor bbox expansion margin")
     parser.add_argument(
-        "--ratios",
-        type=str,
-        default="0,2,2,2",
-        help="Class sampling ratios as CSV for [bg,c1,c2,c3], e.g. 0,1,1,1",
+        "--tumor-center-prob",
+        type=float,
+        default=0.7,
+        help="Probability of tumor-centered sampling (remaining probability uses random patch)",
     )
     parser.add_argument(
         "--bad-threshold",
@@ -92,7 +89,7 @@ def collect_cases_for_dataset(repo_root: Path, dataset_name: str) -> list[dict[s
     return cases
 
 
-def get_transforms(patch_size: tuple[int, int, int], ratios: list[float]) -> Compose:
+def get_transforms(patch_size: tuple[int, int, int]) -> Compose:
     return Compose(
         [
             LoadImaged(keys=["image", "label"]),
@@ -102,16 +99,85 @@ def get_transforms(patch_size: tuple[int, int, int], ratios: list[float]) -> Com
             EnsureTyped(keys=["image"], dtype=torch.float32),
             EnsureTyped(keys=["label"], dtype=torch.int64),
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            RandCropByLabelClassesd(
-                keys=["image", "label"],
-                label_key="label",
-                spatial_size=patch_size,
-                ratios=ratios,
-                num_classes=4,
-                num_samples=1,
-            ),
         ]
     )
+
+
+def get_tumor_bbox(label_3d: np.ndarray) -> list[int] | None:
+    coords = np.where(label_3d > 0)
+    if len(coords[0]) == 0:
+        return None
+
+    zmin, ymin, xmin = np.min(coords, axis=1)
+    zmax, ymax, xmax = np.max(coords, axis=1)
+    return [int(zmin), int(zmax), int(ymin), int(ymax), int(xmin), int(xmax)]
+
+
+def random_centered_crop(
+    image_3d: np.ndarray,
+    label_3d: np.ndarray,
+    patch_size: tuple[int, int, int],
+) -> tuple[np.ndarray, np.ndarray]:
+    sz, sy, sx = patch_size
+    zmax = max(label_3d.shape[0] - sz, 0)
+    ymax = max(label_3d.shape[1] - sy, 0)
+    xmax = max(label_3d.shape[2] - sx, 0)
+
+    z1 = np.random.randint(0, zmax + 1) if zmax > 0 else 0
+    y1 = np.random.randint(0, ymax + 1) if ymax > 0 else 0
+    x1 = np.random.randint(0, xmax + 1) if xmax > 0 else 0
+
+    z2, y2, x2 = z1 + sz, y1 + sy, x1 + sx
+    return image_3d[z1:z2, y1:y2, x1:x2], label_3d[z1:z2, y1:y2, x1:x2]
+
+
+def tumor_centered_crop(
+    image_3d: np.ndarray,
+    label_3d: np.ndarray,
+    patch_size: tuple[int, int, int],
+    margin: int,
+) -> tuple[np.ndarray | None, np.ndarray | None]:
+    bbox = get_tumor_bbox(label_3d)
+    if bbox is None:
+        return None, None
+
+    zmin, zmax, ymin, ymax, xmin, xmax = bbox
+
+    zmin = max(0, zmin - margin)
+    ymin = max(0, ymin - margin)
+    xmin = max(0, xmin - margin)
+    zmax = min(label_3d.shape[0] - 1, zmax + margin)
+    ymax = min(label_3d.shape[1] - 1, ymax + margin)
+    xmax = min(label_3d.shape[2] - 1, xmax + margin)
+
+    cz = np.random.randint(zmin, zmax + 1)
+    cy = np.random.randint(ymin, ymax + 1)
+    cx = np.random.randint(xmin, xmax + 1)
+
+    sz, sy, sx = patch_size
+    z1 = max(0, cz - sz // 2)
+    y1 = max(0, cy - sy // 2)
+    x1 = max(0, cx - sx // 2)
+
+    z2 = z1 + sz
+    y2 = y1 + sy
+    x2 = x1 + sx
+
+    if z2 > label_3d.shape[0]:
+        z1 = label_3d.shape[0] - sz
+        z2 = label_3d.shape[0]
+    if y2 > label_3d.shape[1]:
+        y1 = label_3d.shape[1] - sy
+        y2 = label_3d.shape[1]
+    if x2 > label_3d.shape[2]:
+        x1 = label_3d.shape[2] - sx
+        x2 = label_3d.shape[2]
+
+    z1 = max(0, z1)
+    y1 = max(0, y1)
+    x1 = max(0, x1)
+
+    return image_3d[z1:z2, y1:y2, x1:x2], label_3d[z1:z2, y1:y2, x1:x2]
 
 
 def to_3d(t: torch.Tensor | np.ndarray) -> np.ndarray:
@@ -166,10 +232,10 @@ def process_dataset(
     data: list[dict[str, str]],
     save_dir: Path,
     patch_size: tuple[int, int, int],
-    ratios: list[float],
+    margin: int,
+    tumor_center_prob: float,
     bad_threshold: float,
     num_patches: int,
-    num_workers: int,
 ) -> None:
     print(f"\nChecking {name}")
     if not data:
@@ -179,26 +245,41 @@ def process_dataset(
     random.shuffle(data)
     selected = data[: min(num_patches, len(data))]
 
-    transforms = get_transforms(patch_size=patch_size, ratios=ratios)
-    ds = Dataset(data=selected, transform=transforms)
-    loader = DataLoader(
-        ds,
-        batch_size=1,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=torch.cuda.is_available(),
-        persistent_workers=num_workers > 0,
-    )
+    transforms = get_transforms(patch_size=patch_size)
 
     save_folder = save_dir / name
     save_folder.mkdir(parents=True, exist_ok=True)
 
-    for i, batch in enumerate(loader):
-        img = batch["image"]
-        lbl = batch["label"]
-        case_id = batch.get("case_id", [f"sample_{i}"])
-        if isinstance(case_id, (list, tuple)):
-            case_id = str(case_id[0])
+    for i, item in enumerate(selected):
+        batch = transforms(item)
+        img_full = to_3d(batch["image"])
+        lbl_full = to_3d(batch["label"])
+        case_id = str(item.get("case_id", f"sample_{i}"))
+        full_unique = np.unique(lbl_full)
+
+        if i == 0:
+            print(f"{name} | Full-label unique values (first case): {full_unique.tolist()}")
+            if len(full_unique) == 1 and full_unique[0] == 0:
+                print(f"{name} | WARNING: labels appear all-zero; verify label path/remap for this dataset")
+
+        use_tumor_center = np.random.rand() < tumor_center_prob
+        strategy = "tumor_centered" if use_tumor_center else "random"
+
+        if use_tumor_center:
+            img_patch, lbl_patch = tumor_centered_crop(
+                image_3d=img_full,
+                label_3d=lbl_full,
+                patch_size=patch_size,
+                margin=margin,
+            )
+            if img_patch is None or lbl_patch is None:
+                strategy = "random_fallback"
+                img_patch, lbl_patch = random_centered_crop(img_full, lbl_full, patch_size)
+        else:
+            img_patch, lbl_patch = random_centered_crop(img_full, lbl_full, patch_size)
+
+        img = torch.tensor(img_patch, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+        lbl = torch.tensor(lbl_patch, dtype=torch.int64).unsqueeze(0).unsqueeze(0)
 
         tumor_ratio = float((lbl > 0).sum().item() / lbl.numel())
         unique = torch.unique(lbl)
@@ -206,24 +287,14 @@ def process_dataset(
 
         print(
             f"{name} | Patch {i} | Case: {case_id} | Tumor %: {tumor_ratio:.4f} | "
-            f"Labels: {unique.tolist()} | {status}"
+            f"Labels: {unique.tolist()} | {status} | strategy={strategy}"
         )
 
         if tumor_ratio < bad_threshold:
             print("  BAD PATCH (almost empty foreground)")
 
-        full_case = next((x for x in selected if x["case_id"] == case_id), selected[i])
-        full_image = nib_load(full_case["image"])
-        full_label = nib_load(full_case["label"])
-
         save_path = save_folder / f"{name}_patch_{i}_{case_id}.png"
-        save_patch(img, lbl, full_image=full_image, full_label=full_label, save_path=save_path)
-
-
-def nib_load(path: str) -> np.ndarray:
-    import nibabel as nib
-
-    return nib.load(path).get_fdata()
+        save_patch(img, lbl, full_image=img_full, full_label=lbl_full, save_path=save_path)
 
 
 def main() -> None:
@@ -239,9 +310,9 @@ def main() -> None:
     save_dir.mkdir(parents=True, exist_ok=True)
 
     patch_size = tuple(args.patch_size)
-    ratios = [float(x.strip()) for x in args.ratios.split(",") if x.strip()]
-    if len(ratios) != 4:
-        raise ValueError("--ratios must contain 4 values: bg,c1,c2,c3")
+
+    if not (0.0 <= args.tumor_center_prob <= 1.0):
+        raise ValueError("--tumor-center-prob must be between 0 and 1")
 
     for dataset_name in ["GLI", "PED", "MEN"]:
         data = collect_cases_for_dataset(repo_root=repo_root, dataset_name=dataset_name)
@@ -250,10 +321,10 @@ def main() -> None:
             data=data,
             save_dir=save_dir,
             patch_size=patch_size,
-            ratios=ratios,
+            margin=int(args.margin),
+            tumor_center_prob=float(args.tumor_center_prob),
             bad_threshold=float(args.bad_threshold),
             num_patches=args.num_patches,
-            num_workers=args.num_workers,
         )
 
     print(f"\nSampling check completed. See outputs in: {save_dir}")
