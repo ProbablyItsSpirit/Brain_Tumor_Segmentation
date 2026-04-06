@@ -431,13 +431,17 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
                     best_lbl = c_lbl
 
                 if fg_ratio >= self.min_fg_ratio:
-                    d["image"] = c_img
-                    d["label"] = c_lbl
+                    # Keep dataset-specific sampling behavior, but return a fixed shape
+                    # so mixed-dataset batches can always be stacked.
+                    d["image"] = self._pad_to_size(c_img, self.default_patch_size)
+                    d["label"] = self._pad_to_size(c_lbl, self.default_patch_size)
                     return d
 
             # Fallback: best patch from retries, even if below threshold.
-            d["image"] = best_img if best_img is not None else img
-            d["label"] = best_lbl if best_lbl is not None else lbl
+            fallback_img = best_img if best_img is not None else img
+            fallback_lbl = best_lbl if best_lbl is not None else lbl
+            d["image"] = self._pad_to_size(fallback_img, self.default_patch_size)
+            d["label"] = self._pad_to_size(fallback_lbl, self.default_patch_size)
             return d
 
     sampler = DatasetAwarePatchSampler(
