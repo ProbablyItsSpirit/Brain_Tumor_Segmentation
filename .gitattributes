@@ -1,3 +1,4 @@
 *.nii.gz filter=lfs diff=lfs merge=lfs -text
 experiments/baseline_t1ce_multiclass/ filter=lfs diff=lfs merge=lfs -text
 experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass_expB_4c_gli_ped/ filter=lfs diff=lfs merge=lfs -text
+experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass_expC_3c_gli_ped/ filter=lfs diff=lfs merge=lfs -text
