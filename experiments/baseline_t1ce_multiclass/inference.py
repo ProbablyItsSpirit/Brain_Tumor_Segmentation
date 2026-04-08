@@ -333,6 +333,7 @@ def main() -> None:
 	args = parse_args()
 	config_path = Path(args.config).resolve()
 	checkpoint_path = Path(args.checkpoint).resolve()
+	repo_root = config_path.parent.parent.resolve()
 
 	if not checkpoint_path.exists():
 		raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
@@ -342,7 +343,9 @@ def main() -> None:
 	print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
 	set_determinism(seed=int(cfg.get("seed", 42)))
 
-	output_dir = resolve_path(config_path.parent, args.output_dir)
+	output_dir = Path(args.output_dir)
+	if not output_dir.is_absolute():
+		output_dir = (repo_root / output_dir).resolve()
 	output_dir.mkdir(parents=True, exist_ok=True)
 	pred_dir = output_dir / "predictions"
 	if args.save_predictions:
