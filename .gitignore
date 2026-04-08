@@ -178,3 +178,13 @@ BraTS-2024-Complete/BraTS-MEN-RT
 BraTS-2024-Complete/BraTS-PEDs
 BraTS-2024-Complete
 experiments/Experiments.md
+
+# Research page cleanup: generated experiment artifacts
+experiments/baseline_t1ce_multiclass/checkpoints/
+experiments/baseline_t1ce_multiclass/predictions/
+experiments/baseline_t1ce_multiclass/outputs/
+
+# Model and checkpoint binaries
+*.pt
+*.pth
+*.ckpt
