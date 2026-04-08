@@ -333,7 +333,7 @@ def main() -> None:
 	args = parse_args()
 	config_path = Path(args.config).resolve()
 	checkpoint_path = Path(args.checkpoint).resolve()
-	repo_root = config_path.parent.parent.resolve()
+	repo_root = config_path.parent.parent.parent.resolve()
 
 	if not checkpoint_path.exists():
 		raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
