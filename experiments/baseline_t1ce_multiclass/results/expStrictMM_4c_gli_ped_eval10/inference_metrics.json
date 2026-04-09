@@ -1,0 +1,142 @@
+{
+  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/baseline_t1ce_multiclass_expStrictMM_4c_gli_ped/stage_b_best.pt",
+  "num_cases": 10,
+  "mean_dice_no_bg": 0.7235495740237334,
+  "valid_count_per_class": {
+    "class_1": 1,
+    "class_2": 10,
+    "class_3": 10
+  },
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02244-101",
+      "mean_dice_no_bg": 0.9206267595291138,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.9077246189117432,
+      "dice_class_3": 0.9335289001464844
+    },
+    {
+      "case_id": "BraTS-GLI-02976-100",
+      "mean_dice_no_bg": 0.8068015575408936,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.8195189237594604,
+      "dice_class_3": 0.7940841913223267
+    },
+    {
+      "case_id": "BraTS-GLI-02209-101",
+      "mean_dice_no_bg": 0.8712356388568878,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.8594819903373718,
+      "dice_class_3": 0.8829892873764038
+    },
+    {
+      "case_id": "BraTS-GLI-02184-101",
+      "mean_dice_no_bg": 0.6671106517314911,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.8285014033317566,
+      "dice_class_3": 0.5057199001312256
+    },
+    {
+      "case_id": "BraTS-GLI-02060-100",
+      "mean_dice_no_bg": 0.7351852754751841,
+      "valid_class_count": 3,
+      "valid_count_per_class": {
+        "class_1": 1,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": 0.3987838923931122,
+      "dice_class_2": 0.9104224443435669,
+      "dice_class_3": 0.8963494896888733
+    },
+    {
+      "case_id": "BraTS-GLI-02129-106",
+      "mean_dice_no_bg": 0.44502814020961523,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.8736985921859741,
+      "dice_class_3": 0.01635768823325634
+    },
+    {
+      "case_id": "BraTS-GLI-02844-100",
+      "mean_dice_no_bg": 0.8558001220226288,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.7895522117614746,
+      "dice_class_3": 0.922048032283783
+    },
+    {
+      "case_id": "BraTS-GLI-02798-100",
+      "mean_dice_no_bg": 0.40440645813941956,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.3848602771759033,
+      "dice_class_3": 0.4239526391029358
+    },
+    {
+      "case_id": "BraTS-GLI-02185-100",
+      "mean_dice_no_bg": 0.7731465101242065,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.7020270228385925,
+      "dice_class_3": 0.8442659974098206
+    },
+    {
+      "case_id": "BraTS-GLI-02128-101",
+      "mean_dice_no_bg": 0.7561546266078949,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.8723801970481873,
+      "dice_class_3": 0.6399290561676025
+    }
+  ]
+}
