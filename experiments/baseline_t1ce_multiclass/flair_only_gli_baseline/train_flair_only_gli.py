@@ -87,6 +87,12 @@ def parse_args() -> argparse.Namespace:
         default="multiclass4",
         help="multiclass4: original 4-class setup. whole_tumor: binary foreground vs background sanity baseline.",
     )
+    parser.add_argument(
+        "--tumor-center-prob",
+        type=float,
+        default=0.5,
+        help="Probability of sampling a tumor-centered crop. Remaining crops are random brain crops.",
+    )
     return parser.parse_args()
 
 
@@ -184,10 +190,11 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
     return remapped.astype(np.int64)
 
 
-class TumorCenterCropd:
-    def __init__(self, keys: List[str], roi_size: tuple[int, int, int]) -> None:
+class BalancedTumorCropd:
+    def __init__(self, keys: List[str], roi_size: tuple[int, int, int], tumor_center_prob: float = 0.5) -> None:
         self.keys = keys
         self.roi_size = roi_size
+        self.tumor_center_prob = float(tumor_center_prob)
 
     def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
         d = dict(data)
@@ -200,7 +207,17 @@ class TumorCenterCropd:
         label_3d = label[0] if label.ndim == 4 else label
         fg = torch.nonzero(label_3d > 0, as_tuple=False)
 
-        if fg.numel() == 0:
+        use_tumor_center = fg.numel() > 0 and random.random() < self.tumor_center_prob
+
+        if not use_tumor_center:
+            center = []
+            for dim, size in zip(spatial_shape, roi):
+                if dim <= size:
+                    center.append(dim // 2)
+                else:
+                    start = random.randint(0, dim - size)
+                    center.append(start + size // 2)
+        elif fg.numel() == 0:
             center = [dim // 2 for dim in spatial_shape]
         else:
             mins = fg.min(dim=0).values
@@ -226,7 +243,7 @@ def apply_target_setup(cfg: Dict[str, Any], target: str) -> int:
     if target == "whole_tumor":
         cfg["data"]["label_mapping"] = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
         loss_cfg = cfg.setdefault("training", {}).setdefault("loss", {})
-        loss_cfg["class_weights"] = [0.05, 0.95]
+        loss_cfg["class_weights"] = [0.2, 0.8]
         return 2
 
     loss_cfg = cfg.setdefault("training", {}).setdefault("loss", {})
@@ -254,7 +271,11 @@ def build_train_transforms(cfg: Dict[str, Any]) -> Compose:
             # stays focused on the brain instead of mostly background voxels.
             CropForegroundd(keys=["image", "label"], source_key="image"),
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            TumorCenterCropd(keys=["image", "label"], roi_size=patch_size),
+            BalancedTumorCropd(
+                keys=["image", "label"],
+                roi_size=patch_size,
+                tumor_center_prob=float(cfg["patch"].get("tumor_center_prob", 0.5)),
+            ),
             SqueezeDimd(keys="label", dim=0),
         ]
     )
@@ -290,6 +311,7 @@ def main() -> None:
     num_classes = apply_target_setup(cfg, args.target)
     cfg["splits"]["train"] = {"GLI": "train"}
     cfg["patch"]["size"] = [128, 128, 128]
+    cfg.setdefault("patch", {})["tumor_center_prob"] = float(args.tumor_center_prob)
 
     if args.overfit_cases > 0:
         cfg["training"]["epochs"] = int(args.overfit_epochs) if args.overfit_epochs > 0 else 100
@@ -320,6 +342,7 @@ def main() -> None:
     print(f"Total val samples: {len(val_files)}")
     print("Training mode: FLAIR-only GLI baseline")
     print(f"Patch size: {tuple(cfg['patch']['size'])}")
+    print(f"Tumor-centered crop probability: {cfg['patch']['tumor_center_prob']}")
     print(f"Target: {args.target} (num_classes={num_classes})")
 
     checkpoint_dir = resolve_path(config_path.parent, cfg["training"]["checkpoint_dir"])
