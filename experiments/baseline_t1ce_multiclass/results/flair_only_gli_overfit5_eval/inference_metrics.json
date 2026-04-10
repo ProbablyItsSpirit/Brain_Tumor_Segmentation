@@ -1,0 +1,77 @@
+{
+  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/flair_only_gli_baseline_clean_gli_overfit5/stage_b_best.pt",
+  "num_cases": 5,
+  "mean_dice_no_bg": 0.3218596337886993,
+  "valid_count_per_class": {
+    "class_1": 0,
+    "class_2": 5,
+    "class_3": 5
+  },
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02129-106",
+      "mean_dice_no_bg": 0.3691152402025182,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.7377671599388123,
+      "dice_class_3": 0.00046332046622410417
+    },
+    {
+      "case_id": "BraTS-GLI-02844-100",
+      "mean_dice_no_bg": 0.34728680551052094,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.24459770321846008,
+      "dice_class_3": 0.4499759078025818
+    },
+    {
+      "case_id": "BraTS-GLI-02798-100",
+      "mean_dice_no_bg": 0.0613599456846714,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.04966733604669571,
+      "dice_class_3": 0.0730525553226471
+    },
+    {
+      "case_id": "BraTS-GLI-02185-100",
+      "mean_dice_no_bg": 0.27553941681981087,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.4863434433937073,
+      "dice_class_3": 0.06473539024591446
+    },
+    {
+      "case_id": "BraTS-GLI-02128-101",
+      "mean_dice_no_bg": 0.555996760725975,
+      "valid_class_count": 2,
+      "valid_count_per_class": {
+        "class_1": 0,
+        "class_2": 1,
+        "class_3": 1
+      },
+      "dice_class_1": null,
+      "dice_class_2": 0.7151436805725098,
+      "dice_class_3": 0.3968498408794403
+    }
+  ]
+}
