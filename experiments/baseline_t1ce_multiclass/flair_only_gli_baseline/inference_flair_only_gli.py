@@ -175,7 +175,7 @@ def main() -> None:
     if len(case_specs) == 0:
         raise RuntimeError("No cases found for inference.")
 
-    test_ds = Dataset(data=case_specs, transform=train_module.build_transforms(cfg))
+    test_ds = Dataset(data=case_specs, transform=train_module.build_inference_transforms(cfg))
     test_loader = DataLoader(
         test_ds,
         batch_size=1,

@@ -14,6 +14,7 @@ from monai.data import DataLoader, Dataset
 from monai.transforms import (
     CenterSpatialCropd,
     Compose,
+    CropForegroundd,
     EnsureChannelFirstd,
     EnsureTyped,
     Lambdad,
@@ -177,7 +178,7 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
     return remapped.astype(np.int64)
 
 
-def build_transforms(cfg: Dict[str, Any]) -> Compose:
+def build_train_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
     patch_size = tuple(int(x) for x in cfg["patch"]["size"])
 
@@ -193,9 +194,31 @@ def build_transforms(cfg: Dict[str, Any]) -> Compose:
             Lambdad(keys="label", func=label_mapper),
             EnsureTyped(keys="image", dtype=torch.float32),
             EnsureTyped(keys="label", dtype=torch.int64),
+            # Remove empty margins before cropping so the fixed-size training patch
+            # stays focused on the brain instead of mostly background voxels.
+            CropForegroundd(keys=["image", "label"], source_key="image"),
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
             CenterSpatialCropd(keys=["image", "label"], roi_size=patch_size),
             SqueezeDimd(keys="label", dim=0),
+        ]
+    )
+
+
+def build_inference_transforms(cfg: Dict[str, Any]) -> Compose:
+    mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
+
+    def label_mapper(lbl: Any):
+        return remap_labels(lbl, mapping)
+
+    return Compose(
+        [
+            LoadImaged(keys=["image", "label"]),
+            EnsureChannelFirstd(keys=["image", "label"]),
+            Orientationd(keys=["image", "label"], axcodes="RAS"),
+            NormalizeIntensityd(keys="image", nonzero=True, channel_wise=True),
+            Lambdad(keys="label", func=label_mapper),
+            EnsureTyped(keys="image", dtype=torch.float32),
+            EnsureTyped(keys="label", dtype=torch.int64),
         ]
     )
 
@@ -250,8 +273,8 @@ def main() -> None:
         json.dump(val_files, f, indent=2)
     print(f"Saved holdout case list: {holdout_file}")
 
-    train_transforms = build_transforms(cfg)
-    val_transforms = build_transforms(cfg)
+    train_transforms = build_train_transforms(cfg)
+    val_transforms = build_inference_transforms(cfg)
 
     train_ds = Dataset(data=train_files, transform=train_transforms)
     val_ds = Dataset(data=val_files, transform=val_transforms)

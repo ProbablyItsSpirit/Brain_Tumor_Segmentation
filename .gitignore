@@ -124,6 +124,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+brain/
 
 # Spyder project settings
 .spyderproject
@@ -183,6 +184,17 @@ experiments/Experiments.md
 experiments/baseline_t1ce_multiclass/checkpoints/
 experiments/baseline_t1ce_multiclass/predictions/
 experiments/baseline_t1ce_multiclass/outputs/
+experiments/**/predictions/
+experiments/**/visual_10/
+experiments/**/visual_debug/
+experiments/**/holdout_cases.json
+experiments/**/stage_a_latest.pt
+experiments/**/stage_b_latest.pt
+experiments/**/stage_b_best.pt
+experiments/**/stage_b_metrics_history.json
+experiments/sampling_debug_outputs/
+experiments/sampling_debug_outputs_test1/
+experiments/sampling_debug_outputs_test2/
 
 # Model and checkpoint binaries
 *.pt
