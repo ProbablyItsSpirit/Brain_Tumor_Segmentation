@@ -37,7 +37,7 @@ training:
   learning_rate: 0.0002
   epochs: 10
   val_interval: 1
-  checkpoint_dir: ../checkpoints/baseline_t1ce_multiclass/flair_only_gli_baseline
+  checkpoint_dir: ../checkpoints/flair_only_gli_baseline
   log_every: 10
   loss:
     lambda_ce: 0.5
