@@ -45,6 +45,13 @@ def parse_args() -> argparse.Namespace:
         choices=["t1c", "t2f", "t2w", "t1n"],
         help="MRI modality to display in the overlay figure",
     )
+    parser.add_argument(
+        "--target",
+        type=str,
+        default="multiclass4",
+        choices=["multiclass4", "whole_tumor"],
+        help="How to interpret labels when scoring/visualizing predictions.",
+    )
     return parser.parse_args()
 
 
@@ -98,6 +105,12 @@ def dice_no_bg(pred: np.ndarray, gt: np.ndarray, num_classes: int = 4) -> float:
     if not vals:
         return 0.0
     return float(np.mean(vals))
+
+
+def remap_for_target(arr: np.ndarray, target: str) -> np.ndarray:
+    if target == "whole_tumor":
+        return (arr > 0).astype(np.int64)
+    return arr.astype(np.int64)
 
 
 def classify_failure(pred: np.ndarray, gt: np.ndarray) -> str:
@@ -220,12 +233,13 @@ def main() -> None:
         try:
             img_path, gt_path = find_case_files(repo_root, case_id, args.modality)
             img = nib.load(str(img_path)).get_fdata()
-            gt = nib.load(str(gt_path)).get_fdata().astype(np.int64)
-            pred = np.load(pred_path).astype(np.int64)
+            gt = remap_for_target(nib.load(str(gt_path)).get_fdata(), args.target)
+            pred = remap_for_target(np.load(pred_path), args.target)
 
             img, gt, pred = align_volumes(img, gt, pred)
 
-            d = dice_no_bg(pred, gt)
+            num_classes = 2 if args.target == "whole_tumor" else 4
+            d = dice_no_bg(pred, gt, num_classes=num_classes)
             pattern = classify_failure(pred, gt)
 
             out_png = output_dir / f"{case_id}_compare.png"

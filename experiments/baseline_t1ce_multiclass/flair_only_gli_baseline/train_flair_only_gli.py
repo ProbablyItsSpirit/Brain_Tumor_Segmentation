@@ -12,7 +12,6 @@ import numpy as np
 import torch
 from monai.data import DataLoader, Dataset
 from monai.transforms import (
-    CenterSpatialCropd,
     Compose,
     CropForegroundd,
     EnsureChannelFirstd,
@@ -80,6 +79,13 @@ def parse_args() -> argparse.Namespace:
         "--reset-optimizer",
         action="store_true",
         help="If set, optimizer state from resume checkpoint is ignored",
+    )
+    parser.add_argument(
+        "--target",
+        type=str,
+        choices=["multiclass4", "whole_tumor"],
+        default="multiclass4",
+        help="multiclass4: original 4-class setup. whole_tumor: binary foreground vs background sanity baseline.",
     )
     return parser.parse_args()
 
@@ -178,6 +184,56 @@ def remap_labels(label: Any, mapping: Dict[int, int]):
     return remapped.astype(np.int64)
 
 
+class TumorCenterCropd:
+    def __init__(self, keys: List[str], roi_size: tuple[int, int, int]) -> None:
+        self.keys = keys
+        self.roi_size = roi_size
+
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        label = d["label"]
+        if not torch.is_tensor(label):
+            label = torch.as_tensor(label)
+
+        spatial_shape = tuple(int(x) for x in label.shape[-3:])
+        roi = self.roi_size
+        label_3d = label[0] if label.ndim == 4 else label
+        fg = torch.nonzero(label_3d > 0, as_tuple=False)
+
+        if fg.numel() == 0:
+            center = [dim // 2 for dim in spatial_shape]
+        else:
+            mins = fg.min(dim=0).values
+            maxs = fg.max(dim=0).values
+            center = [int(((mins[i] + maxs[i]) // 2).item()) for i in range(3)]
+
+        starts: List[int] = []
+        for dim, size, c in zip(spatial_shape, roi, center):
+            start = c - size // 2
+            start = max(0, min(start, dim - size))
+            starts.append(int(start))
+
+        z1, y1, x1 = starts
+        z2, y2, x2 = z1 + roi[0], y1 + roi[1], x1 + roi[2]
+
+        for key in self.keys:
+            arr = d[key]
+            d[key] = arr[..., z1:z2, y1:y2, x1:x2]
+        return d
+
+
+def apply_target_setup(cfg: Dict[str, Any], target: str) -> int:
+    if target == "whole_tumor":
+        cfg["data"]["label_mapping"] = {0: 0, 1: 1, 2: 1, 3: 1, 4: 1}
+        loss_cfg = cfg.setdefault("training", {}).setdefault("loss", {})
+        loss_cfg["class_weights"] = [0.05, 0.95]
+        return 2
+
+    loss_cfg = cfg.setdefault("training", {}).setdefault("loss", {})
+    loss_cfg["class_weights"] = [0.05, 0.2, 0.25, 0.5]
+    return 4
+
+
 def build_train_transforms(cfg: Dict[str, Any]) -> Compose:
     mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
     patch_size = tuple(int(x) for x in cfg["patch"]["size"])
@@ -198,7 +254,7 @@ def build_train_transforms(cfg: Dict[str, Any]) -> Compose:
             # stays focused on the brain instead of mostly background voxels.
             CropForegroundd(keys=["image", "label"], source_key="image"),
             SpatialPadd(keys=["image", "label"], spatial_size=patch_size),
-            CenterSpatialCropd(keys=["image", "label"], roi_size=patch_size),
+            TumorCenterCropd(keys=["image", "label"], roi_size=patch_size),
             SqueezeDimd(keys="label", dim=0),
         ]
     )
@@ -231,7 +287,7 @@ def main() -> None:
     cfg = tb.load_config(config_path)
     tb.apply_local_path_overrides(cfg, config_path.parent)
 
-    num_classes = tb.apply_label_setup(cfg, "4c")
+    num_classes = apply_target_setup(cfg, args.target)
     cfg["splits"]["train"] = {"GLI": "train"}
     cfg["patch"]["size"] = [128, 128, 128]
 
@@ -264,7 +320,7 @@ def main() -> None:
     print(f"Total val samples: {len(val_files)}")
     print("Training mode: FLAIR-only GLI baseline")
     print(f"Patch size: {tuple(cfg['patch']['size'])}")
-    print(f"Label setup: 4c (num_classes={num_classes})")
+    print(f"Target: {args.target} (num_classes={num_classes})")
 
     checkpoint_dir = resolve_path(config_path.parent, cfg["training"]["checkpoint_dir"])
     checkpoint_dir.mkdir(parents=True, exist_ok=True)

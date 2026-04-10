@@ -62,6 +62,13 @@ def parse_args() -> argparse.Namespace:
         default=0,
         help="Optional cap on number of cases to run (0 means all)",
     )
+    parser.add_argument(
+        "--target",
+        type=str,
+        choices=["multiclass4", "whole_tumor"],
+        default="multiclass4",
+        help="Must match the target used during training.",
+    )
     return parser.parse_args()
 
 
@@ -156,8 +163,8 @@ def main() -> None:
     tb = train_module.load_train_b_module()
     cfg = load_config(config_path)
     tb.apply_local_path_overrides(cfg, config_path.parent)
-    num_classes = tb.apply_label_setup(cfg, "4c")
-    print(f"Label setup: 4c (num_classes={num_classes})")
+    num_classes = train_module.apply_target_setup(cfg, args.target)
+    print(f"Target: {args.target} (num_classes={num_classes})")
 
     output_dir = Path(args.output_dir)
     if not output_dir.is_absolute():
