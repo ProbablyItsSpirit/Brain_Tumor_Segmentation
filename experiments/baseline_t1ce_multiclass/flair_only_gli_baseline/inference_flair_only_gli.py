@@ -111,6 +111,38 @@ def load_checkpoint(model: UNet, checkpoint_path: Path, device: torch.device) ->
         model.load_state_dict(state)
 
 
+def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> tuple[float | None, bool]:
+    pred_c = (pred == class_id).float()
+    target_c = (target == class_id).float()
+    target_sum = target_c.sum()
+    if target_sum.item() == 0:
+        return None, False
+
+    denominator = pred_c.sum() + target_sum
+    intersection = (pred_c * target_c).sum()
+    return float((2.0 * intersection / denominator).item()), True
+
+
+def compute_case_metrics(pred: torch.Tensor, target: torch.Tensor, num_classes: int = 4) -> Dict[str, Any]:
+    per_class: Dict[str, Any] = {}
+    valid_count_per_class: Dict[str, int] = {}
+    class_values: List[float] = []
+    for class_id in range(1, num_classes):
+        d, is_valid = dice_for_class(pred, target, class_id)
+        per_class[f"dice_class_{class_id}"] = None if d is None else d
+        valid_count_per_class[f"class_{class_id}"] = 1 if is_valid else 0
+        if is_valid and d is not None:
+            class_values.append(d)
+
+    mean_dice_no_bg = float(np.mean(class_values)) if class_values else 0.0
+    return {
+        "mean_dice_no_bg": mean_dice_no_bg,
+        "valid_class_count": len(class_values),
+        "valid_count_per_class": valid_count_per_class,
+        **per_class,
+    }
+
+
 def main() -> None:
     args = parse_args()
     config_path = Path(args.config).resolve()
@@ -183,7 +215,7 @@ def main() -> None:
                 pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
                 np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
-            metrics = tb.compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
+            metrics = compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
             for key, value in metrics.get("valid_count_per_class", {}).items():
                 support_sums[key] = support_sums.get(key, 0) + int(value)
             all_case_metrics.append({"case_id": case_id, **metrics})
