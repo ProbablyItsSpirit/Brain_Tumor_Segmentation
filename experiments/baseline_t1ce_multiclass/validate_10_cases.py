@@ -119,6 +119,34 @@ def classify_failure(pred: np.ndarray, gt: np.ndarray) -> str:
     return "noisy blobs"
 
 
+def center_crop_to_shape(arr: np.ndarray, target_shape: Tuple[int, int, int]) -> np.ndarray:
+    slices = []
+    for dim, tgt in zip(arr.shape, target_shape):
+        if dim <= tgt:
+            start = 0
+            end = dim
+        else:
+            start = (dim - tgt) // 2
+            end = start + tgt
+        slices.append(slice(start, end))
+    return arr[tuple(slices)]
+
+
+def align_volumes(img: np.ndarray, gt: np.ndarray, pred: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    # Align all three volumes to a common center-cropped shape so validation can run
+    # even when predictions were generated on patch-sized tensors.
+    common_shape = (
+        min(img.shape[0], gt.shape[0], pred.shape[0]),
+        min(img.shape[1], gt.shape[1], pred.shape[1]),
+        min(img.shape[2], gt.shape[2], pred.shape[2]),
+    )
+    return (
+        center_crop_to_shape(img, common_shape),
+        center_crop_to_shape(gt, common_shape),
+        center_crop_to_shape(pred, common_shape),
+    )
+
+
 def save_case_figure(case_id: str, img: np.ndarray, gt: np.ndarray, pred: np.ndarray, out_png: Path, modality: str) -> None:
     z = choose_slice(gt, pred)
 
@@ -194,6 +222,8 @@ def main() -> None:
             img = nib.load(str(img_path)).get_fdata()
             gt = nib.load(str(gt_path)).get_fdata().astype(np.int64)
             pred = np.load(pred_path).astype(np.int64)
+
+            img, gt, pred = align_volumes(img, gt, pred)
 
             d = dice_no_bg(pred, gt)
             pattern = classify_failure(pred, gt)
