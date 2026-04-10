@@ -1,0 +1,32 @@
+[
+  {
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02904-101/BraTS-GLI-02904-101-t2f.nii.gz",
+    "label": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02904-101/BraTS-GLI-02904-101-seg.nii.gz",
+    "dataset": "GLI",
+    "case_id": "BraTS-GLI-02904-101"
+  },
+  {
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02246-101/BraTS-GLI-02246-101-t2f.nii.gz",
+    "label": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02246-101/BraTS-GLI-02246-101-seg.nii.gz",
+    "dataset": "GLI",
+    "case_id": "BraTS-GLI-02246-101"
+  },
+  {
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-03005-100/BraTS-GLI-03005-100-t2f.nii.gz",
+    "label": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-03005-100/BraTS-GLI-03005-100-seg.nii.gz",
+    "dataset": "GLI",
+    "case_id": "BraTS-GLI-03005-100"
+  },
+  {
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02362-100/BraTS-GLI-02362-100-t2f.nii.gz",
+    "label": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02362-100/BraTS-GLI-02362-100-seg.nii.gz",
+    "dataset": "GLI",
+    "case_id": "BraTS-GLI-02362-100"
+  },
+  {
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02639-100/BraTS-GLI-02639-100-t2f.nii.gz",
+    "label": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-GLI/train/BraTS-GLI-02639-100/BraTS-GLI-02639-100-seg.nii.gz",
+    "dataset": "GLI",
+    "case_id": "BraTS-GLI-02639-100"
+  }
+]
