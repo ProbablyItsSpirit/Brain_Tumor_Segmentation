@@ -1,4 +1,0 @@
-. filter=lfs diff=lfs merge=lfs -text
-all filter=lfs diff=lfs merge=lfs -text
-stage_b_best.pt filter=lfs diff=lfs merge=lfs -text
-stage_b_latest.pt filter=lfs diff=lfs merge=lfs -text
