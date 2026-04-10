@@ -38,14 +38,21 @@ def parse_args() -> argparse.Namespace:
         default=10,
         help="How many cases to validate when --cases is not provided",
     )
+    parser.add_argument(
+        "--modality",
+        type=str,
+        default="t1c",
+        choices=["t1c", "t2f", "t2w", "t1n"],
+        help="MRI modality to display in the overlay figure",
+    )
     return parser.parse_args()
 
 
-def find_case_files(repo_root: Path, case_id: str) -> Tuple[Path, Path]:
+def find_case_files(repo_root: Path, case_id: str, modality: str) -> Tuple[Path, Path]:
     dataset_specs = [
-        ("BraTS-GLI", "-t1c.nii.gz", "-seg.nii.gz"),
-        ("BraTS-PED", "-t1c.nii.gz", "-seg.nii.gz"),
-        ("BraTS-MEN-RT", "_t1c.nii.gz", "_gtv.nii.gz"),
+        ("BraTS-GLI", f"-{modality}.nii.gz", "-seg.nii.gz"),
+        ("BraTS-PED", f"-{modality}.nii.gz", "-seg.nii.gz"),
+        ("BraTS-MEN-RT", f"_{modality}.nii.gz", "_gtv.nii.gz"),
     ]
 
     for dataset_name, image_suffix, label_suffix in dataset_specs:
@@ -112,7 +119,7 @@ def classify_failure(pred: np.ndarray, gt: np.ndarray) -> str:
     return "noisy blobs"
 
 
-def save_case_figure(case_id: str, img: np.ndarray, gt: np.ndarray, pred: np.ndarray, out_png: Path) -> None:
+def save_case_figure(case_id: str, img: np.ndarray, gt: np.ndarray, pred: np.ndarray, out_png: Path, modality: str) -> None:
     z = choose_slice(gt, pred)
 
     img2d = img[:, :, z]
@@ -126,7 +133,7 @@ def save_case_figure(case_id: str, img: np.ndarray, gt: np.ndarray, pred: np.nda
     fig, ax = plt.subplots(1, 4, figsize=(20, 5))
 
     ax[0].imshow(img2d, cmap="gray")
-    ax[0].set_title("T1ce")
+    ax[0].set_title(modality.upper())
     ax[0].axis("off")
 
     ax[1].imshow(img2d, cmap="gray")
@@ -183,7 +190,7 @@ def main() -> None:
             continue
 
         try:
-            img_path, gt_path = find_case_files(repo_root, case_id)
+            img_path, gt_path = find_case_files(repo_root, case_id, args.modality)
             img = nib.load(str(img_path)).get_fdata()
             gt = nib.load(str(gt_path)).get_fdata().astype(np.int64)
             pred = np.load(pred_path).astype(np.int64)
@@ -192,7 +199,7 @@ def main() -> None:
             pattern = classify_failure(pred, gt)
 
             out_png = output_dir / f"{case_id}_compare.png"
-            save_case_figure(case_id, img, gt, pred, out_png)
+            save_case_figure(case_id, img, gt, pred, out_png, args.modality)
 
             results.append(
                 {
