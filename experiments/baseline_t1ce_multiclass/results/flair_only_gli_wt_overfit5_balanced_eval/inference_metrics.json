@@ -1,0 +1,55 @@
+{
+  "checkpoint": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/checkpoints/flair_only_gli_baseline_wt_overfit5_balanced/stage_b_best.pt",
+  "num_cases": 5,
+  "mean_dice_no_bg": 0.4878506623208523,
+  "valid_count_per_class": {
+    "class_1": 5
+  },
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02129-106",
+      "mean_dice_no_bg": 0.810802698135376,
+      "valid_class_count": 1,
+      "valid_count_per_class": {
+        "class_1": 1
+      },
+      "dice_class_1": 0.810802698135376
+    },
+    {
+      "case_id": "BraTS-GLI-02844-100",
+      "mean_dice_no_bg": 0.17550617456436157,
+      "valid_class_count": 1,
+      "valid_count_per_class": {
+        "class_1": 1
+      },
+      "dice_class_1": 0.17550617456436157
+    },
+    {
+      "case_id": "BraTS-GLI-02798-100",
+      "mean_dice_no_bg": 0.03945712372660637,
+      "valid_class_count": 1,
+      "valid_count_per_class": {
+        "class_1": 1
+      },
+      "dice_class_1": 0.03945712372660637
+    },
+    {
+      "case_id": "BraTS-GLI-02185-100",
+      "mean_dice_no_bg": 0.7176790833473206,
+      "valid_class_count": 1,
+      "valid_count_per_class": {
+        "class_1": 1
+      },
+      "dice_class_1": 0.7176790833473206
+    },
+    {
+      "case_id": "BraTS-GLI-02128-101",
+      "mean_dice_no_bg": 0.6958082318305969,
+      "valid_class_count": 1,
+      "valid_count_per_class": {
+        "class_1": 1
+      },
+      "dice_class_1": 0.6958082318305969
+    }
+  ]
+}
