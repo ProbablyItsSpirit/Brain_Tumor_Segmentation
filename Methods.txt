@@ -1,0 +1,42 @@
+Methods tried so far
+
+1. FLAIR-only GLI baseline
+- Dataset: BraTS-GLI only
+- Modality: FLAIR / T2f only
+- Result: weak predictions, noisy blobs, low Dice
+- Example metric: mean Dice about 0.32 on 5 cases
+
+2. FLAIR-only GLI + WT overfit variant
+- Dataset: BraTS-GLI only
+- Modality: FLAIR / T2f only
+- Region setup: WT-focused variant
+- Result: still unstable, noisy outputs
+
+3. Mixed strict multimodal GLI + PED attempt
+- Dataset: GLI + PED
+- Modalities: multimodal strict pipeline
+- Result: poor validation, mean Dice about 0.11 on 10 cases
+- Notes: indicates pipeline/label/config mismatch for that setup
+
+4. Strict multimodal GLI + PED with better checkpoint
+- Dataset: GLI + PED
+- Modalities: strict multimodal pipeline
+- Result: best recorded mean Dice about 0.72 on 10 cases
+- Case examples included high values like ~0.92 on some GLI cases
+
+5. Overfit smoke test on tiny subset
+- Dataset: 2 cases
+- Epochs: 1
+- Result: pipeline reached training successfully after label transform fix
+- Mean Dice was very low at first (~0.01), confirming it was only a smoke test
+
+6. Current reset direction
+- Dataset: GLI only first
+- Modalities: T1ce + T2 + FLAIR
+- Labels: binary first, then region-based later
+- Goal: simple working pipeline that can overfit 20 cases before any advanced techniques
+
+Notes
+- MEN was not the right target for the early baseline
+- Fancy techniques were intentionally deferred
+- Overfit test on 20 cases / 60 epochs is the current required validation step
