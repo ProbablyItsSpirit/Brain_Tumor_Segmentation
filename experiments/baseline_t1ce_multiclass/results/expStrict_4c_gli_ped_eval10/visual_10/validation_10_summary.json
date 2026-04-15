@@ -1,0 +1,102 @@
+[
+  {
+    "case_id": "BraTS-PED-00043-000",
+    "status": "ok",
+    "dice_no_bg": 0.2699658781099788,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00043-000/BraTS-PED-00043-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00043-000/BraTS-PED-00043-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00043-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00043-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00068-000",
+    "status": "ok",
+    "dice_no_bg": 0.00013869865982419946,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00068-000/BraTS-PED-00068-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00068-000/BraTS-PED-00068-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00068-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00068-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00085-000",
+    "status": "ok",
+    "dice_no_bg": 0.012162353273935793,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00085-000/BraTS-PED-00085-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00085-000/BraTS-PED-00085-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00085-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00085-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00102-000",
+    "status": "ok",
+    "dice_no_bg": 0.0,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00102-000/BraTS-PED-00102-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00102-000/BraTS-PED-00102-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00102-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00102-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00124-000",
+    "status": "ok",
+    "dice_no_bg": 0.2961296434129508,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00124-000/BraTS-PED-00124-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00124-000/BraTS-PED-00124-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00124-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00124-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00148-000",
+    "status": "ok",
+    "dice_no_bg": 0.26685736413401345,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00148-000/BraTS-PED-00148-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00148-000/BraTS-PED-00148-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00148-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00148-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00195-000",
+    "status": "ok",
+    "dice_no_bg": 0.09297867811706131,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00195-000/BraTS-PED-00195-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00195-000/BraTS-PED-00195-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00195-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00195-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00221-000",
+    "status": "ok",
+    "dice_no_bg": 0.012660428969843701,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00221-000/BraTS-PED-00221-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00221-000/BraTS-PED-00221-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00221-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00221-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00252-000",
+    "status": "ok",
+    "dice_no_bg": 0.26429418249131637,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00252-000/BraTS-PED-00252-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00252-000/BraTS-PED-00252-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00252-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00252-000_compare.png"
+  },
+  {
+    "case_id": "BraTS-PED-00253-000",
+    "status": "ok",
+    "dice_no_bg": 0.0,
+    "failure_pattern": "noisy blobs",
+    "image": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00253-000/BraTS-PED-00253-000-t1c.nii.gz",
+    "gt": "/home/faculty1/Brain_Tumor_Segmentation/BraTS-2024-Complete/BraTS-PED/train/BraTS-PED-00253-000/BraTS-PED-00253-000-seg.nii.gz",
+    "pred": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/predictions/BraTS-PED-00253-000_pred.npy",
+    "png": "/home/faculty1/Brain_Tumor_Segmentation/experiments/baseline_t1ce_multiclass/results/expStrict_4c_gli_ped_eval10/visual_10/BraTS-PED-00253-000_compare.png"
+  }
+]
