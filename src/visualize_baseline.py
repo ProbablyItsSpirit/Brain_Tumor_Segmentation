@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint", type=str, required=True)
     parser.add_argument("--split", type=str, choices=["train", "val"], default="train")
     parser.add_argument("--case-index", type=int, default=0)
+    parser.add_argument("--num-cases", type=int, default=5)
     parser.add_argument("--output-dir", type=str, default="results/clean_gli_binary_baseline/visuals")
     parser.add_argument("--patch-size", type=int, nargs=3, default=[96, 96, 96])
     return parser.parse_args()
@@ -41,20 +42,9 @@ def main() -> None:
     cases = train_cases if args.split == "train" else val_cases
     if not cases:
         raise RuntimeError("No cases available for visualization.")
-    case = cases[min(args.case_index, len(cases) - 1)]
-
-    ds = Dataset(
-        data=[case],
-        transform=build_transforms(
-            modalities=cfg.modalities,
-            patch_size=cfg.patch_size,
-            min_fg_ratio=cfg.min_fg_ratio,
-            max_tries=cfg.max_sample_tries,
-            margin=cfg.tumor_margin,
-            training=False,
-        ),
-    )
-    loader = DataLoader(ds, batch_size=1, shuffle=False, num_workers=0)
+    start_index = max(0, args.case_index)
+    end_index = min(len(cases), start_index + max(1, args.num_cases))
+    selected_cases = cases[start_index:end_index]
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(in_channels=3, out_channels=2).to(device)
@@ -71,30 +61,48 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     with torch.no_grad():
-        batch = next(iter(loader))
-        image = batch["image"].to(device)
-        label = batch["label"].cpu().numpy()[0, 0]
+        for case in selected_cases:
+            case_loader = DataLoader(
+                Dataset(
+                    data=[case],
+                    transform=build_transforms(
+                        modalities=cfg.modalities,
+                        patch_size=cfg.patch_size,
+                        min_fg_ratio=cfg.min_fg_ratio,
+                        max_tries=cfg.max_sample_tries,
+                        margin=cfg.tumor_margin,
+                        training=False,
+                    ),
+                ),
+                batch_size=1,
+                shuffle=False,
+                num_workers=0,
+            )
 
-        logits = sliding_window_inference(image, tuple(cfg.patch_size), 1, model, overlap=0.25)
-        pred = torch.argmax(torch.softmax(logits, dim=1), dim=1).cpu().numpy()[0]
+            batch = next(iter(case_loader))
+            image = batch["image"].to(device)
+            label = batch["label"].cpu().numpy()[0, 0]
 
-    mid = pick_slice(label)
-    fig, axes = plt.subplots(1, 3, figsize=(12, 4), dpi=160)
-    title = case.get("case_id", "case") if isinstance(case, dict) else "case"
-    axes[0].imshow(image[0, 0, mid].detach().cpu().numpy(), cmap="gray")
-    axes[0].set_title("T1ce")
-    axes[1].imshow(label[mid], cmap="magma", vmin=0, vmax=1)
-    axes[1].set_title("Ground Truth")
-    axes[2].imshow(pred[mid], cmap="magma", vmin=0, vmax=1)
-    axes[2].set_title("Prediction")
-    for axis in axes:
-        axis.axis("off")
-    fig.suptitle(str(title))
-    fig.tight_layout()
-    fig.savefig(out_dir / f"{title}_slice{mid}.png")
-    plt.close(fig)
+            logits = sliding_window_inference(image, tuple(cfg.patch_size), 1, model, overlap=0.25)
+            pred = torch.argmax(torch.softmax(logits, dim=1), dim=1).cpu().numpy()[0]
 
-    print(f"Saved visualization to: {out_dir}")
+            mid = pick_slice(label)
+            fig, axes = plt.subplots(1, 3, figsize=(12, 4), dpi=160)
+            title = case.get("case_id", "case") if isinstance(case, dict) else "case"
+            axes[0].imshow(image[0, 0, mid].detach().cpu().numpy(), cmap="gray")
+            axes[0].set_title("T1ce")
+            axes[1].imshow(label[mid], cmap="magma", vmin=0, vmax=1)
+            axes[1].set_title("Ground Truth")
+            axes[2].imshow(pred[mid], cmap="magma", vmin=0, vmax=1)
+            axes[2].set_title("Prediction")
+            for axis in axes:
+                axis.axis("off")
+            fig.suptitle(str(title))
+            fig.tight_layout()
+            fig.savefig(out_dir / f"{title}_slice{mid}.png")
+            plt.close(fig)
+
+            print(f"Saved visualization for {title} to: {out_dir}")
 
 
 if __name__ == "__main__":
