@@ -27,6 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--weight-decay", type=float, default=1e-5)
     parser.add_argument("--epochs", type=int, default=125, help="Epochs for full training")
     parser.add_argument("--val-ratio", type=float, default=0.1, help="Validation split ratio used only when val list is empty")
+    parser.add_argument("--val-interval", type=int, default=5, help="Run validation every N epochs")
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
@@ -125,6 +126,7 @@ def main() -> None:
 
     history = []
     best_dice = -1.0
+    last_val_dice = 0.0
 
     for epoch in range(1, num_epochs + 1):
         model.train()
@@ -145,25 +147,29 @@ def main() -> None:
 
         epoch_loss /= max(steps, 1)
 
-        model.eval()
-        dice_scores = []
-        with torch.no_grad():
-            for batch in val_loader:
-                image = batch["image"].to(device)
-                label = batch["label"].to(device)
-                logits = sliding_window_inference(image, cfg.patch_size, 1, model, overlap=0.25)
-                probs = torch.softmax(logits, dim=1)
-                pred = torch.argmax(probs, dim=1, keepdim=True)
-                dice_scores.append(dice_binary(pred.float(), label.float()))
+        run_val = (epoch % max(1, args.val_interval) == 0) or (epoch == num_epochs)
+        if run_val:
+            model.eval()
+            dice_scores = []
+            with torch.no_grad():
+                for batch in val_loader:
+                    image = batch["image"].to(device)
+                    label = batch["label"].to(device)
+                    logits = sliding_window_inference(image, cfg.patch_size, 1, model, overlap=0.25)
+                    probs = torch.softmax(logits, dim=1)
+                    pred = torch.argmax(probs, dim=1, keepdim=True)
+                    dice_scores.append(dice_binary(pred.float(), label.float()))
 
-        mean_dice = float(np.mean(dice_scores)) if dice_scores else 0.0
-        history.append({"epoch": epoch, "loss": epoch_loss, "dice": mean_dice})
+            last_val_dice = float(np.mean(dice_scores)) if dice_scores else 0.0
+            if last_val_dice > best_dice:
+                best_dice = last_val_dice
+                torch.save(model.state_dict(), cfg.checkpoint_dir / "best.pt")
 
-        if mean_dice > best_dice:
-            best_dice = mean_dice
-            torch.save(model.state_dict(), cfg.checkpoint_dir / "best.pt")
+            print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | val_dice={last_val_dice:.4f}")
+        else:
+            print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | val_dice=skip")
 
-        print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | dice={mean_dice:.4f}")
+        history.append({"epoch": epoch, "loss": epoch_loss, "dice": last_val_dice, "validated": run_val})
 
     torch.save(model.state_dict(), cfg.checkpoint_dir / "last.pt")
     with (cfg.checkpoint_dir / "history.json").open("w", encoding="utf-8") as f:
