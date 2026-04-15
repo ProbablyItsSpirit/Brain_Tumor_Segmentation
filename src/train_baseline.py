@@ -26,6 +26,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-5)
     parser.add_argument("--epochs", type=int, default=125, help="Epochs for full training")
+    parser.add_argument("--val-ratio", type=float, default=0.1, help="Validation split ratio used only when val list is empty")
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
@@ -59,6 +60,24 @@ def main() -> None:
         mode_str = f"OVERFIT ({args.overfit_cases} cases, {args.overfit_epochs} epochs)"
     else:
         # Full training on all available cases
+        if len(val_cases) == 0:
+            if len(train_cases) < 2:
+                raise RuntimeError("Need at least 2 training cases to create a validation split.")
+            rng = np.random.default_rng(cfg.seed)
+            perm = rng.permutation(len(train_cases))
+            val_count = max(1, int(len(train_cases) * args.val_ratio))
+            val_idx = set(perm[:val_count].tolist())
+            split_train = []
+            split_val = []
+            for i, case in enumerate(train_cases):
+                if i in val_idx:
+                    split_val.append(case)
+                else:
+                    split_train.append(case)
+            train_cases = split_train
+            val_cases = split_val
+            print(f"Val list empty: created split with {len(train_cases)} train / {len(val_cases)} val cases")
+
         num_epochs = args.epochs
         mode_str = f"FULL TRAINING ({len(train_cases)} cases, {args.epochs} epochs)"
 
@@ -144,8 +163,7 @@ def main() -> None:
             best_dice = mean_dice
             torch.save(model.state_dict(), cfg.checkpoint_dir / "best.pt")
 
-        if epoch % 5 == 0 or epoch == num_epochs:
-            print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | dice={mean_dice:.4f}")
+        print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | dice={mean_dice:.4f}")
 
     torch.save(model.state_dict(), cfg.checkpoint_dir / "last.pt")
     with (cfg.checkpoint_dir / "history.json").open("w", encoding="utf-8") as f:
