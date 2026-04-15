@@ -58,7 +58,10 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(in_channels=3, out_channels=2).to(device)
-    state = torch.load(Path(args.checkpoint), map_location=device)
+    checkpoint_path = Path(args.checkpoint)
+    if not checkpoint_path.is_absolute():
+        checkpoint_path = (cfg.repo_root / checkpoint_path).resolve()
+    state = torch.load(checkpoint_path, map_location=device)
     model.load_state_dict(state)
     model.eval()
 
