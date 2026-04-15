@@ -18,13 +18,14 @@ from transforms import build_transforms
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Clean GLI-only binary baseline")
-    parser.add_argument("--overfit-cases", type=int, default=20)
-    parser.add_argument("--overfit-epochs", type=int, default=60)
+    parser = argparse.ArgumentParser(description="GLI binary baseline trainer")
+    parser.add_argument("--overfit-cases", type=int, default=0, help="If > 0, use only this many cases for debugging")
+    parser.add_argument("--overfit-epochs", type=int, default=60, help="Epochs for overfit mode")
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--patch-size", type=int, nargs=3, default=[96, 96, 96])
-    parser.add_argument("--learning-rate", type=float, default=2e-4)
-    parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument("--learning-rate", type=float, default=1e-4)
+    parser.add_argument("--weight-decay", type=float, default=1e-5)
+    parser.add_argument("--epochs", type=int, default=125, help="Epochs for full training")
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
@@ -44,20 +45,30 @@ def main() -> None:
     cfg.patch_size = tuple(args.patch_size)
     cfg.learning_rate = args.learning_rate
     cfg.weight_decay = args.weight_decay
-    cfg.overfit_cases = args.overfit_cases
-    cfg.overfit_epochs = args.overfit_epochs
     cfg.seed = args.seed
 
     set_determinism(seed=cfg.seed)
 
     train_cases, val_cases = load_gli_splits(cfg.repo_root, cfg.data_root, cfg.train_list, cfg.val_list)
-    train_cases = train_cases[: cfg.overfit_cases]
-    val_cases = train_cases.copy()
+    
+    # Handle overfit mode (small training set for debugging)
+    if args.overfit_cases > 0:
+        train_cases = train_cases[: args.overfit_cases]
+        val_cases = train_cases.copy()
+        num_epochs = args.overfit_epochs
+        mode_str = f"OVERFIT ({args.overfit_cases} cases, {args.overfit_epochs} epochs)"
+    else:
+        # Full training on all available cases
+        num_epochs = args.epochs
+        mode_str = f"FULL TRAINING ({len(train_cases)} cases, {args.epochs} epochs)"
 
+    print(f"Mode: {mode_str}")
     print(f"Train cases: {len(train_cases)} | Val cases: {len(val_cases)}")
-    print(f"Modalities: {cfg.modalities}")
+    print(f"Modalities: {cfg.modalities} (4 channels)")
     print(f"Patch size: {cfg.patch_size}")
+    print(f"LR: {cfg.learning_rate} | Weight decay: {cfg.weight_decay}")
     print("Label setup: binary tumor vs background")
+    print()
 
     train_ds = Dataset(
         data=train_cases,
@@ -86,7 +97,7 @@ def main() -> None:
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=cfg.num_workers)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(in_channels=3, out_channels=2).to(device)
+    model = build_model(in_channels=4, out_channels=2).to(device)
     loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
 
@@ -96,7 +107,7 @@ def main() -> None:
     history = []
     best_dice = -1.0
 
-    for epoch in range(1, cfg.overfit_epochs + 1):
+    for epoch in range(1, num_epochs + 1):
         model.train()
         epoch_loss = 0.0
         steps = 0
@@ -133,13 +144,14 @@ def main() -> None:
             best_dice = mean_dice
             torch.save(model.state_dict(), cfg.checkpoint_dir / "best.pt")
 
-        print(f"Epoch {epoch:03d} | loss={epoch_loss:.4f} | dice={mean_dice:.4f}")
+        if epoch % 5 == 0 or epoch == num_epochs:
+            print(f"Epoch {epoch:03d}/{num_epochs} | loss={epoch_loss:.4f} | dice={mean_dice:.4f}")
 
     torch.save(model.state_dict(), cfg.checkpoint_dir / "last.pt")
     with (cfg.checkpoint_dir / "history.json").open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
-    print(f"Best Dice: {best_dice:.4f}")
+    print(f"\nBest Dice: {best_dice:.4f}")
     print(f"Checkpoint dir: {cfg.checkpoint_dir}")
 
 

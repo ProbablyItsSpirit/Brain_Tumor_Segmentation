@@ -11,21 +11,21 @@ class BaselineConfig:
     data_root: Path = Path("BraTS-2024-Complete/BraTS-GLI")
     train_list: Path = Path("patient_lists/gli_train.txt")
     val_list: Path = Path("patient_lists/gli_val.txt")
-    modalities: List[str] = field(default_factory=lambda: ["t1c", "t2w", "t2f"])
+    modalities: List[str] = field(default_factory=lambda: ["t1n", "t1c", "t2w", "t2f"])
     batch_size: int = 1
     num_workers: int = 0
     patch_size: tuple[int, int, int] = (96, 96, 96)
-    learning_rate: float = 2e-4
-    weight_decay: float = 1e-4
-    epochs: int = 60
+    learning_rate: float = 1e-4
+    weight_decay: float = 1e-5
+    epochs: int = 125
     val_interval: int = 1
     overfit_cases: int = 20
     overfit_epochs: int = 60
     min_fg_ratio: float = 0.02
     max_sample_tries: int = 30
     tumor_margin: int = 24
-    checkpoint_dir: Path = Path("checkpoints/clean_gli_binary_baseline")
-    results_dir: Path = Path("results/clean_gli_binary_baseline")
+    checkpoint_dir: Path = Path("checkpoints/gli_4mod_binary_full")
+    results_dir: Path = Path("results/gli_4mod_binary_full")
     seed: int = 42
 
     def resolve(self) -> "BaselineConfig":

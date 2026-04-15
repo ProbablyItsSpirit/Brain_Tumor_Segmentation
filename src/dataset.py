@@ -37,6 +37,7 @@ def build_gli_case_dicts(repo_root: Path, data_root: Path, list_path: Path) -> L
 
         sample = {
             "case_id": case_id,
+            "image_t1n": str(case_dir / f"{case_id}-t1n.nii.gz"),
             "image_t1c": str(case_dir / f"{case_id}-t1c.nii.gz"),
             "image_t2w": str(case_dir / f"{case_id}-t2w.nii.gz"),
             "image_t2f": str(case_dir / f"{case_id}-t2f.nii.gz"),

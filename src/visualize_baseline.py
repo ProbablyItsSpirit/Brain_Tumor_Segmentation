@@ -47,7 +47,7 @@ def main() -> None:
     selected_cases = cases[start_index:end_index]
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(in_channels=3, out_channels=2).to(device)
+    model = build_model(in_channels=4, out_channels=2).to(device)
     checkpoint_path = Path(args.checkpoint)
     if not checkpoint_path.is_absolute():
         checkpoint_path = (cfg.repo_root / checkpoint_path).resolve()

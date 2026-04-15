@@ -4,7 +4,11 @@ from typing import Any, Dict, Sequence
 
 import numpy as np
 import torch
-from monai.transforms import Compose, EnsureChannelFirstd, EnsureTyped, LoadImaged, NormalizeIntensityd
+from monai.transforms import (
+    Compose, EnsureChannelFirstd, EnsureTyped, LoadImaged,
+    RandFlipd, RandRotate90d, RandAffined, RandGaussianNoised,
+    RandIntensityShiftd,
+)
 
 
 class BinaryLabeld:
@@ -24,6 +28,32 @@ class BinaryLabeld:
             if arr.ndim >= 4 and arr.shape[0] == 1:
                 arr = np.squeeze(arr, axis=0)
             d[self.key] = (arr > 0).astype(np.int64)[None, ...]
+        return d
+
+
+class ZScoreNormalizeModalitiesd:
+    """Z-score normalize each modality independently."""
+    def __init__(self, keys: Sequence[str]):
+        self.keys = list(keys)
+
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        for key in self.keys:
+            img = d[key]
+            if torch.is_tensor(img):
+                img = img.float()
+            else:
+                img = torch.tensor(img, dtype=torch.float32)
+            
+            # Compute mean and std for this modality
+            mask = img > 0  # Ignore background
+            if mask.sum() > 0:
+                mean = img[mask].mean()
+                std = img[mask].std()
+                if std > 1e-6:
+                    img = (img - mean) / (std + 1e-6)
+            
+            d[key] = img
         return d
 
 
@@ -136,7 +166,7 @@ def build_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_f
     ops = [
         LoadImaged(keys=keys),
         EnsureChannelFirstd(keys=keys),
-        NormalizeIntensityd(keys=image_keys, nonzero=True, channel_wise=True),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
         BinaryLabeld(key="label"),
         EnsureTyped(keys=image_keys, dtype=torch.float32),
         EnsureTyped(keys="label", dtype=torch.float32),
@@ -144,7 +174,7 @@ def build_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_f
     ]
 
     if training:
-        ops.append(
+        ops.extend([
             TumorCenteredCropd(
                 image_key="image",
                 label_key="label",
@@ -152,7 +182,20 @@ def build_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_f
                 min_fg_ratio=min_fg_ratio,
                 max_tries=max_tries,
                 margin=margin,
-            )
-        )
+            ),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
+            RandRotate90d(keys=["image", "label"], prob=0.5, max_k=3),
+            RandAffined(
+                keys=["image", "label"],
+                prob=0.5,
+                rotate_range=(np.pi / 12, np.pi / 12, np.pi / 12),
+                translate_range=(10, 10, 5),
+                scale_range=(0.1, 0.1, 0.1),
+                mode=("bilinear", "nearest"),
+            ),
+            RandIntensityShiftd(keys="image", factors=0.1, prob=0.5),
+        ])
 
     return Compose(ops)
