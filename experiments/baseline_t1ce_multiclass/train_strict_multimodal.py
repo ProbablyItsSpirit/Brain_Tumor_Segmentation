@@ -1,271 +1,49 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
-import random
+import sys
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, Sequence
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+import yaml
 from monai.data import DataLoader, Dataset
+from monai.inferers import sliding_window_inference
+from monai.losses import DiceLoss, FocalLoss
 from monai.networks.nets import UNet
-from monai.transforms import (
-    Compose,
-    EnsureChannelFirstd,
-    EnsureTyped,
-    Lambdad,
-    LoadImaged,
-    NormalizeIntensityd,
-    Orientationd,
-    SqueezeDimd,
-)
+from monai.transforms import Compose, EnsureChannelFirstd, EnsureTyped, LoadImaged, NormalizeIntensityd, Orientationd
 from monai.utils import set_determinism
 
-
-MODALITIES = ["t1c", "t2w", "t2f"]
-DATASET_IMAGE_SUFFIXES = {
-    "GLI": {
-        "t1c": "-t1c.nii.gz",
-        "t2w": "-t2w.nii.gz",
-        "t2f": "-t2f.nii.gz",
-    },
-    "PED": {
-        "t1c": "-t1c.nii.gz",
-        "t2w": "-t2w.nii.gz",
-        "t2f": "-t2f.nii.gz",
-    },
-}
-
-
-def load_train_b_module():
-    this_file = Path(__file__).resolve()
-    train_b_path = this_file.with_name("train_B.py")
-    spec = importlib.util.spec_from_file_location("train_B_module", train_b_path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Failed to load module from {train_b_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+from dataset_loader import build_case_list, region_channels_from_label
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Strict multimodal 4c GLI+PED training with tumor-centered rejection sampling (MEN excluded)."
-    )
-    parser.add_argument(
-        "--config",
-        type=str,
-        default=str(Path(__file__).with_name("config.yaml")),
-        help="Path to experiment config file",
-    )
-    parser.add_argument(
-        "--checkpoint-suffix",
-        type=str,
-        default="strictmm_4c_gli_ped",
-        help="Suffix appended to checkpoint_dir",
-    )
-    parser.add_argument(
-        "--val-holdout-count",
-        type=int,
-        default=30,
-        help="Number of GLI train cases to hold out for validation",
-    )
-    parser.add_argument(
-        "--min-fg-ratio",
-        type=float,
-        default=0.02,
-        help="Minimum tumor fraction required inside sampled training patch",
-    )
-    parser.add_argument(
-        "--max-sample-tries",
-        type=int,
-        default=30,
-        help="Number of rejection attempts before fallback to best available tumor patch",
-    )
-    parser.add_argument(
-        "--tumor-margin",
-        type=int,
-        default=24,
-        help="Random center margin around tumor bounding box",
-    )
-    parser.add_argument(
-        "--loss-type",
-        type=str,
-        choices=["dicece", "dicefocal"],
-        default="dicece",
-        help="Loss function",
-    )
-    parser.add_argument(
-        "--class-weights",
-        type=str,
-        default="",
-        help="Optional comma-separated class weights for 4 classes",
-    )
-    parser.add_argument(
-        "--overfit-cases",
-        type=int,
-        default=0,
-        help="If >0, train/validate on a tiny subset for pipeline debugging",
-    )
-    parser.add_argument(
-        "--overfit-epochs",
-        type=int,
-        default=0,
-        help="Optional epoch override for overfit mode (default 50 when overfit-cases > 0)",
-    )
-    parser.add_argument(
-        "--resume-checkpoint",
-        type=str,
-        default="",
-        help="Optional checkpoint path to resume from",
-    )
-    parser.add_argument(
-        "--reset-optimizer",
-        action="store_true",
-        help="If set, optimizer state from resume checkpoint is ignored",
-    )
+    parser = argparse.ArgumentParser(description="Clean strict multimodal GLI+PED training")
+    parser.add_argument("--config", type=str, default=str(Path(__file__).with_name("config.yaml")))
+    parser.add_argument("--overfit-cases", type=int, default=0, help="Use N train samples and validate on same set")
+    parser.add_argument("--overfit-epochs", type=int, default=0, help="Epoch override for overfit mode")
+    parser.add_argument("--seed", type=int, default=-1)
     return parser.parse_args()
 
 
-def resolve_path(base_dir: Path, raw_path: str) -> Path:
-    path = Path(raw_path)
-    if path.is_absolute():
-        return path
-    return (base_dir / path).resolve()
+def load_config(path: Path) -> Dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
-def read_case_ids(list_file: Path) -> List[str]:
-    case_ids: List[str] = []
-    with list_file.open("r", encoding="utf-8") as f:
-        for line in f:
-            case_id = line.strip()
-            if case_id and not case_id.startswith("#"):
-                case_ids.append(case_id)
-    return case_ids
+class RegionLabeld:
+    def __init__(self, key: str, et_labels: Sequence[int]):
+        self.key = key
+        self.et_labels = tuple(int(x) for x in et_labels)
 
-
-def find_case_dir(dataset_root: Path, case_id: str) -> Path | None:
-    candidates = [
-        dataset_root / "train" / case_id,
-        dataset_root / "val" / case_id,
-        dataset_root / "train_additional" / case_id,
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return None
-
-
-def remap_labels(label: Any, mapping: Dict[int, int]):
-    if torch.is_tensor(label):
-        remapped = label.clone()
-        for src, dst in mapping.items():
-            remapped[label == src] = dst
-        return remapped.to(dtype=torch.int64)
-
-    remapped = np.asarray(label).copy()
-    for src, dst in mapping.items():
-        remapped[remapped == src] = dst
-    return remapped.astype(np.int64)
-
-
-def remap_with_mapping(label: Any, mapping: Dict[int, int]):
-    return remap_labels(label, mapping)
-
-
-def apply_label_setup(cfg: Dict[str, Any], label_setup: str) -> int:
-    if label_setup == "3c":
-        cfg["data"]["label_mapping"] = {
-            0: 0,
-            1: 1,
-            2: 2,
-            3: 2,
-            4: 2,
-        }
-    else:
-        cfg["data"]["label_mapping"] = {
-            0: 0,
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 3,
-        }
-    return int(max(cfg["data"]["label_mapping"].values())) + 1
-
-
-def build_multimodal_case_dicts(
-    cfg: Dict[str, Any],
-    config_dir: Path,
-    modalities: Sequence[str],
-) -> Dict[str, List[Dict[str, Any]]]:
-    data_cfg = cfg["data"]
-    data_root = resolve_path(config_dir, data_cfg["root"])
-    patient_lists_dir = resolve_path(config_dir, data_cfg["patient_lists_dir"])
-    repo_root = config_dir.parent.parent.resolve()
-    default_data_root = repo_root / "BraTS-2024-Complete"
-    default_patient_lists_dir = repo_root / "patient_lists"
-
-    if not data_root.exists() and default_data_root.exists():
-        print(f"[path override] data.root not found: {data_root}")
-        print(f"[path override] using local repo data root: {default_data_root}")
-        data_root = default_data_root
-
-    if not patient_lists_dir.exists() and default_patient_lists_dir.exists():
-        print(f"[path override] data.patient_lists_dir not found: {patient_lists_dir}")
-        print(f"[path override] using local repo patient lists: {default_patient_lists_dir}")
-        patient_lists_dir = default_patient_lists_dir
-
-    all_cases: Dict[str, List[Dict[str, Any]]] = {}
-
-    for dataset_name in ("GLI", "PED"):
-        dataset_info = data_cfg["datasets"][dataset_name]
-        dataset_root = data_root / dataset_info["folder"]
-        list_path = patient_lists_dir / dataset_info["list_files"]["train"]
-        case_ids = read_case_ids(list_path)
-        missing_count = 0
-        loaded: List[Dict[str, Any]] = []
-
-        for case_id in case_ids:
-            case_dir = find_case_dir(dataset_root, case_id)
-            if case_dir is None:
-                missing_count += 1
-                continue
-
-            image_paths: Dict[str, str] = {}
-            missing_image = False
-            for modality in modalities:
-                suffix = DATASET_IMAGE_SUFFIXES[dataset_name].get(modality)
-                if suffix is None:
-                    missing_image = True
-                    break
-                image_path = case_dir / f"{case_id}{suffix}"
-                if not image_path.exists():
-                    missing_image = True
-                    break
-                image_paths[f"image_{modality}"] = str(image_path)
-
-            label_suffix = dataset_info["label_suffix"]
-            label_path = case_dir / f"{case_id}{label_suffix}"
-            if missing_image or not label_path.exists():
-                missing_count += 1
-                continue
-
-            loaded.append(
-                {
-                    "dataset": dataset_name,
-                    "case_id": case_id,
-                    "label": str(label_path),
-                    **image_paths,
-                }
-            )
-
-        print(f"{dataset_name} train: {len(loaded)} cases loaded (missing/skipped: {missing_count})")
-        all_cases[dataset_name] = loaded
-
-    return all_cases
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        wt, tc, et = region_channels_from_label(d[self.key], et_labels=self.et_labels)
+        d[self.key] = np.stack([wt, tc, et], axis=0).astype(np.float32)
+        return d
 
 
 class StackModalitiesd:
@@ -274,298 +52,316 @@ class StackModalitiesd:
 
     def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
         d = dict(data)
-        d["image"] = torch.cat([d[key] for key in self.image_keys], dim=0)
-        for key in self.image_keys:
-            d.pop(key, None)
+        d["image"] = torch.cat([d[k] for k in self.image_keys], dim=0)
+        for k in self.image_keys:
+            d.pop(k, None)
         return d
 
 
 class StrictTumorSampler:
-    def __init__(self, patch_size: tuple[int, int, int], min_fg_ratio: float, max_tries: int, tumor_margin: int):
-        self.patch = patch_size
+    def __init__(self, patch_size: Sequence[int], min_fg_ratio: float, max_tries: int, margin: int):
+        self.patch = tuple(int(x) for x in patch_size)
         self.min_fg_ratio = float(min_fg_ratio)
         self.max_tries = int(max_tries)
-        self.margin = int(tumor_margin)
+        self.margin = int(margin)
 
     @staticmethod
-    def _pad_to_size(t: torch.Tensor, target_size: tuple[int, int, int]) -> torch.Tensor:
-        _, d, h, w = t.shape
-        td, th, tw = target_size
+    def _pad(img: torch.Tensor, target: tuple[int, int, int]) -> torch.Tensor:
+        _, d, h, w = img.shape
+        td, th, tw = target
         pd = max(0, td - d)
         ph = max(0, th - h)
         pw = max(0, tw - w)
-        if pd == 0 and ph == 0 and pw == 0:
-            return t
-        return F.pad(t, (0, pw, 0, ph, 0, pd), mode="constant", value=0)
+        if pd == ph == pw == 0:
+            return img
+        return F.pad(img, (0, pw, 0, ph, 0, pd), mode="constant", value=0)
 
     @staticmethod
-    def _crop(
-        img: torch.Tensor,
-        lbl: torch.Tensor,
-        z1: int,
-        y1: int,
-        x1: int,
-        patch: tuple[int, int, int],
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+    def _crop(img: torch.Tensor, z: int, y: int, x: int, patch: tuple[int, int, int]) -> torch.Tensor:
         pd, ph, pw = patch
-        return (
-            img[:, z1 : z1 + pd, y1 : y1 + ph, x1 : x1 + pw],
-            lbl[:, z1 : z1 + pd, y1 : y1 + ph, x1 : x1 + pw],
-        )
+        return img[:, z : z + pd, y : y + ph, x : x + pw]
 
     @staticmethod
-    def _random_crop_coords(shape: tuple[int, int, int], patch: tuple[int, int, int]):
+    def _rand_start(shape: tuple[int, int, int], patch: tuple[int, int, int]):
         d, h, w = shape
         pd, ph, pw = patch
-        z1 = np.random.randint(0, max(d - pd, 0) + 1) if d > pd else 0
-        y1 = np.random.randint(0, max(h - ph, 0) + 1) if h > ph else 0
-        x1 = np.random.randint(0, max(w - pw, 0) + 1) if w > pw else 0
-        return int(z1), int(y1), int(x1)
+        z = np.random.randint(0, max(d - pd, 0) + 1) if d > pd else 0
+        y = np.random.randint(0, max(h - ph, 0) + 1) if h > ph else 0
+        x = np.random.randint(0, max(w - pw, 0) + 1) if w > pw else 0
+        return int(z), int(y), int(x)
 
-    def _tumor_center_coords(self, label_3d: torch.Tensor):
-        fg = torch.nonzero(label_3d > 0, as_tuple=False)
+    def _tumor_start(self, wt_region: torch.Tensor):
+        fg = torch.nonzero(wt_region > 0, as_tuple=False)
         if fg.numel() == 0:
-            return self._random_crop_coords(tuple(label_3d.shape), self.patch), False
+            return self._rand_start(tuple(wt_region.shape), self.patch)
 
-        zmin = max(0, int(fg[:, 0].min().item()) - self.margin)
-        ymin = max(0, int(fg[:, 1].min().item()) - self.margin)
-        xmin = max(0, int(fg[:, 2].min().item()) - self.margin)
-        zmax = min(label_3d.shape[0] - 1, int(fg[:, 0].max().item()) + self.margin)
-        ymax = min(label_3d.shape[1] - 1, int(fg[:, 1].max().item()) + self.margin)
-        xmax = min(label_3d.shape[2] - 1, int(fg[:, 2].max().item()) + self.margin)
+        zmin = max(0, int(fg[:, 0].min()) - self.margin)
+        ymin = max(0, int(fg[:, 1].min()) - self.margin)
+        xmin = max(0, int(fg[:, 2].min()) - self.margin)
+        zmax = min(wt_region.shape[0] - 1, int(fg[:, 0].max()) + self.margin)
+        ymax = min(wt_region.shape[1] - 1, int(fg[:, 1].max()) + self.margin)
+        xmax = min(wt_region.shape[2] - 1, int(fg[:, 2].max()) + self.margin)
 
         cz = np.random.randint(zmin, zmax + 1)
         cy = np.random.randint(ymin, ymax + 1)
         cx = np.random.randint(xmin, xmax + 1)
 
         pd, ph, pw = self.patch
-        d, h, w = label_3d.shape
-        z1 = max(0, min(int(cz) - pd // 2, d - pd))
-        y1 = max(0, min(int(cy) - ph // 2, h - ph))
-        x1 = max(0, min(int(cx) - pw // 2, w - pw))
-        return (z1, y1, x1), True
+        d, h, w = wt_region.shape
+        z = max(0, min(cz - pd // 2, d - pd))
+        y = max(0, min(cy - ph // 2, h - ph))
+        x = max(0, min(cx - pw // 2, w - pw))
+        return int(z), int(y), int(x)
 
     def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
         d = dict(data)
-        img = self._pad_to_size(d["image"], self.patch)
-        lbl = self._pad_to_size(d["label"], self.patch)
+        image = self._pad(d["image"], self.patch)
+        label = self._pad(d["label"], self.patch)
 
-        best_img = None
-        best_lbl = None
+        best_img = image
+        best_lbl = label
         best_ratio = -1.0
 
         for _ in range(self.max_tries):
-            (z1, y1, x1), had_fg = self._tumor_center_coords(lbl[0])
-            if not had_fg:
-                z1, y1, x1 = self._random_crop_coords(tuple(lbl[0].shape), self.patch)
-
-            c_img, c_lbl = self._crop(img, lbl, z1, y1, x1, self.patch)
-            fg_ratio = float((c_lbl > 0).float().mean().item())
+            z, y, x = self._tumor_start(label[0])
+            ci = self._crop(image, z, y, x, self.patch)
+            cl = self._crop(label, z, y, x, self.patch)
+            fg_ratio = float((cl[0] > 0).float().mean().item())
 
             if fg_ratio > best_ratio:
                 best_ratio = fg_ratio
-                best_img = c_img
-                best_lbl = c_lbl
+                best_img = ci
+                best_lbl = cl
 
             if fg_ratio >= self.min_fg_ratio:
-                d["image"] = c_img
-                d["label"] = c_lbl
+                d["image"] = ci
+                d["label"] = cl
                 return d
 
-        d["image"] = best_img if best_img is not None else img
-        d["label"] = best_lbl if best_lbl is not None else lbl
+        d["image"] = best_img
+        d["label"] = best_lbl
         return d
 
 
-def build_transforms(
-    cfg: Dict[str, Any],
-    modalities: Sequence[str],
-    min_fg_ratio: float,
-    max_sample_tries: int,
-    tumor_margin: int,
-    training: bool = True,
-) -> Compose:
-    mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
-    image_keys = [f"image_{modality}" for modality in modalities]
-    all_image_keys = list(image_keys) + ["label"]
+def build_transforms(cfg: Dict[str, Any], training: bool) -> Compose:
+    mods = list(cfg["data"]["modalities"])
+    image_keys = [f"image_{m}" for m in mods]
+    keys = image_keys + ["label"]
 
-    def label_mapper(lbl: Any):
-        remapped = torch.as_tensor(lbl).clone()
-        for src, dst in mapping.items():
-            remapped[remapped == src] = dst
-        return remapped.to(dtype=torch.int64)
+    et_labels = tuple(int(x) for x in cfg["labels"].get("et_labels", [3, 4]))
 
     transforms = [
-        LoadImaged(keys=all_image_keys),
-        EnsureChannelFirstd(keys=all_image_keys),
-        Orientationd(keys=all_image_keys, axcodes="RAS"),
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        Orientationd(keys=keys, axcodes="RAS"),
         NormalizeIntensityd(keys=image_keys, nonzero=True, channel_wise=True),
-        Lambdad(keys="label", func=label_mapper),
+        RegionLabeld(key="label", et_labels=et_labels),
         EnsureTyped(keys=image_keys, dtype=torch.float32),
-        EnsureTyped(keys="label", dtype=torch.int64),
-        StackModalitiesd(image_keys),
+        EnsureTyped(keys="label", dtype=torch.float32),
+        StackModalitiesd(image_keys=image_keys),
     ]
 
     if training:
-        transforms.extend(
-            [
-                StrictTumorSampler(
-                    patch_size=tuple(int(x) for x in cfg["patch"]["size"]),
-                    min_fg_ratio=min_fg_ratio,
-                    max_tries=max_sample_tries,
-                    tumor_margin=tumor_margin,
-                ),
-                SqueezeDimd(keys="label", dim=0),
-            ]
+        p = cfg["patch"]
+        transforms.append(
+            StrictTumorSampler(
+                patch_size=p["size"],
+                min_fg_ratio=p["min_fg_ratio"],
+                max_tries=p["max_sample_tries"],
+                margin=p["tumor_margin"],
+            )
         )
 
     return Compose(transforms)
 
 
-def build_model(out_channels: int, in_channels: int) -> UNet:
+def build_model(cfg: Dict[str, Any]) -> UNet:
+    m = cfg["model"]
     return UNet(
         spatial_dims=3,
-        in_channels=in_channels,
-        out_channels=out_channels,
-        channels=(16, 32, 64, 128, 256),
-        strides=(2, 2, 2, 2),
-        num_res_units=2,
+        in_channels=int(m["in_channels"]),
+        out_channels=int(m["out_channels"]),
+        channels=tuple(int(x) for x in m["channels"]),
+        strides=tuple(int(x) for x in m["strides"]),
+        num_res_units=int(m["num_res_units"]),
     )
+
+
+def dice_per_region(pred_bin: torch.Tensor, target_bin: torch.Tensor) -> Dict[str, float]:
+    names = ["WT", "TC", "ET"]
+    out: Dict[str, float] = {}
+    eps = 1e-6
+    for c, name in enumerate(names):
+        p = pred_bin[:, c]
+        t = target_bin[:, c]
+        inter = (p * t).sum().item()
+        den = p.sum().item() + t.sum().item()
+        out[name] = float((2.0 * inter + eps) / (den + eps))
+    return out
+
+
+def run_validation(model, val_loader, cfg, device):
+    model.eval()
+    losses = []
+    dice_rows = []
+
+    dloss = DiceLoss(sigmoid=True)
+    floss = FocalLoss(gamma=float(cfg["training"]["loss"]["focal_gamma"]))
+    ld = float(cfg["training"]["loss"]["lambda_dice"])
+    lf = float(cfg["training"]["loss"]["lambda_focal"])
+
+    with torch.no_grad():
+        for batch in val_loader:
+            image = batch["image"].to(device)
+            target = batch["label"].to(device)
+
+            logits = sliding_window_inference(
+                inputs=image,
+                roi_size=tuple(int(x) for x in cfg["patch"]["size"]),
+                sw_batch_size=1,
+                predictor=model,
+                overlap=float(cfg["inference"]["overlap"]),
+            )
+
+            loss = ld * dloss(logits, target) + lf * floss(logits, target)
+            losses.append(float(loss.item()))
+
+            probs = torch.sigmoid(logits)
+            pred = (probs > float(cfg["inference"]["threshold"])).float()
+            gt = (target > 0.5).float()
+            dice_rows.append(dice_per_region(pred, gt))
+
+    if not losses:
+        return {"loss": 0.0, "WT": 0.0, "TC": 0.0, "ET": 0.0, "mean": 0.0}
+
+    wt = float(np.mean([d["WT"] for d in dice_rows]))
+    tc = float(np.mean([d["TC"] for d in dice_rows]))
+    et = float(np.mean([d["ET"] for d in dice_rows]))
+    return {
+        "loss": float(np.mean(losses)),
+        "WT": wt,
+        "TC": tc,
+        "ET": et,
+        "mean": float((wt + tc + et) / 3.0),
+    }
 
 
 def main() -> None:
-    tb = load_train_b_module()
     args = parse_args()
-    modalities = MODALITIES
-
     config_path = Path(args.config).resolve()
-    cfg = tb.load_config(config_path)
-    tb.apply_local_path_overrides(cfg, config_path.parent)
+    cfg = load_config(config_path)
 
-    num_classes = apply_label_setup(cfg, "4c")
-    cfg["splits"]["train"] = {"GLI": "train", "PED": "train"}
-    cfg["patch"]["size"] = [128, 128, 128]
+    seed = int(cfg.get("seed", 42)) if args.seed < 0 else int(args.seed)
+    set_determinism(seed=seed)
 
-    if args.overfit_cases > 0:
-        cfg["training"]["epochs"] = int(args.overfit_epochs) if args.overfit_epochs > 0 else 50
-    elif args.overfit_epochs > 0:
-        cfg["training"]["epochs"] = int(args.overfit_epochs)
-
-    if args.checkpoint_suffix:
-        base_ckpt_dir = str(cfg["training"]["checkpoint_dir"]).rstrip("/\\")
-        cfg["training"]["checkpoint_dir"] = f"{base_ckpt_dir}_{args.checkpoint_suffix}"
-
-    set_determinism(seed=int(cfg.get("seed", 42)))
-
-    all_cases = build_multimodal_case_dicts(cfg, config_path.parent, modalities)
-    gli_cases = list(all_cases["GLI"])
-    ped_cases = list(all_cases["PED"])
-
-    rng = random.Random(int(cfg.get("seed", 42)))
-    rng.shuffle(gli_cases)
-
-    holdout_count = min(args.val_holdout_count, len(gli_cases))
-    val_cases = gli_cases[:holdout_count]
-    train_cases = gli_cases[holdout_count:] + ped_cases
+    train_cases = build_case_list(cfg, config_path.parent, split="train")
+    val_cases = build_case_list(cfg, config_path.parent, split="val")
 
     if args.overfit_cases > 0:
-        overfit_n = min(args.overfit_cases, len(train_cases))
-        train_cases = train_cases[:overfit_n]
+        n = min(args.overfit_cases, len(train_cases))
+        train_cases = train_cases[:n]
         val_cases = train_cases.copy()
-        print(f"[overfit mode] Using {len(train_cases)} train cases and same set for validation.")
+        if args.overfit_epochs > 0:
+            cfg["training"]["epochs"] = int(args.overfit_epochs)
 
-    print(f"\nTotal train samples: {len(train_cases)}")
-    print(f"Total val samples: {len(val_cases)}")
-    print(f"Training mode: strict multimodal {'+'.join(modalities)}; GLI+PED only")
-    print(f"Label setup: 4c (num_classes={num_classes})")
-    print(f"Patch size: {tuple(cfg['patch']['size'])}")
-    print(
-        "Strict sampling: "
-        f"min_fg_ratio={args.min_fg_ratio}, "
-        f"max_sample_tries={args.max_sample_tries}, "
-        f"tumor_margin={args.tumor_margin}"
-    )
+    ckpt_dir = Path(cfg["training"]["checkpoint_dir"])
+    if not ckpt_dir.is_absolute():
+        ckpt_dir = (config_path.parent / ckpt_dir).resolve()
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
 
-    checkpoint_dir = resolve_path(config_path.parent, cfg["training"]["checkpoint_dir"])
-    checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    val_case_file = checkpoint_dir / "strict_val_cases.json"
-    with val_case_file.open("w", encoding="utf-8") as f:
+    with (ckpt_dir / "strict_val_cases.json").open("w", encoding="utf-8") as f:
         json.dump(val_cases, f, indent=2)
-    print(f"Saved validation case list: {val_case_file}")
 
-    train_transforms = build_transforms(
-        cfg=cfg,
-        modalities=modalities,
-        min_fg_ratio=args.min_fg_ratio,
-        max_sample_tries=args.max_sample_tries,
-        tumor_margin=args.tumor_margin,
-        training=True,
-    )
-    val_transforms = build_transforms(
-        cfg=cfg,
-        modalities=modalities,
-        min_fg_ratio=args.min_fg_ratio,
-        max_sample_tries=args.max_sample_tries,
-        tumor_margin=args.tumor_margin,
-        training=False,
-    )
+    train_ds = Dataset(data=train_cases, transform=build_transforms(cfg, training=True))
+    val_ds = Dataset(data=val_cases, transform=build_transforms(cfg, training=False))
 
-    train_ds = Dataset(data=train_cases, transform=train_transforms)
-    val_ds = Dataset(data=val_cases, transform=val_transforms)
-
-    num_workers = int(cfg["dataloader"]["num_workers"])
+    nw = int(cfg["dataloader"]["num_workers"])
+    if sys.platform.startswith("win"):
+        nw = 0
     train_loader = DataLoader(
         train_ds,
         batch_size=int(cfg["dataloader"]["batch_size"]),
-        shuffle=bool(cfg["dataloader"].get("shuffle", True)),
-        num_workers=num_workers,
+        shuffle=bool(cfg["dataloader"]["shuffle"]),
+        num_workers=nw,
         pin_memory=torch.cuda.is_available(),
-        persistent_workers=num_workers > 0,
+        persistent_workers=nw > 0,
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=1,
         shuffle=False,
-        num_workers=num_workers,
+        num_workers=nw,
         pin_memory=torch.cuda.is_available(),
-        persistent_workers=num_workers > 0,
+        persistent_workers=nw > 0,
     )
 
-    print("\nVerifying one training batch...")
-    batch = next(iter(train_loader))
-    print(f"image shape: {tuple(batch['image'].shape)}")
-    print(f"label shape: {tuple(batch['label'].shape)}")
-    print(f"label unique values: {torch.unique(batch['label']).tolist()}")
-
-    parsed_class_weights = tb.parse_class_weights(args.class_weights, num_classes)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = build_model(cfg).to(device)
 
-    def multimodal_build_model(out_channels: int):
-        return build_model(out_channels=out_channels, in_channels=len(modalities)).to(device)
+    dloss = DiceLoss(sigmoid=True)
+    floss = FocalLoss(gamma=float(cfg["training"]["loss"]["focal_gamma"]))
+    ld = float(cfg["training"]["loss"]["lambda_dice"])
+    lf = float(cfg["training"]["loss"]["lambda_focal"])
 
-    tb.build_model = multimodal_build_model  # type: ignore[assignment]
+    optimizer = torch.optim.Adam(model.parameters(), lr=float(cfg["training"]["learning_rate"]))
 
-    sanity_loss_fn = tb.build_loss_function(args.loss_type, parsed_class_weights, num_classes, cfg, device)
-    print("\nVerifying model forward pass and loss...")
-    tb.run_model_forward_check(train_loader, sanity_loss_fn, out_channels=num_classes)
+    best_mean = -1.0
+    history = []
+    epochs = int(cfg["training"]["epochs"])
+    log_every = int(cfg["training"].get("log_every", 10))
 
-    print("\nRunning strict multimodal Stage B training...")
-    tb.run_stage_b_training(
-        loader=train_loader,
-        val_loader=val_loader,
-        cfg=cfg,
-        config_dir=config_path.parent,
-        train_samples=len(train_cases),
-        test_samples=len(val_cases),
-        val_samples=len(val_cases),
-        loss_type=args.loss_type,
-        class_weights=parsed_class_weights,
-        num_classes=num_classes,
-        resume_checkpoint=args.resume_checkpoint,
-        reset_optimizer=args.reset_optimizer,
-    )
+    print(f"Train samples: {len(train_cases)} | Val samples: {len(val_cases)}")
+    print(f"Epochs: {epochs} | Overfit mode: {args.overfit_cases > 0}")
 
-    print("Strict multimodal GLI+PED training completed.")
+    for epoch in range(1, epochs + 1):
+        model.train()
+        train_loss = 0.0
+        steps = 0
+
+        for batch in train_loader:
+            steps += 1
+            image = batch["image"].to(device)
+            target = batch["label"].to(device)
+
+            optimizer.zero_grad()
+            logits = model(image)
+            loss = ld * dloss(logits, target) + lf * floss(logits, target)
+            loss.backward()
+            optimizer.step()
+
+            train_loss += float(loss.item())
+
+        train_loss = train_loss / max(steps, 1)
+
+        if epoch % int(cfg["training"]["val_interval"]) == 0:
+            vm = run_validation(model, val_loader, cfg, device)
+            row = {
+                "epoch": epoch,
+                "train_loss": train_loss,
+                "val_loss": vm["loss"],
+                "dice_WT": vm["WT"],
+                "dice_TC": vm["TC"],
+                "dice_ET": vm["ET"],
+                "dice_mean": vm["mean"],
+            }
+            history.append(row)
+
+            if vm["mean"] > best_mean:
+                best_mean = vm["mean"]
+                torch.save(model.state_dict(), ckpt_dir / "stage_b_best.pt")
+
+            if epoch % log_every == 0 or epoch == 1 or epoch == epochs:
+                print(
+                    f"Epoch {epoch:03d} | train_loss={train_loss:.4f} | "
+                    f"val_mean={vm['mean']:.4f} (WT={vm['WT']:.4f}, TC={vm['TC']:.4f}, ET={vm['ET']:.4f})"
+                )
+
+    torch.save(model.state_dict(), ckpt_dir / "stage_b_last.pt")
+    with (ckpt_dir / "training_history.json").open("w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2)
+
+    print(f"Done. Best val mean Dice: {best_mean:.4f}")
+    print(f"Checkpoints: {ckpt_dir}")
 
 
 if __name__ == "__main__":

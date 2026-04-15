@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
+import sys
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, Sequence
 
 import numpy as np
 import torch
@@ -12,152 +12,47 @@ import yaml
 from monai.data import DataLoader, Dataset
 from monai.inferers import sliding_window_inference
 from monai.networks.nets import UNet
-from monai.transforms import (
-    Compose,
-    EnsureChannelFirstd,
-    EnsureTyped,
-    Lambdad,
-    LoadImaged,
-    NormalizeIntensityd,
-    Orientationd,
-)
+from monai.transforms import Compose, EnsureChannelFirstd, EnsureTyped, LoadImaged, NormalizeIntensityd, Orientationd
 from monai.utils import set_determinism
+try:
+    from scipy import ndimage  # type: ignore
+except Exception:
+    ndimage = None
 
-
-MODALITIES = ["t1c", "t2w", "t2f"]
-
-
-def load_train_b_module():
-    this_file = Path(__file__).resolve()
-    train_b_path = this_file.with_name("train_B.py")
-    spec = importlib.util.spec_from_file_location("train_B_module", train_b_path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Failed to load module from {train_b_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+from dataset_loader import build_case_list, region_channels_from_label
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run strict multimodal inference using a trained checkpoint")
-    parser.add_argument(
-        "--config",
-        type=str,
-        default=str(Path(__file__).with_name("config.yaml")),
-        help="Path to experiment config file",
-    )
-    parser.add_argument(
-        "--checkpoint",
-        type=str,
-        required=True,
-        help="Path to checkpoint file (e.g., stage_b_best.pt)",
-    )
-    parser.add_argument(
-        "--case-file",
-        type=str,
-        default="",
-        help="Optional JSON file containing held-out case dicts created by train_strict_multimodal.py",
-    )
+    parser = argparse.ArgumentParser(description="Clean strict multimodal inference")
+    parser.add_argument("--config", type=str, default=str(Path(__file__).with_name("config.yaml")))
+    parser.add_argument("--checkpoint", type=str, required=True)
+    parser.add_argument("--split", type=str, choices=["train", "val"], default="val")
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="experiments/baseline_t1ce_multiclass/results/strict_multimodal_inference",
-        help="Directory to save inference metrics and optional predictions",
+        default="experiments/baseline_t1ce_multiclass/results/strict_multimodal_clean",
     )
-    parser.add_argument(
-        "--save-predictions",
-        action="store_true",
-        help="If set, save per-case prediction volumes (.npy).",
-    )
-    parser.add_argument(
-        "--max-cases",
-        type=int,
-        default=0,
-        help="Optional cap on number of cases to run (0 means all)",
-    )
-    parser.add_argument(
-        "--label-setup",
-        type=str,
-        choices=["4c", "3c"],
-        default="4c",
-        help="4c: keep 4 output classes (0..3). 3c: merge labels 3/4 into class 2 (0..2).",
-    )
+    parser.add_argument("--max-cases", type=int, default=0)
+    parser.add_argument("--save-region-prob", action="store_true")
+    parser.add_argument("--min-component-size", type=int, default=-1)
     return parser.parse_args()
 
 
-def load_config(config_path: Path) -> Dict[str, Any]:
-    with config_path.open("r", encoding="utf-8") as f:
+def load_config(path: Path) -> Dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
-def resolve_path(base_dir: Path, raw_path: str) -> Path:
-    path = Path(raw_path)
-    if path.is_absolute():
-        return path
-    return (base_dir / path).resolve()
+class RegionLabeld:
+    def __init__(self, key: str, et_labels: Sequence[int]):
+        self.key = key
+        self.et_labels = tuple(int(x) for x in et_labels)
 
-
-def remap_labels(label: Any, mapping: Dict[int, int]):
-    if torch.is_tensor(label):
-        remapped = label.clone()
-        for src, dst in mapping.items():
-            remapped[label == src] = dst
-        return remapped.to(dtype=torch.int64)
-
-    remapped = np.asarray(label).copy()
-    for src, dst in mapping.items():
-        remapped[remapped == src] = dst
-    return remapped.astype(np.int64)
-
-
-def remap_with_mapping(label: Any, mapping: Dict[int, int]):
-    return remap_labels(label, mapping)
-
-
-def apply_label_setup(cfg: Dict[str, Any], label_setup: str) -> int:
-    if label_setup == "3c":
-        cfg["data"]["label_mapping"] = {
-            0: 0,
-            1: 1,
-            2: 2,
-            3: 2,
-            4: 2,
-        }
-    else:
-        cfg["data"]["label_mapping"] = {
-            0: 0,
-            1: 1,
-            2: 2,
-            3: 3,
-            4: 3,
-        }
-    return int(max(cfg["data"]["label_mapping"].values())) + 1
-
-
-def load_case_specs(args: argparse.Namespace, checkpoint_path: Path) -> List[Dict[str, Any]]:
-    if args.case_file.strip():
-        case_file = Path(args.case_file)
-    else:
-        case_file = checkpoint_path.parent / "strict_val_cases.json"
-
-    if not case_file.exists():
-        raise FileNotFoundError(
-            f"Case file not found: {case_file}\n"
-            "Run train_strict_multimodal.py first so it saves strict_val_cases.json, or pass --case-file explicitly."
-        )
-
-    with case_file.open("r", encoding="utf-8") as f:
-        loaded = json.load(f)
-
-    if not isinstance(loaded, list) or not loaded:
-        raise RuntimeError(f"Case file is empty or invalid: {case_file}")
-
-    case_specs: List[Dict[str, Any]] = []
-    for item in loaded:
-        if not isinstance(item, dict):
-            raise RuntimeError(f"Invalid case entry in {case_file}: expected dict, got {type(item).__name__}")
-        case_specs.append(item)
-    return case_specs
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        wt, tc, et = region_channels_from_label(d[self.key], et_labels=self.et_labels)
+        d[self.key] = np.stack([wt, tc, et], axis=0).astype(np.float32)
+        return d
 
 
 class StackModalitiesd:
@@ -166,187 +61,195 @@ class StackModalitiesd:
 
     def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
         d = dict(data)
-        d["image"] = torch.cat([d[key] for key in self.image_keys], dim=0)
-        for key in self.image_keys:
-            d.pop(key, None)
+        d["image"] = torch.cat([d[k] for k in self.image_keys], dim=0)
+        for k in self.image_keys:
+            d.pop(k, None)
         return d
 
 
-def build_transforms(cfg: Dict[str, Any], modalities: Sequence[str]) -> Compose:
-    mapping = {int(k): int(v) for k, v in cfg["data"]["label_mapping"].items()}
-    image_keys = [f"image_{modality}" for modality in modalities]
-    all_image_keys = list(image_keys) + ["label"]
+def build_transforms(cfg: Dict[str, Any]) -> Compose:
+    mods = list(cfg["data"]["modalities"])
+    image_keys = [f"image_{m}" for m in mods]
+    keys = image_keys + ["label"]
 
-    def label_mapper(lbl: Any):
-        return remap_with_mapping(lbl, mapping=mapping)
+    et_labels = tuple(int(x) for x in cfg["labels"].get("et_labels", [3, 4]))
 
     return Compose(
         [
-            LoadImaged(keys=all_image_keys),
-            EnsureChannelFirstd(keys=all_image_keys),
-            Orientationd(keys=all_image_keys, axcodes="RAS"),
+            LoadImaged(keys=keys),
+            EnsureChannelFirstd(keys=keys),
+            Orientationd(keys=keys, axcodes="RAS"),
             NormalizeIntensityd(keys=image_keys, nonzero=True, channel_wise=True),
-            Lambdad(keys="label", func=label_mapper),
+            RegionLabeld(key="label", et_labels=et_labels),
             EnsureTyped(keys=image_keys, dtype=torch.float32),
-            EnsureTyped(keys="label", dtype=torch.int64),
-            StackModalitiesd(image_keys),
+            EnsureTyped(keys="label", dtype=torch.float32),
+            StackModalitiesd(image_keys=image_keys),
         ]
     )
 
 
-def build_model(out_channels: int, in_channels: int) -> UNet:
+def build_model(cfg: Dict[str, Any]) -> UNet:
+    m = cfg["model"]
     return UNet(
         spatial_dims=3,
-        in_channels=in_channels,
-        out_channels=out_channels,
-        channels=(16, 32, 64, 128, 256),
-        strides=(2, 2, 2, 2),
-        num_res_units=2,
+        in_channels=int(m["in_channels"]),
+        out_channels=int(m["out_channels"]),
+        channels=tuple(int(x) for x in m["channels"]),
+        strides=tuple(int(x) for x in m["strides"]),
+        num_res_units=int(m["num_res_units"]),
     )
 
 
-def extract_case_id(case_id_field: Any) -> str:
-    if isinstance(case_id_field, (list, tuple)):
-        return str(case_id_field[0])
-    return str(case_id_field)
+def region_to_labelmap(wt: np.ndarray, tc: np.ndarray, et: np.ndarray) -> np.ndarray:
+    """Convert WT/TC/ET booleans to BraTS-like integer map 0/1/2/4."""
+    out = np.zeros(wt.shape, dtype=np.uint8)
+    out[wt > 0] = 2
+    out[tc > 0] = 1
+    out[et > 0] = 4
+    return out
 
 
-def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> tuple[float | None, bool]:
-    pred_c = (pred == class_id).float()
-    target_c = (target == class_id).float()
-    target_sum = target_c.sum()
-    if target_sum.item() == 0:
-        return None, False
+def filter_small_components(mask: np.ndarray, min_size: int) -> np.ndarray:
+    if min_size <= 0:
+        return mask
 
-    denominator = pred_c.sum() + target_sum
-    intersection = (pred_c * target_c).sum()
-    return float((2.0 * intersection / denominator).item()), True
+    if ndimage is None:
+        return mask
 
-
-def compute_case_metrics(pred: torch.Tensor, target: torch.Tensor, num_classes: int = 4) -> Dict[str, Any]:
-    per_class: Dict[str, Any] = {}
-    valid_count_per_class: Dict[str, int] = {}
-    class_values: List[float] = []
-    for class_id in range(1, num_classes):
-        d, is_valid = dice_for_class(pred, target, class_id)
-        per_class[f"dice_class_{class_id}"] = None if d is None else d
-        valid_count_per_class[f"class_{class_id}"] = 1 if is_valid else 0
-        if is_valid and d is not None:
-            class_values.append(d)
-
-    mean_dice_no_bg = float(np.mean(class_values)) if class_values else 0.0
-    return {
-        "mean_dice_no_bg": mean_dice_no_bg,
-        "valid_class_count": len(class_values),
-        "valid_count_per_class": valid_count_per_class,
-        **per_class,
-    }
+    filtered = np.zeros_like(mask, dtype=np.uint8)
+    labeled, n = ndimage.label(mask.astype(np.uint8))
+    for i in range(1, n + 1):
+        comp = labeled == i
+        if int(comp.sum()) >= min_size:
+            filtered[comp] = 1
+    return filtered
 
 
-def load_checkpoint(model: UNet, checkpoint_path: Path, device: torch.device) -> None:
-    state = torch.load(checkpoint_path, map_location=device)
-    if isinstance(state, dict) and "model_state_dict" in state:
-        model.load_state_dict(state["model_state_dict"])
-    else:
-        model.load_state_dict(state)
+def dice_region(pred: np.ndarray, gt: np.ndarray) -> float:
+    eps = 1e-6
+    inter = float((pred * gt).sum())
+    den = float(pred.sum() + gt.sum())
+    return float((2.0 * inter + eps) / (den + eps))
 
 
 def main() -> None:
     args = parse_args()
     config_path = Path(args.config).resolve()
-    checkpoint_path = Path(args.checkpoint).resolve()
-    repo_root = config_path.parent.parent.parent.resolve()
-
-    if not checkpoint_path.exists():
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
-
     cfg = load_config(config_path)
-    num_classes = apply_label_setup(cfg, args.label_setup)
-    print(f"Label setup: {args.label_setup} (num_classes={num_classes})")
+
     set_determinism(seed=int(cfg.get("seed", 42)))
+
+    checkpoint = Path(args.checkpoint).resolve()
+    if not checkpoint.exists():
+        raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
+
+    cases = build_case_list(cfg, config_path.parent, split=args.split)
+    if args.max_cases > 0:
+        cases = cases[: args.max_cases]
+    if not cases:
+        raise RuntimeError("No cases found for inference.")
 
     output_dir = Path(args.output_dir)
     if not output_dir.is_absolute():
-        output_dir = (repo_root / output_dir).resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir = (config_path.parent.parent.parent / output_dir).resolve()
     pred_dir = output_dir / "predictions"
-    if args.save_predictions:
-        pred_dir.mkdir(parents=True, exist_ok=True)
+    pred_dir.mkdir(parents=True, exist_ok=True)
 
-    case_specs = load_case_specs(args, checkpoint_path)
-    if args.max_cases > 0:
-        case_specs = case_specs[: args.max_cases]
-
-    print(f"\nTotal cases for inference: {len(case_specs)}")
-    if len(case_specs) == 0:
-        raise RuntimeError("No cases found for inference.")
-
-    modalities = MODALITIES
-    test_ds = Dataset(data=case_specs, transform=build_transforms(cfg, modalities))
-    test_loader = DataLoader(
-        test_ds,
+    ds = Dataset(data=cases, transform=build_transforms(cfg))
+    nw = int(cfg["dataloader"].get("num_workers", 0))
+    if sys.platform.startswith("win"):
+        nw = 0
+    loader = DataLoader(
+        ds,
         batch_size=1,
         shuffle=False,
-        num_workers=int(cfg["dataloader"].get("num_workers", 0)),
+        num_workers=nw,
         pin_memory=torch.cuda.is_available(),
-        persistent_workers=int(cfg["dataloader"].get("num_workers", 0)) > 0,
+        persistent_workers=nw > 0,
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(out_channels=num_classes, in_channels=len(modalities)).to(device)
-    load_checkpoint(model, checkpoint_path, device)
+    model = build_model(cfg).to(device)
+    model.load_state_dict(torch.load(checkpoint, map_location=device))
     model.eval()
 
-    all_case_metrics: List[Dict[str, Any]] = []
-    support_sums: Dict[str, int] = {f"class_{cid}": 0 for cid in range(1, num_classes)}
+    min_comp = args.min_component_size
+    if min_comp < 0:
+        min_comp = int(cfg["inference"].get("min_component_size", 50))
+
+    rows = []
+    thresh = float(cfg["inference"]["threshold"])
+
+    if ndimage is None and min_comp > 0:
+        print("WARNING: scipy not available, skipping connected-component post-processing.")
 
     with torch.no_grad():
-        for batch in test_loader:
-            case_id = extract_case_id(batch["case_id"])
-            images = batch["image"].to(device)
-            labels = batch["label"].to(device)
-            if labels.ndim == 5 and labels.shape[1] == 1:
-                labels = labels.squeeze(1)
+        for batch in loader:
+            case_id = str(batch["case_id"][0])
+            image = batch["image"].to(device)
+            target = batch["label"].to(device)
 
-            roi_size = tuple(cfg["patch"]["size"])
             logits = sliding_window_inference(
-                inputs=images,
-                roi_size=roi_size,
+                inputs=image,
+                roi_size=tuple(int(x) for x in cfg["patch"]["size"]),
                 sw_batch_size=1,
                 predictor=model,
-                overlap=0.25,
+                overlap=float(cfg["inference"]["overlap"]),
             )
-            preds = torch.argmax(logits, dim=1)
+            probs = torch.sigmoid(logits)[0].cpu().numpy()
 
-            if args.save_predictions:
-                pred_np = preds[0].detach().cpu().numpy().astype(np.uint8)
-                np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
+            wt = (probs[0] > thresh).astype(np.uint8)
+            tc = (probs[1] > thresh).astype(np.uint8)
+            et = (probs[2] > thresh).astype(np.uint8)
 
-            metrics = compute_case_metrics(preds[0], labels[0], num_classes=num_classes)
-            for key, value in metrics.get("valid_count_per_class", {}).items():
-                support_sums[key] = support_sums.get(key, 0) + int(value)
-            all_case_metrics.append({"case_id": case_id, **metrics})
+            wt = filter_small_components(wt, min_comp)
+            tc = filter_small_components(tc, min_comp)
+            et = filter_small_components(et, min_comp)
 
-    mean_dice_values = [m["mean_dice_no_bg"] for m in all_case_metrics]
+            # Keep region consistency
+            tc = np.logical_and(tc, wt).astype(np.uint8)
+            et = np.logical_and(et, tc).astype(np.uint8)
+
+            pred_map = region_to_labelmap(wt, tc, et)
+            np.save(pred_dir / f"{case_id}_pred.npy", pred_map)
+
+            if args.save_region_prob:
+                np.save(pred_dir / f"{case_id}_regions.npy", np.stack([wt, tc, et], axis=0).astype(np.uint8))
+
+            gt = target[0].cpu().numpy()
+            d_wt = dice_region(wt, (gt[0] > 0.5).astype(np.uint8))
+            d_tc = dice_region(tc, (gt[1] > 0.5).astype(np.uint8))
+            d_et = dice_region(et, (gt[2] > 0.5).astype(np.uint8))
+            d_mean = float((d_wt + d_tc + d_et) / 3.0)
+
+            rows.append(
+                {
+                    "case_id": case_id,
+                    "dice_WT": d_wt,
+                    "dice_TC": d_tc,
+                    "dice_ET": d_et,
+                    "dice_mean": d_mean,
+                }
+            )
+
     summary = {
-        "checkpoint": str(checkpoint_path),
-        "num_cases": len(all_case_metrics),
-        "mean_dice_no_bg": float(np.mean(mean_dice_values)) if mean_dice_values else 0.0,
-        "valid_count_per_class": support_sums,
-        "cases": all_case_metrics,
+        "checkpoint": str(checkpoint),
+        "split": args.split,
+        "num_cases": len(rows),
+        "mean_dice_WT": float(np.mean([r["dice_WT"] for r in rows])),
+        "mean_dice_TC": float(np.mean([r["dice_TC"] for r in rows])),
+        "mean_dice_ET": float(np.mean([r["dice_ET"] for r in rows])),
+        "mean_dice": float(np.mean([r["dice_mean"] for r in rows])),
+        "cases": rows,
     }
 
-    summary_path = output_dir / "inference_metrics.json"
-    with summary_path.open("w", encoding="utf-8") as f:
+    with (output_dir / "inference_metrics.json").open("w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
-    print("\nInference completed.")
-    if args.save_predictions:
-        print(f"Predictions saved to: {pred_dir}")
-    else:
-        print("Predictions were not saved (use --save-predictions to enable).")
-    print(f"Metrics saved to: {summary_path}")
-    print(f"Mean Dice (classes 1-3): {summary['mean_dice_no_bg']:.6f}")
+    print(f"Inference done on {len(rows)} cases")
+    print(f"Predictions saved to: {pred_dir}")
+    print(f"Mean Dice WT/TC/ET: {summary['mean_dice_WT']:.4f} / {summary['mean_dice_TC']:.4f} / {summary['mean_dice_ET']:.4f}")
+    print(f"Mean Dice overall: {summary['mean_dice']:.4f}")
 
 
 if __name__ == "__main__":

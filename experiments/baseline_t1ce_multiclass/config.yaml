@@ -1,73 +1,59 @@
-experiment_name: baseline_t1ce_multiclass
+experiment_name: strict_multimodal_clean
 seed: 42
 
 data:
   root: ../../BraTS-2024-Complete
   patient_lists_dir: ../../patient_lists
-  modality: t1c
-  label_mapping:
-    0: 0
-    1: 1
-    2: 2
-    3: 3
-    4: 3
   datasets:
     GLI:
       folder: BraTS-GLI
-      image_suffix: -t1c.nii.gz
       label_suffix: -seg.nii.gz
       list_files:
         train: gli_train.txt
-        test: gli_val.txt
+        val: gli_val.txt
     PED:
       folder: BraTS-PED
-      image_suffix: -t1c.nii.gz
       label_suffix: -seg.nii.gz
       list_files:
         train: ped_train.txt
-        test: ped_val.txt
-    MEN:
-      folder: BraTS-MEN-RT
-      image_suffix: _t1c.nii.gz
-      label_suffix: _gtv.nii.gz
-      list_files:
-        train: men_train.txt
-        test: men_val.txt
+        val: ped_val.txt
+  modalities: [t1c, t2w, t2f]
 
-splits:
-  train:
-    GLI: train
-  test:
-    PED: train
-    MEN: train
+labels:
+  setup: regions
+  et_labels: [3, 4]
 
 patch:
   size: [128, 128, 128]
-  size_men: [96, 96, 96]
-  num_samples: 1
-  sampling: label_classes
-  class_ratios: [0, 2, 2, 2]
-  pos: 3
-  neg: 1
-  min_fg_ratio: 0.005
-  max_sample_tries: 10
-  tumor_center_prob: 0.7
-  tumor_margin: 20
+  min_fg_ratio: 0.02
+  max_sample_tries: 30
+  tumor_margin: 24
 
 dataloader:
   batch_size: 2
   num_workers: 2
   shuffle: true
 
+model:
+  name: unet
+  channels: [16, 32, 64, 128, 256]
+  strides: [2, 2, 2, 2]
+  num_res_units: 2
+  in_channels: 3
+  out_channels: 3
+
 training:
   learning_rate: 0.0002
-  epochs: 10
+  epochs: 60
   val_interval: 1
-  checkpoint_dir: checkpoints/baseline_t1ce_multiclass
-  log_every: 20
+  checkpoint_dir: checkpoints/strict_multimodal_clean
+  log_every: 10
   loss:
-    lambda_ce: 0.5
-    lambda_dice: 0.5
-    lambda_focal: 0.5
+    lambda_dice: 1.0
+    lambda_focal: 1.0
     focal_gamma: 2.0
-    class_weights: [0.05, 0.2, 0.25, 0.5]
+
+inference:
+  overlap: 0.25
+  threshold: 0.5
+  min_component_size: 50
