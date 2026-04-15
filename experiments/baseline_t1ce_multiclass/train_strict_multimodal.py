@@ -41,7 +41,16 @@ class RegionLabeld:
 
     def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
         d = dict(data)
-        wt, tc, et = region_channels_from_label(d[self.key], et_labels=self.et_labels)
+        label = d[self.key]
+        if torch.is_tensor(label):
+            if label.ndim >= 4 and label.shape[0] == 1:
+                label = label.squeeze(0)
+        else:
+            label = np.asarray(label)
+            if label.ndim >= 4 and label.shape[0] == 1:
+                label = np.squeeze(label, axis=0)
+
+        wt, tc, et = region_channels_from_label(label, et_labels=self.et_labels)
         d[self.key] = np.stack([wt, tc, et], axis=0).astype(np.float32)
         return d
 
