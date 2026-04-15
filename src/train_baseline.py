@@ -86,7 +86,7 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(in_channels=3, out_channels=2).to(device)
-    loss_fn = DiceCELoss(to_onehot_y=False, sigmoid=True)
+    loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
 
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
@@ -107,7 +107,7 @@ def main() -> None:
 
             optimizer.zero_grad()
             logits = model(image)
-            loss = loss_fn(logits, torch.nn.functional.one_hot(label.long().squeeze(1), num_classes=2).permute(0, 4, 1, 2, 3).float())
+            loss = loss_fn(logits, label.long())
             loss.backward()
             optimizer.step()
             epoch_loss += float(loss.item())
