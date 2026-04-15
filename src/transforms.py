@@ -7,7 +7,7 @@ import torch
 from monai.transforms import (
     Compose, EnsureChannelFirstd, EnsureTyped, LoadImaged,
     RandFlipd, RandRotate90d, RandAffined, RandGaussianNoised,
-    RandIntensityShiftd,
+    RandScaleIntensityd, RandAdjustContrastd,
 )
 
 
@@ -195,7 +195,8 @@ def build_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_f
                 scale_range=(0.1, 0.1, 0.1),
                 mode=("bilinear", "nearest"),
             ),
-            RandIntensityShiftd(keys="image", factors=0.1, prob=0.5),
+            RandScaleIntensityd(keys="image", factors=0.1, prob=0.5),
+            RandAdjustContrastd(keys="image", prob=0.3),
         ])
 
     return Compose(ops)
