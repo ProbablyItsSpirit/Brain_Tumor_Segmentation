@@ -8,6 +8,7 @@ import numpy as np
 import torch
 from monai.data import DataLoader, Dataset
 from monai.losses import DiceCELoss
+from monai.inferers import sliding_window_inference
 from monai.utils import set_determinism
 
 from config import get_default_config
@@ -120,7 +121,7 @@ def main() -> None:
             for batch in val_loader:
                 image = batch["image"].to(device)
                 label = batch["label"].to(device)
-                logits = model(image)
+                logits = sliding_window_inference(image, cfg.patch_size, 1, model, overlap=0.25)
                 probs = torch.softmax(logits, dim=1)
                 pred = torch.argmax(probs, dim=1, keepdim=True)
                 dice_scores.append(dice_binary(pred.float(), label.float()))
