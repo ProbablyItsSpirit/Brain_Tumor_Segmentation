@@ -1,0 +1,212 @@
+[
+  {
+    "epoch": 1,
+    "loss": 0.6007881624658603,
+    "dice": 0.0,
+    "validated": false
+  },
+  {
+    "epoch": 2,
+    "loss": 0.2785639718399626,
+    "dice": 0.0,
+    "validated": false
+  },
+  {
+    "epoch": 3,
+    "loss": 0.2222606066596516,
+    "dice": 0.0,
+    "validated": false
+  },
+  {
+    "epoch": 4,
+    "loss": 0.19509691615589603,
+    "dice": 0.0,
+    "validated": false
+  },
+  {
+    "epoch": 5,
+    "loss": 0.18412407162721187,
+    "dice": 0.7367534861637651,
+    "validated": true
+  },
+  {
+    "epoch": 6,
+    "loss": 0.17576796533648406,
+    "dice": 0.7367534861637651,
+    "validated": false
+  },
+  {
+    "epoch": 7,
+    "loss": 0.16429994402120096,
+    "dice": 0.7367534861637651,
+    "validated": false
+  },
+  {
+    "epoch": 8,
+    "loss": 0.15946751734148648,
+    "dice": 0.7367534861637651,
+    "validated": false
+  },
+  {
+    "epoch": 9,
+    "loss": 0.15270446800461487,
+    "dice": 0.7367534861637651,
+    "validated": false
+  },
+  {
+    "epoch": 10,
+    "loss": 0.1538986555294908,
+    "dice": 0.7998025360651727,
+    "validated": true
+  },
+  {
+    "epoch": 11,
+    "loss": 0.14630904332737837,
+    "dice": 0.7998025360651727,
+    "validated": false
+  },
+  {
+    "epoch": 12,
+    "loss": 0.14267937855500118,
+    "dice": 0.7998025360651727,
+    "validated": false
+  },
+  {
+    "epoch": 13,
+    "loss": 0.14020371940586973,
+    "dice": 0.7998025360651727,
+    "validated": false
+  },
+  {
+    "epoch": 14,
+    "loss": 0.1401967820076296,
+    "dice": 0.7998025360651727,
+    "validated": false
+  },
+  {
+    "epoch": 15,
+    "loss": 0.13367243531281978,
+    "dice": 0.78620696346177,
+    "validated": true
+  },
+  {
+    "epoch": 16,
+    "loss": 0.13230985760653036,
+    "dice": 0.78620696346177,
+    "validated": false
+  },
+  {
+    "epoch": 17,
+    "loss": 0.13391482467476515,
+    "dice": 0.78620696346177,
+    "validated": false
+  },
+  {
+    "epoch": 18,
+    "loss": 0.12931780573529605,
+    "dice": 0.78620696346177,
+    "validated": false
+  },
+  {
+    "epoch": 19,
+    "loss": 0.12839250638570338,
+    "dice": 0.78620696346177,
+    "validated": false
+  },
+  {
+    "epoch": 20,
+    "loss": 0.12619998247948022,
+    "dice": 0.7742203958190735,
+    "validated": true
+  },
+  {
+    "epoch": 21,
+    "loss": 0.12328959384842471,
+    "dice": 0.7742203958190735,
+    "validated": false
+  },
+  {
+    "epoch": 22,
+    "loss": 0.1249318819868393,
+    "dice": 0.7742203958190735,
+    "validated": false
+  },
+  {
+    "epoch": 23,
+    "loss": 0.12413998231843287,
+    "dice": 0.7742203958190735,
+    "validated": false
+  },
+  {
+    "epoch": 24,
+    "loss": 0.12237499169035061,
+    "dice": 0.7742203958190735,
+    "validated": false
+  },
+  {
+    "epoch": 25,
+    "loss": 0.11718703365570025,
+    "dice": 0.8279996486319144,
+    "validated": true
+  },
+  {
+    "epoch": 26,
+    "loss": 0.1197756441505377,
+    "dice": 0.8279996486319144,
+    "validated": false
+  },
+  {
+    "epoch": 27,
+    "loss": 0.11854433302523094,
+    "dice": 0.8279996486319144,
+    "validated": false
+  },
+  {
+    "epoch": 28,
+    "loss": 0.11524242312456542,
+    "dice": 0.8279996486319144,
+    "validated": false
+  },
+  {
+    "epoch": 29,
+    "loss": 0.11502582255069159,
+    "dice": 0.8279996486319144,
+    "validated": false
+  },
+  {
+    "epoch": 30,
+    "loss": 0.11379283079475348,
+    "dice": 0.8029844677198795,
+    "validated": true
+  },
+  {
+    "epoch": 31,
+    "loss": 0.11610449887071675,
+    "dice": 0.8029844677198795,
+    "validated": false
+  },
+  {
+    "epoch": 32,
+    "loss": 0.1138082262654575,
+    "dice": 0.8029844677198795,
+    "validated": false
+  },
+  {
+    "epoch": 33,
+    "loss": 0.1141141471073205,
+    "dice": 0.8029844677198795,
+    "validated": false
+  },
+  {
+    "epoch": 34,
+    "loss": 0.11069971067809217,
+    "dice": 0.8029844677198795,
+    "validated": false
+  },
+  {
+    "epoch": 35,
+    "loss": 0.11166422485646481,
+    "dice": 0.836248652745143,
+    "validated": true
+  }
+]
