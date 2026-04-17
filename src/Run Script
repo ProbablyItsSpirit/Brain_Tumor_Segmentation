@@ -1,0 +1,8 @@
+
+python3 train_baseline_new.py
+
+python3 inference_baseline_new.py --checkpoint checkpoints/gli_4mod_binary_new/best.pt --split val
+
+python3 inference_baseline_new.py --checkpoint checkpoints/gli_4mod_binary_new/best.pt --split test
+
+python3 inference_baseline_new.py --checkpoint checkpoints/gli_4mod_binary_new/best.pt --split val --min-component-size 120
