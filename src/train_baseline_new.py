@@ -65,8 +65,27 @@ def main() -> None:
 
     if not train_cases:
         raise RuntimeError("No train cases loaded from gli_train.txt")
-    if not val_cases:
-        raise RuntimeError("No val cases loaded from gli_val.txt")
+
+    raw_val_cases = val_cases
+    if not raw_val_cases:
+        if len(train_cases) < 2:
+            raise RuntimeError("Need at least 2 train cases to create a validation split.")
+        rng = np.random.default_rng(cfg.seed)
+        perm = rng.permutation(len(train_cases))
+        val_count = max(1, int(len(train_cases) * 0.1))
+        val_idx = set(perm[:val_count].tolist())
+        split_train = []
+        split_val = []
+        for i, case in enumerate(train_cases):
+            if i in val_idx:
+                split_val.append(case)
+            else:
+                split_train.append(case)
+        train_cases = split_train
+        val_cases = split_val
+        print(f"gli_val.txt had no labeled cases; created holdout val split with {len(train_cases)} train / {len(val_cases)} val cases")
+    else:
+        print(f"Loaded {len(raw_val_cases)} labeled cases from gli_val.txt")
 
     print("Mode: FULL TRAINING NEW")
     print(f"Train cases: {len(train_cases)} | Val cases: {len(val_cases)} | Test cases: {len(test_cases)}")
@@ -165,6 +184,7 @@ def main() -> None:
     split_meta = {
         "train_cases": len(train_cases),
         "val_cases": len(val_cases),
+        "raw_val_cases": len(raw_val_cases),
         "test_cases": len(test_cases),
         "train_list": str(train_list),
         "val_list": str(val_list),

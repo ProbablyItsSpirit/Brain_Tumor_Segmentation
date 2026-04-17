@@ -102,3 +102,41 @@ def load_gli_train_val_test_strict(
     val_cases = build_gli_case_dicts_for_split(data_root, val_list, preferred_split="val")
     test_cases = build_gli_case_dicts_for_split(data_root, test_list, preferred_split="val")
     return train_cases, val_cases, test_cases
+
+
+def build_gli_image_case_dicts(data_root: Path, list_path: Path, preferred_split: str) -> List[Dict[str, str]]:
+    case_ids = read_case_ids(list_path)
+    cases: List[Dict[str, str]] = []
+
+    for case_id in case_ids:
+        case_dir = find_case_dir_preferred(data_root, case_id, preferred_split)
+        if case_dir is None:
+            continue
+
+        sample = {
+            "case_id": case_id,
+            "image_t1n": str(case_dir / f"{case_id}-t1n.nii.gz"),
+            "image_t1c": str(case_dir / f"{case_id}-t1c.nii.gz"),
+            "image_t2w": str(case_dir / f"{case_id}-t2w.nii.gz"),
+            "image_t2f": str(case_dir / f"{case_id}-t2f.nii.gz"),
+        }
+
+        if all(Path(v).exists() for k, v in sample.items() if k != "case_id"):
+            seg_path = case_dir / f"{case_id}-seg.nii.gz"
+            if seg_path.exists():
+                sample["label"] = str(seg_path)
+            cases.append(sample)
+
+    return cases
+
+
+def load_gli_train_val_test_cases(
+    data_root: Path,
+    train_list: Path,
+    val_list: Path,
+    test_list: Path,
+) -> tuple[List[Dict[str, str]], List[Dict[str, str]], List[Dict[str, str]]]:
+    train_cases = build_gli_image_case_dicts(data_root, train_list, preferred_split="train")
+    val_cases = build_gli_image_case_dicts(data_root, val_list, preferred_split="val")
+    test_cases = build_gli_image_case_dicts(data_root, test_list, preferred_split="val")
+    return train_cases, val_cases, test_cases

@@ -10,9 +10,9 @@ from monai.data import DataLoader, Dataset
 from monai.inferers import sliding_window_inference
 
 from config import get_default_config
-from dataset import load_gli_train_val_test_strict
+from dataset import load_gli_train_val_test_cases
 from model import build_model
-from transforms import build_transforms
+from transforms import build_inference_transforms
 
 
 def parse_args() -> argparse.Namespace:
@@ -91,7 +91,7 @@ def main() -> None:
     val_list = cfg.repo_root / "patient_lists/gli_val.txt"
     test_list = cfg.repo_root / "patient_lists/gli_test.txt"
 
-    train_cases, val_cases, test_cases = load_gli_train_val_test_strict(
+    train_cases, val_cases, test_cases = load_gli_train_val_test_cases(
         data_root=cfg.data_root,
         train_list=train_list,
         val_list=val_list,
@@ -111,16 +111,11 @@ def main() -> None:
     if not cases:
         raise RuntimeError(f"No cases available for split={args.split}")
 
+    include_label = args.split == "train" or any("label" in case for case in cases)
+
     ds = Dataset(
         data=cases,
-        transform=build_transforms(
-            modalities=cfg.modalities,
-            patch_size=cfg.patch_size,
-            min_fg_ratio=cfg.min_fg_ratio,
-            max_tries=cfg.max_sample_tries,
-            margin=cfg.tumor_margin,
-            training=False,
-        ),
+        transform=build_inference_transforms(modalities=cfg.modalities, include_label=include_label),
     )
     loader = DataLoader(ds, batch_size=1, shuffle=False, num_workers=cfg.num_workers)
 
@@ -144,7 +139,10 @@ def main() -> None:
         for batch in loader:
             case_id = str(batch["case_id"][0])
             image = batch["image"].to(device)
-            label = batch["label"].to(device)
+            label = batch.get("label")
+            has_label = label is not None
+            if has_label:
+                label = label.to(device)
 
             probs = tta_predict_probs(model, image, tuple(cfg.patch_size))
             pred = torch.argmax(probs, dim=1, keepdim=True)
@@ -155,14 +153,17 @@ def main() -> None:
 
             np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
-            pred_for_metric = torch.from_numpy(pred_np).to(label.device).unsqueeze(0).unsqueeze(0).float()
-            dice = dice_binary(pred_for_metric, label.float())
-            rows.append({"case_id": case_id, "dice": dice})
+            if has_label:
+                pred_for_metric = torch.from_numpy(pred_np).to(label.device).unsqueeze(0).unsqueeze(0).float()
+                dice = dice_binary(pred_for_metric, label.float())
+                rows.append({"case_id": case_id, "dice": dice})
+            else:
+                rows.append({"case_id": case_id, "dice": None})
 
     summary = {
         "split": args.split,
         "num_cases": len(rows),
-        "mean_dice": float(np.mean([r["dice"] for r in rows])) if rows else 0.0,
+        "mean_dice": float(np.mean([r["dice"] for r in rows if r["dice"] is not None])) if any(r["dice"] is not None for r in rows) else None,
         "min_component_size": args.min_component_size,
         "post_processing": not args.disable_post,
         "cases": rows,

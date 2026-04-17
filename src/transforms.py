@@ -200,3 +200,18 @@ def build_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_f
         ])
 
     return Compose(ops)
+
+
+def build_inference_transforms(modalities: Sequence[str], include_label: bool = False) -> Compose:
+    image_keys = [f"image_{m}" for m in modalities]
+    keys = list(image_keys)
+    if include_label:
+        keys.append("label")
+
+    return Compose([
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
+        EnsureTyped(keys=image_keys, dtype=torch.float32),
+        StackModalitiesd(keys=image_keys),
+    ])
