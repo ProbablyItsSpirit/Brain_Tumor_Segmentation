@@ -172,7 +172,10 @@ def main() -> None:
         json.dump(summary, f, indent=2)
 
     print(f"Predictions saved to: {pred_dir}")
-    print(f"Mean Dice: {summary['mean_dice']:.4f}")
+    if summary["mean_dice"] is None:
+        print("Mean Dice: N/A (no labels available for this split)")
+    else:
+        print(f"Mean Dice: {summary['mean_dice']:.4f}")
 
 
 if __name__ == "__main__":
