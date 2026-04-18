@@ -31,6 +31,37 @@ class BinaryLabeld:
         return d
 
 
+class BraTSMulticlassLabeld:
+    """Map BraTS labels to background/TC/ED/ET -> 0/1/2/3."""
+
+    def __init__(self, key: str = "label"):
+        self.key = key
+
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        label = d[self.key]
+        if torch.is_tensor(label):
+            label = label.detach().cpu().numpy()
+        else:
+            label = np.asarray(label)
+
+        if label.ndim >= 4 and label.shape[0] == 1:
+            label = np.squeeze(label, axis=0)
+
+        label = np.rint(label).astype(np.int16)
+
+        if label.max(initial=0) <= 3 and np.isin(label, [0, 1, 2, 3]).all():
+            mapped = label.astype(np.int16)
+        else:
+            mapped = np.zeros_like(label, dtype=np.int16)
+            mapped[label == 1] = 1  # TC / NCR
+            mapped[label == 2] = 2  # ED
+            mapped[label == 4] = 3  # ET
+
+        d[self.key] = mapped[None, ...]
+        return d
+
+
 class ZScoreNormalizeModalitiesd:
     """Z-score normalize each modality independently."""
     def __init__(self, keys: Sequence[str]):
@@ -215,3 +246,67 @@ def build_inference_transforms(modalities: Sequence[str], include_label: bool = 
         EnsureTyped(keys=image_keys, dtype=torch.float32),
         StackModalitiesd(keys=image_keys),
     ])
+
+
+def build_multiclass_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_fg_ratio: float, max_tries: int, margin: int, training: bool = True) -> Compose:
+    image_keys = [f"image_{m}" for m in modalities]
+    keys = list(image_keys) + ["label"]
+
+    ops = [
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
+        BraTSMulticlassLabeld(key="label"),
+        EnsureTyped(keys=image_keys, dtype=torch.float32),
+        EnsureTyped(keys="label", dtype=torch.float32),
+        StackModalitiesd(keys=image_keys),
+    ]
+
+    if training:
+        ops.extend([
+            TumorCenteredCropd(
+                image_key="image",
+                label_key="label",
+                patch_size=patch_size,
+                min_fg_ratio=min_fg_ratio,
+                max_tries=max_tries,
+                margin=margin,
+            ),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
+            RandRotate90d(keys=["image", "label"], prob=0.5, max_k=3),
+            RandAffined(
+                keys=["image", "label"],
+                prob=0.5,
+                rotate_range=(np.pi / 12, np.pi / 12, np.pi / 12),
+                translate_range=(10, 10, 5),
+                scale_range=(0.1, 0.1, 0.1),
+                mode=("bilinear", "nearest"),
+            ),
+            RandScaleIntensityd(keys="image", factors=0.1, prob=0.5),
+            RandAdjustContrastd(keys="image", prob=0.3),
+        ])
+
+    return Compose(ops)
+
+
+def build_multiclass_inference_transforms(modalities: Sequence[str], include_label: bool = False) -> Compose:
+    image_keys = [f"image_{m}" for m in modalities]
+    keys = list(image_keys)
+    if include_label:
+        keys.append("label")
+
+    ops = [
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
+    ]
+    if include_label:
+        ops.append(BraTSMulticlassLabeld(key="label"))
+    ops.extend([
+        EnsureTyped(keys=image_keys, dtype=torch.float32),
+        EnsureTyped(keys="label", dtype=torch.float32) if include_label else None,
+        StackModalitiesd(keys=image_keys),
+    ])
+    return Compose([op for op in ops if op is not None])

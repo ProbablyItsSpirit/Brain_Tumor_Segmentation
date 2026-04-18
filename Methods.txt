@@ -36,6 +36,13 @@ Methods tried so far
 - Labels: binary first, then region-based later
 - Goal: simple working pipeline that can overfit 20 cases before any advanced techniques
 
+7. Multiclass BraTS transition
+- Task: move from binary tumor vs background to 3-class tumor structure segmentation
+- Classes: TC, ED, ET with background
+- Backbone: keep the same UNet / training loop, change only label mapping, output channels, and loss
+- Validation: use held-out train split for Dice tracking because gli_val.txt / gli_test.txt are image-only in this dataset layout
+- Goal: first prove structure-aware predictions, then tune class imbalance and sampling
+
 Notes
 - MEN was not the right target for the early baseline
 - Fancy techniques were intentionally deferred
