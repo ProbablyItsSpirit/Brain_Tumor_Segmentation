@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from collections import deque
 
 import numpy as np
 import torch
@@ -23,6 +24,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=str, default="results/gli_4mod_multiclass_new_tta")
     parser.add_argument("--patch-size", type=int, nargs=3, default=[128, 128, 128])
     parser.add_argument("--disable-tta", action="store_true")
+    parser.add_argument("--min-component-size", type=int, default=75)
+    parser.add_argument("--disable-keep-largest-tumor", action="store_true")
     return parser.parse_args()
 
 
@@ -51,6 +54,107 @@ def tta_predict_probs(model: torch.nn.Module, image: torch.Tensor, patch_size: t
         prob_sum = probs if prob_sum is None else prob_sum + probs
 
     return prob_sum / float(len(flip_axes))
+
+
+def _remove_small_components(mask: np.ndarray, min_size: int) -> np.ndarray:
+    if min_size <= 0:
+        return mask
+    if not np.any(mask):
+        return mask
+
+    visited = np.zeros(mask.shape, dtype=bool)
+    out = np.zeros_like(mask, dtype=bool)
+    d, h, w = mask.shape
+    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+    coords = np.argwhere(mask)
+    for z, y, x in coords:
+        z = int(z)
+        y = int(y)
+        x = int(x)
+        if visited[z, y, x]:
+            continue
+
+        comp = []
+        q = deque([(z, y, x)])
+        visited[z, y, x] = True
+
+        while q:
+            cz, cy, cx = q.pop()
+            comp.append((cz, cy, cx))
+            for dz, dy, dx in neighbors:
+                nz, ny, nx = cz + dz, cy + dy, cx + dx
+                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
+                    continue
+                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
+                    continue
+                visited[nz, ny, nx] = True
+                q.append((nz, ny, nx))
+
+        if len(comp) >= min_size:
+            zz, yy, xx = zip(*comp)
+            out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
+
+    return out
+
+
+def _largest_component_mask(mask: np.ndarray) -> np.ndarray:
+    if not np.any(mask):
+        return mask
+
+    visited = np.zeros(mask.shape, dtype=bool)
+    d, h, w = mask.shape
+    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+    largest_comp = []
+    coords = np.argwhere(mask)
+    for z, y, x in coords:
+        z = int(z)
+        y = int(y)
+        x = int(x)
+        if visited[z, y, x]:
+            continue
+
+        comp = []
+        q = deque([(z, y, x)])
+        visited[z, y, x] = True
+
+        while q:
+            cz, cy, cx = q.pop()
+            comp.append((cz, cy, cx))
+            for dz, dy, dx in neighbors:
+                nz, ny, nx = cz + dz, cy + dy, cx + dx
+                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
+                    continue
+                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
+                    continue
+                visited[nz, ny, nx] = True
+                q.append((nz, ny, nx))
+
+        if len(comp) > len(largest_comp):
+            largest_comp = comp
+
+    out = np.zeros_like(mask, dtype=bool)
+    if largest_comp:
+        zz, yy, xx = zip(*largest_comp)
+        out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
+    return out
+
+
+def postprocess_prediction(pred_3d: np.ndarray, min_component_size: int, keep_largest_tumor: bool) -> np.ndarray:
+    out = np.zeros_like(pred_3d, dtype=np.uint8)
+
+    for class_id in (1, 2, 3):
+        class_mask = pred_3d == class_id
+        class_mask = _remove_small_components(class_mask, min_component_size)
+        out[class_mask] = class_id
+
+    if keep_largest_tumor:
+        tumor = out > 0
+        keep_mask = _largest_component_mask(tumor)
+        out = np.where(keep_mask, out, 0).astype(np.uint8)
+
+    return out
 
 
 def main() -> None:
@@ -118,10 +222,15 @@ def main() -> None:
             probs = tta_predict_probs(model, image, tuple(cfg.patch_size), enabled=not args.disable_tta)
             pred = torch.argmax(probs, dim=1, keepdim=True)
             pred_np = pred[0, 0].detach().cpu().numpy().astype(np.uint8)
+            pred_np = postprocess_prediction(
+                pred_np,
+                min_component_size=args.min_component_size,
+                keep_largest_tumor=not args.disable_keep_largest_tumor,
+            )
             np.save(pred_dir / f"{case_id}_pred.npy", pred_np)
 
             if has_label:
-                pred_t = pred.squeeze(1)
+                pred_t = torch.from_numpy(pred_np).unsqueeze(0).to(device=device, dtype=torch.long)
                 dice_tc = dice_for_class(pred_t, label, 1)
                 dice_ed = dice_for_class(pred_t, label, 2)
                 dice_et = dice_for_class(pred_t, label, 3)
@@ -155,6 +264,8 @@ def main() -> None:
         "dice_ed": float(np.mean([r["dice_ed"] for r in valid_rows])) if valid_rows else None,
         "dice_et": float(np.mean([r["dice_et"] for r in valid_rows])) if valid_rows else None,
         "tta": not args.disable_tta,
+        "min_component_size": args.min_component_size,
+        "keep_largest_tumor": not args.disable_keep_largest_tumor,
         "cases": rows,
     }
 

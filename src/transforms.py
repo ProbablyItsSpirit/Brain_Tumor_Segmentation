@@ -101,13 +101,25 @@ class StackModalitiesd:
 
 
 class TumorCenteredCropd:
-    def __init__(self, image_key: str, label_key: str, patch_size: Sequence[int], min_fg_ratio: float, max_tries: int, margin: int):
+    def __init__(
+        self,
+        image_key: str,
+        label_key: str,
+        patch_size: Sequence[int],
+        min_fg_ratio: float,
+        max_tries: int,
+        margin: int,
+        target_classes: Sequence[int] | None = None,
+        class_sample_weights: Sequence[float] | None = None,
+    ):
         self.image_key = image_key
         self.label_key = label_key
         self.patch_size = tuple(int(x) for x in patch_size)
         self.min_fg_ratio = float(min_fg_ratio)
         self.max_tries = int(max_tries)
         self.margin = int(margin)
+        self.target_classes = list(target_classes) if target_classes is not None else None
+        self.class_sample_weights = list(class_sample_weights) if class_sample_weights is not None else None
 
     @staticmethod
     def _pad_to(t: torch.Tensor, target: tuple[int, int, int]) -> torch.Tensor:
@@ -136,8 +148,34 @@ class TumorCenteredCropd:
         x = np.random.randint(0, max(w - pw, 0) + 1) if w > pw else 0
         return int(z), int(y), int(x)
 
-    def _tumor_start(self, label_3d: torch.Tensor):
-        fg = torch.nonzero(label_3d > 0, as_tuple=False)
+    def _choose_focus_class(self, label_3d: torch.Tensor) -> int | None:
+        if not self.target_classes:
+            return None
+
+        present_classes = []
+        present_weights = []
+        for i, class_id in enumerate(self.target_classes):
+            if torch.any(label_3d == int(class_id)):
+                present_classes.append(int(class_id))
+                if self.class_sample_weights is not None and i < len(self.class_sample_weights):
+                    present_weights.append(float(self.class_sample_weights[i]))
+                else:
+                    present_weights.append(1.0)
+
+        if not present_classes:
+            return None
+
+        weights = np.asarray(present_weights, dtype=np.float64)
+        weights = np.clip(weights, 1e-6, None)
+        weights /= weights.sum()
+        return int(np.random.choice(present_classes, p=weights))
+
+    def _tumor_start(self, label_3d: torch.Tensor, focus_class: int | None = None):
+        if focus_class is None:
+            fg = torch.nonzero(label_3d > 0, as_tuple=False)
+        else:
+            fg = torch.nonzero(label_3d == int(focus_class), as_tuple=False)
+
         if fg.numel() == 0:
             return self._rand_start(tuple(label_3d.shape), self.patch_size)
 
@@ -169,7 +207,8 @@ class TumorCenteredCropd:
         best_ratio = -1.0
 
         for _ in range(self.max_tries):
-            z, y, x = self._tumor_start(label[0])
+            focus_class = self._choose_focus_class(label[0])
+            z, y, x = self._tumor_start(label[0], focus_class=focus_class)
             ci = self._crop(image, z, y, x, self.patch_size)
             cl = self._crop(label, z, y, x, self.patch_size)
             fg_ratio = float((cl[0] > 0.5).float().mean().item())
@@ -248,7 +287,15 @@ def build_inference_transforms(modalities: Sequence[str], include_label: bool = 
     ])
 
 
-def build_multiclass_transforms(modalities: Sequence[str], patch_size: Sequence[int], min_fg_ratio: float, max_tries: int, margin: int, training: bool = True) -> Compose:
+def build_multiclass_transforms(
+    modalities: Sequence[str],
+    patch_size: Sequence[int],
+    min_fg_ratio: float,
+    max_tries: int,
+    margin: int,
+    training: bool = True,
+    class_sample_weights: Sequence[float] | None = None,
+) -> Compose:
     image_keys = [f"image_{m}" for m in modalities]
     keys = list(image_keys) + ["label"]
 
@@ -271,6 +318,8 @@ def build_multiclass_transforms(modalities: Sequence[str], patch_size: Sequence[
                 min_fg_ratio=min_fg_ratio,
                 max_tries=max_tries,
                 margin=margin,
+                target_classes=[1, 2, 3],
+                class_sample_weights=class_sample_weights,
             ),
             RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
             RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),

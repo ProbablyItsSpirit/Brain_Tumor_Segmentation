@@ -3,12 +3,13 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from collections import deque
 
 import numpy as np
 import torch
 from monai.data import DataLoader, Dataset
 from monai.inferers import sliding_window_inference
-from monai.losses import DiceCELoss
+from monai.losses import DiceFocalLoss
 from monai.utils import set_determinism
 
 from config import get_default_config
@@ -32,6 +33,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--checkpoint-dir", type=str, default="checkpoints/gli_4mod_multiclass_new")
     parser.add_argument("--results-dir", type=str, default="results/gli_4mod_multiclass_new")
+    parser.add_argument("--focal-gamma", type=float, default=2.0)
+    parser.add_argument("--lambda-dice", type=float, default=1.0)
+    parser.add_argument("--lambda-focal", type=float, default=1.0)
+    parser.add_argument("--bg-focal-weight", type=float, default=0.5)
+    parser.add_argument("--tc-focal-weight", type=float, default=2.5)
+    parser.add_argument("--ed-focal-weight", type=float, default=1.0)
+    parser.add_argument("--et-focal-weight", type=float, default=1.25)
+    parser.add_argument("--tc-sampling-weight", type=float, default=2.5)
+    parser.add_argument("--ed-sampling-weight", type=float, default=1.0)
+    parser.add_argument("--et-sampling-weight", type=float, default=1.5)
+    parser.add_argument("--min-fg-ratio", type=float, default=0.03)
+    parser.add_argument("--max-sample-tries", type=int, default=45)
+    parser.add_argument("--tumor-margin", type=int, default=28)
+    parser.add_argument("--min-component-size", type=int, default=75)
+    parser.add_argument("--disable-keep-largest-tumor", action="store_true")
     return parser.parse_args()
 
 
@@ -43,7 +59,115 @@ def dice_for_class(pred: torch.Tensor, target: torch.Tensor, class_id: int) -> f
     return float((2.0 * inter + 1e-6) / (den + 1e-6))
 
 
-def evaluate_multiclass(model: torch.nn.Module, loader: DataLoader, device: torch.device, patch_size: tuple[int, int, int]) -> dict[str, float]:
+def _remove_small_components(mask: np.ndarray, min_size: int) -> np.ndarray:
+    if min_size <= 0:
+        return mask
+    if not np.any(mask):
+        return mask
+
+    visited = np.zeros(mask.shape, dtype=bool)
+    out = np.zeros_like(mask, dtype=bool)
+    d, h, w = mask.shape
+    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+    coords = np.argwhere(mask)
+    for z, y, x in coords:
+        z = int(z)
+        y = int(y)
+        x = int(x)
+        if visited[z, y, x]:
+            continue
+
+        comp = []
+        q = deque([(z, y, x)])
+        visited[z, y, x] = True
+
+        while q:
+            cz, cy, cx = q.pop()
+            comp.append((cz, cy, cx))
+            for dz, dy, dx in neighbors:
+                nz, ny, nx = cz + dz, cy + dy, cx + dx
+                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
+                    continue
+                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
+                    continue
+                visited[nz, ny, nx] = True
+                q.append((nz, ny, nx))
+
+        if len(comp) >= min_size:
+            zz, yy, xx = zip(*comp)
+            out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
+
+    return out
+
+
+def _largest_component_mask(mask: np.ndarray) -> np.ndarray:
+    if not np.any(mask):
+        return mask
+
+    visited = np.zeros(mask.shape, dtype=bool)
+    d, h, w = mask.shape
+    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+    largest_comp = []
+    coords = np.argwhere(mask)
+    for z, y, x in coords:
+        z = int(z)
+        y = int(y)
+        x = int(x)
+        if visited[z, y, x]:
+            continue
+
+        comp = []
+        q = deque([(z, y, x)])
+        visited[z, y, x] = True
+
+        while q:
+            cz, cy, cx = q.pop()
+            comp.append((cz, cy, cx))
+            for dz, dy, dx in neighbors:
+                nz, ny, nx = cz + dz, cy + dy, cx + dx
+                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
+                    continue
+                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
+                    continue
+                visited[nz, ny, nx] = True
+                q.append((nz, ny, nx))
+
+        if len(comp) > len(largest_comp):
+            largest_comp = comp
+
+    out = np.zeros_like(mask, dtype=bool)
+    if largest_comp:
+        zz, yy, xx = zip(*largest_comp)
+        out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
+    return out
+
+
+def postprocess_prediction(pred_3d: np.ndarray, min_component_size: int, keep_largest_tumor: bool) -> np.ndarray:
+    out = np.zeros_like(pred_3d, dtype=np.uint8)
+
+    for class_id in (1, 2, 3):
+        class_mask = pred_3d == class_id
+        class_mask = _remove_small_components(class_mask, min_component_size)
+        out[class_mask] = class_id
+
+    if keep_largest_tumor:
+        tumor = out > 0
+        keep_mask = _largest_component_mask(tumor)
+        out = np.where(keep_mask, out, 0).astype(np.uint8)
+
+    return out
+
+
+def evaluate_multiclass(
+    model: torch.nn.Module,
+    loader: DataLoader,
+    device: torch.device,
+    patch_size: tuple[int, int, int],
+    min_component_size: int,
+    keep_largest_tumor: bool,
+) -> dict[str, float]:
     per_class_values: dict[int, list[float]] = {1: [], 2: [], 3: []}
 
     model.eval()
@@ -53,6 +177,13 @@ def evaluate_multiclass(model: torch.nn.Module, loader: DataLoader, device: torc
             label = batch["label"].to(device).long().squeeze(1)
             logits = sliding_window_inference(image, patch_size, 1, model, overlap=0.25)
             pred = torch.argmax(torch.softmax(logits, dim=1), dim=1)
+            pred_np = pred[0].detach().cpu().numpy().astype(np.uint8)
+            pred_np = postprocess_prediction(
+                pred_np,
+                min_component_size=min_component_size,
+                keep_largest_tumor=keep_largest_tumor,
+            )
+            pred = torch.from_numpy(pred_np).unsqueeze(0).to(device=device, dtype=torch.long)
 
             for class_id in (1, 2, 3):
                 per_class_values[class_id].append(dice_for_class(pred, label, class_id))
@@ -74,6 +205,9 @@ def main() -> None:
     cfg.seed = args.seed
     cfg.checkpoint_dir = (cfg.repo_root / Path(args.checkpoint_dir)).resolve()
     cfg.results_dir = (cfg.repo_root / Path(args.results_dir)).resolve()
+    cfg.min_fg_ratio = args.min_fg_ratio
+    cfg.max_sample_tries = args.max_sample_tries
+    cfg.tumor_margin = args.tumor_margin
 
     train_list = cfg.repo_root / "patient_lists/gli_train.txt"
     val_list = cfg.repo_root / "patient_lists/gli_val.txt"
@@ -122,6 +256,18 @@ def main() -> None:
     print(f"Patch size: {cfg.patch_size}")
     print(f"LR: {cfg.learning_rate} | Weight decay: {cfg.weight_decay}")
     print(f"Epochs: {args.epochs} | Val interval: {args.val_interval}")
+    print(
+        "Sampling weights (TC/ED/ET): "
+        f"{args.tc_sampling_weight:.2f}/{args.ed_sampling_weight:.2f}/{args.et_sampling_weight:.2f}"
+    )
+    print(
+        "Focal weights (BG/TC/ED/ET): "
+        f"{args.bg_focal_weight:.2f}/{args.tc_focal_weight:.2f}/{args.ed_focal_weight:.2f}/{args.et_focal_weight:.2f}"
+    )
+    print(
+        f"Postprocess: min_component_size={args.min_component_size} | "
+        f"keep_largest_tumor={not args.disable_keep_largest_tumor}"
+    )
     print(f"Checkpoint dir: {cfg.checkpoint_dir}")
     print(f"Results dir: {cfg.results_dir}")
     print()
@@ -135,6 +281,7 @@ def main() -> None:
             max_tries=cfg.max_sample_tries,
             margin=cfg.tumor_margin,
             training=True,
+            class_sample_weights=[args.tc_sampling_weight, args.ed_sampling_weight, args.et_sampling_weight],
         ),
     )
     val_ds = Dataset(
@@ -154,7 +301,14 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(in_channels=4, out_channels=4).to(device)
-    loss_fn = DiceCELoss(to_onehot_y=True, softmax=True)
+    loss_fn = DiceFocalLoss(
+        to_onehot_y=True,
+        softmax=True,
+        gamma=args.focal_gamma,
+        focal_weight=[args.bg_focal_weight, args.tc_focal_weight, args.ed_focal_weight, args.et_focal_weight],
+        lambda_dice=args.lambda_dice,
+        lambda_focal=args.lambda_focal,
+    )
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
 
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
@@ -185,7 +339,14 @@ def main() -> None:
 
         run_val = (epoch % max(1, args.val_interval) == 0) or (epoch == args.epochs)
         if run_val:
-            last_metrics = evaluate_multiclass(model, val_loader, device, tuple(cfg.patch_size))
+            last_metrics = evaluate_multiclass(
+                model,
+                val_loader,
+                device,
+                tuple(cfg.patch_size),
+                min_component_size=args.min_component_size,
+                keep_largest_tumor=not args.disable_keep_largest_tumor,
+            )
             if last_metrics["mean_dice"] > best_mean_dice:
                 best_mean_dice = last_metrics["mean_dice"]
                 torch.save(model.state_dict(), cfg.checkpoint_dir / "best.pt")
