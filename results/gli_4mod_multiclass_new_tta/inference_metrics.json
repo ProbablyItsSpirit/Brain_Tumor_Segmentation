@@ -1,0 +1,935 @@
+{
+  "split": "val",
+  "num_cases": 132,
+  "mean_dice": null,
+  "dice_tc": null,
+  "dice_ed": null,
+  "dice_et": null,
+  "tta": true,
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02733-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02587-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02728-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02210-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03033-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03046-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02130-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02321-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02551-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02522-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02127-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02392-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02130-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02126-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02607-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02397-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02627-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02359-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02127-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02395-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02356-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03046-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02125-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02127-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02275-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02559-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02297-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02321-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03039-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02557-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02148-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02392-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02214-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02374-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02213-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02678-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02607-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02626-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02680-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02587-105",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02557-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02214-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02500-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03044-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02187-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02133-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02109-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02611-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02589-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02133-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02557-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02684-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02500-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02559-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02526-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02681-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02679-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02257-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02097-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03037-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02692-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02532-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02275-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02122-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02499-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03058-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02374-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02328-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02213-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02589-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02187-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02272-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02257-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02500-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02212-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02499-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02180-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02532-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02210-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02125-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02313-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02730-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03047-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02210-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02133-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02283-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02187-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02127-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02212-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02180-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02213-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03037-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02304-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02097-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03037-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02180-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02109-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02532-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02210-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02113-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02522-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02611-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02519-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02391-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02500-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02551-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02587-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02402-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02213-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02349-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02519-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02703-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02095-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02212-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02189-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02190-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02711-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02109-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02712-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02559-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02212-104",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02272-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02519-105",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02356-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02587-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03047-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02496-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02276-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02499-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02214-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02109-103",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02275-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    }
+  ]
+}
