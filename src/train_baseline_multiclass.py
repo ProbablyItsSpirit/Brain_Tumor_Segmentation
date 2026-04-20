@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 from pathlib import Path
 from collections import deque
@@ -301,14 +302,27 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = build_model(in_channels=4, out_channels=4).to(device)
-    loss_fn = DiceFocalLoss(
-        to_onehot_y=True,
-        softmax=True,
-        gamma=args.focal_gamma,
-        focal_weight=[args.bg_focal_weight, args.tc_focal_weight, args.ed_focal_weight, args.et_focal_weight],
-        lambda_dice=args.lambda_dice,
-        lambda_focal=args.lambda_focal,
-    )
+    class_weights = [args.bg_focal_weight, args.tc_focal_weight, args.ed_focal_weight, args.et_focal_weight]
+    loss_kwargs: dict[str, object] = {
+        "to_onehot_y": True,
+        "softmax": True,
+        "gamma": args.focal_gamma,
+        "lambda_dice": args.lambda_dice,
+        "lambda_focal": args.lambda_focal,
+    }
+
+    # Handle MONAI API differences across versions.
+    dice_focal_params = inspect.signature(DiceFocalLoss.__init__).parameters
+    if "focal_weight" in dice_focal_params:
+        loss_kwargs["focal_weight"] = class_weights
+    elif "weight" in dice_focal_params:
+        loss_kwargs["weight"] = class_weights
+    elif "class_weight" in dice_focal_params:
+        loss_kwargs["class_weight"] = class_weights
+    else:
+        print("Warning: This MONAI version does not expose focal/class weight args for DiceFocalLoss; using unweighted DiceFocalLoss.")
+
+    loss_fn = DiceFocalLoss(**loss_kwargs)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
 
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
