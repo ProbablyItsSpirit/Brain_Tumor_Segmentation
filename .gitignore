@@ -188,3 +188,7 @@ experiments/baseline_t1ce_multiclass/outputs/
 *.pt
 *.pth
 *.ckpt
+results/gli_4mod_multiclass_new/curves/curves.csv
+src/plot_multiclass_curves.py
+results/gli_4mod_multiclass_new/curves/metrics_text_report.txt
+results/gli_4mod_multiclass_new/curves/precision_accuracy_note.txt
