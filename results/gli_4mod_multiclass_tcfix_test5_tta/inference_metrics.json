@@ -1,0 +1,48 @@
+{
+  "split": "test",
+  "num_cases": 5,
+  "mean_dice": null,
+  "dice_tc": null,
+  "dice_ed": null,
+  "dice_et": null,
+  "tta": true,
+  "min_component_size": 75,
+  "keep_largest_tumor": true,
+  "cases": [
+    {
+      "case_id": "BraTS-GLI-02214-102",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-03046-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02130-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02500-101",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    },
+    {
+      "case_id": "BraTS-GLI-02280-100",
+      "dice_tc": null,
+      "dice_ed": null,
+      "dice_et": null,
+      "mean_dice": null
+    }
+  ]
+}
