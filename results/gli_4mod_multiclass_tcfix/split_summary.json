@@ -1,0 +1,14 @@
+{
+  "train_cases": 1459,
+  "val_cases": 162,
+  "test_cases": 56,
+  "train_list": "/home/faculty1/Brain_Tumor_Segmentation/patient_lists/gli_train.txt",
+  "val_list": "/home/faculty1/Brain_Tumor_Segmentation/patient_lists/gli_val.txt",
+  "test_list": "/home/faculty1/Brain_Tumor_Segmentation/patient_lists/gli_test.txt",
+  "best_mean_dice": 0.7286291909445065,
+  "class_names": {
+    "1": "TC",
+    "2": "ED",
+    "3": "ET"
+  }
+}
