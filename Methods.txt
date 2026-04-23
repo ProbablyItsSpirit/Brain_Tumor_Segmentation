@@ -43,6 +43,15 @@ Methods tried so far
 - Validation: use held-out train split for Dice tracking because gli_val.txt / gli_test.txt are image-only in this dataset layout
 - Goal: first prove structure-aware predictions, then tune class imbalance and sampling
 
+8. Region-target multilabel transition (WT/TC/ET)
+- Task: move from multiclass CE-style targets to BraTS region targets as multilabel masks
+- Targets: WT = label>0, TC = (NCR/NET or ET), ET = ET
+- Model head: 3-channel sigmoid output (WT/TC/ET)
+- Loss: DiceFocalLoss(sigmoid=True) with channel weighting to emphasize TC/ET
+- Inference: independent thresholds for WT/TC/ET, hierarchy enforcement ET ⊆ TC ⊆ WT, then reconstruction to BraTS-style map
+- Post-processing: keep largest WT component and remove tiny ET components to reduce extra blobs
+- Goal: improve weak-class stability and reduce noisy false positives without changing backbone
+
 Notes
 - MEN was not the right target for the early baseline
 - Fancy techniques were intentionally deferred

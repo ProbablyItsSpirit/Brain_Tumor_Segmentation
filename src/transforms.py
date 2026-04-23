@@ -62,6 +62,35 @@ class BraTSMulticlassLabeld:
         return d
 
 
+class BraTSRegionTargetsd:
+    """Convert BraTS labels to multilabel region targets [WT, TC, ET]."""
+
+    def __init__(self, key: str = "label"):
+        self.key = key
+
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        label = d[self.key]
+        if torch.is_tensor(label):
+            label = label.detach().cpu().numpy()
+        else:
+            label = np.asarray(label)
+
+        if label.ndim >= 4 and label.shape[0] == 1:
+            label = np.squeeze(label, axis=0)
+
+        label = np.rint(label).astype(np.int16)
+
+        # Support both common BraTS encodings where ET may be 3 or 4.
+        et_mask = np.logical_or(label == 3, label == 4)
+        wt = (label > 0).astype(np.float32)
+        tc = np.logical_or(label == 1, et_mask).astype(np.float32)
+        et = et_mask.astype(np.float32)
+
+        d[self.key] = np.stack([wt, tc, et], axis=0)
+        return d
+
+
 class ZScoreNormalizeModalitiesd:
     """Z-score normalize each modality independently."""
     def __init__(self, keys: Sequence[str]):
@@ -353,6 +382,77 @@ def build_multiclass_inference_transforms(modalities: Sequence[str], include_lab
     ]
     if include_label:
         ops.append(BraTSMulticlassLabeld(key="label"))
+    ops.extend([
+        EnsureTyped(keys=image_keys, dtype=torch.float32),
+        EnsureTyped(keys="label", dtype=torch.float32) if include_label else None,
+        StackModalitiesd(keys=image_keys),
+    ])
+    return Compose([op for op in ops if op is not None])
+
+
+def build_region_transforms(
+    modalities: Sequence[str],
+    patch_size: Sequence[int],
+    min_fg_ratio: float,
+    max_tries: int,
+    margin: int,
+    training: bool = True,
+) -> Compose:
+    image_keys = [f"image_{m}" for m in modalities]
+    keys = list(image_keys) + ["label"]
+
+    ops = [
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
+        BraTSRegionTargetsd(key="label"),
+        EnsureTyped(keys=image_keys, dtype=torch.float32),
+        EnsureTyped(keys="label", dtype=torch.float32),
+        StackModalitiesd(keys=image_keys),
+    ]
+
+    if training:
+        ops.extend([
+            TumorCenteredCropd(
+                image_key="image",
+                label_key="label",
+                patch_size=patch_size,
+                min_fg_ratio=min_fg_ratio,
+                max_tries=max_tries,
+                margin=margin,
+            ),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=0),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=1),
+            RandFlipd(keys=["image", "label"], prob=0.5, spatial_axis=2),
+            RandRotate90d(keys=["image", "label"], prob=0.5, max_k=3),
+            RandAffined(
+                keys=["image", "label"],
+                prob=0.5,
+                rotate_range=(np.pi / 12, np.pi / 12, np.pi / 12),
+                translate_range=(10, 10, 5),
+                scale_range=(0.1, 0.1, 0.1),
+                mode=("bilinear", "nearest"),
+            ),
+            RandScaleIntensityd(keys="image", factors=0.1, prob=0.5),
+            RandAdjustContrastd(keys="image", prob=0.3),
+        ])
+
+    return Compose(ops)
+
+
+def build_region_inference_transforms(modalities: Sequence[str], include_label: bool = False) -> Compose:
+    image_keys = [f"image_{m}" for m in modalities]
+    keys = list(image_keys)
+    if include_label:
+        keys.append("label")
+
+    ops = [
+        LoadImaged(keys=keys),
+        EnsureChannelFirstd(keys=keys),
+        ZScoreNormalizeModalitiesd(keys=image_keys),
+    ]
+    if include_label:
+        ops.append(BraTSRegionTargetsd(key="label"))
     ops.extend([
         EnsureTyped(keys=image_keys, dtype=torch.float32),
         EnsureTyped(keys="label", dtype=torch.float32) if include_label else None,
