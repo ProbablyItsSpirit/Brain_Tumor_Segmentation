@@ -1,0 +1,16 @@
+{
+  "train_cases": 1459,
+  "val_cases": 162,
+  "test_cases": 56,
+  "best_mean_dice": 0.8373125441044341,
+  "targets": [
+    "WT",
+    "TC",
+    "ET"
+  ],
+  "thresholds": {
+    "wt": 0.45,
+    "tc": 0.5,
+    "et": 0.55
+  }
+}
