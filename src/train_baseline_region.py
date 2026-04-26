@@ -15,12 +15,12 @@ from monai.utils import set_determinism
 
 from config import get_default_config
 from dataset import load_gli_train_val_test_cases
-from model import build_model
+from model import build_model_with_name
 from transforms import build_region_transforms
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="GLI region-target baseline trainer (WT/TC/ET)")
+    parser = argparse.ArgumentParser(description="GLI region-target baseline trainer (WT/TC/ET, boundary-ready)")
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--patch-size", type=int, nargs=3, default=[128, 128, 128])
@@ -29,11 +29,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--val-ratio", type=float, default=0.1)
     parser.add_argument("--val-interval", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--checkpoint-dir", type=str, default="checkpoints/gli_4mod_region_new")
-    parser.add_argument("--results-dir", type=str, default="results/gli_4mod_region_new")
+    parser.add_argument("--checkpoint-dir", type=str, default="checkpoints/gli_4mod_region_v2_boundary_ensemble")
+    parser.add_argument("--results-dir", type=str, default="results/gli_4mod_region_v2_boundary_ensemble")
+    parser.add_argument("--model-name", type=str, default="unet", choices=["unet", "swinunetr"])
     parser.add_argument("--focal-gamma", type=float, default=2.0)
     parser.add_argument("--lambda-dice", type=float, default=1.0)
     parser.add_argument("--lambda-focal", type=float, default=1.0)
+    parser.add_argument("--boundary-loss-weight", type=float, default=0.15)
     parser.add_argument("--wt-focal-weight", type=float, default=1.0)
     parser.add_argument("--tc-focal-weight", type=float, default=2.0)
     parser.add_argument("--et-focal-weight", type=float, default=2.5)
@@ -300,7 +302,12 @@ def main() -> None:
     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=cfg.num_workers)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(in_channels=4, out_channels=3).to(device)
+    model = build_model_with_name(
+        model_name=args.model_name,
+        in_channels=4,
+        out_channels=3,
+        patch_size=tuple(cfg.patch_size),
+    ).to(device)
 
     class_weights = [args.wt_focal_weight, args.tc_focal_weight, args.et_focal_weight]
     loss_kwargs: dict[str, object] = {
@@ -321,6 +328,21 @@ def main() -> None:
         print("Warning: DiceFocalLoss in this MONAI version has no class-weight arg; running unweighted.")
 
     loss_fn = DiceFocalLoss(**loss_kwargs)
+    boundary_loss_fn = None
+    if args.boundary_loss_weight > 0:
+        try:
+            from monai.losses import HausdorffDTLoss
+
+            hausdorff_params = inspect.signature(HausdorffDTLoss.__init__).parameters
+            b_kwargs: dict[str, object] = {}
+            if "sigmoid" in hausdorff_params:
+                b_kwargs["sigmoid"] = True
+            if "include_background" in hausdorff_params:
+                b_kwargs["include_background"] = True
+            boundary_loss_fn = HausdorffDTLoss(**b_kwargs)
+            print(f"Boundary loss enabled: HausdorffDTLoss (weight={args.boundary_loss_weight:.3f})")
+        except Exception:
+            print("Warning: HausdorffDTLoss unavailable in this MONAI version, running without boundary loss.")
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate, weight_decay=cfg.weight_decay)
 
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
@@ -343,6 +365,9 @@ def main() -> None:
             optimizer.zero_grad()
             logits = model(image)
             loss = loss_fn(logits, target)
+            if boundary_loss_fn is not None and args.boundary_loss_weight > 0:
+                boundary_loss = boundary_loss_fn(logits, target)
+                loss = loss + (args.boundary_loss_weight * boundary_loss)
             loss.backward()
             optimizer.step()
             epoch_loss += float(loss.item())
@@ -394,6 +419,8 @@ def main() -> None:
         "best_mean_dice": best_mean_dice,
         "targets": ["WT", "TC", "ET"],
         "thresholds": {"wt": args.wt_threshold, "tc": args.tc_threshold, "et": args.et_threshold},
+        "model_name": args.model_name,
+        "boundary_loss_weight": args.boundary_loss_weight,
     }
     with (cfg.results_dir / "split_summary.json").open("w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)

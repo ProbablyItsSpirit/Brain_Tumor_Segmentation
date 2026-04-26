@@ -55,6 +55,14 @@ Methods tried so far
 - Observed behavior: test-split qualitative outputs are mostly clean with occasional imperfect cases/noise remaining
 - Artifact refs: results/gli_4mod_region_new/split_summary.json and results/gli_4mod_region_new_tta/visuals
 
+9. Region v2 boundary + ensemble setup (new experiment)
+- Experiment name: gli_4mod_region_v2_boundary_ensemble
+- TTA: maintained flip-based TTA at inference (x/y/z flips averaged)
+- Boundary objective: added optional Hausdorff distance transform boundary loss on top of DiceFocal
+- Multi-seed ensemble: added dedicated ensemble inference script to average probabilities from multiple checkpoints
+- Optional transformer readiness: model builder now supports unet or swinunetr selection (default remains unet)
+- Status: implementation complete and pushed; training/inference metrics for this new experiment pending execution
+
 Notes
 - MEN was not the right target for the early baseline
 - Fancy techniques were intentionally deferred

@@ -3,25 +3,29 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from collections import deque
 
 import numpy as np
 import torch
 from monai.data import DataLoader, Dataset
-from monai.inferers import sliding_window_inference
 
 from config import get_default_config
 from dataset import load_gli_train_val_test_cases
+from inference_baseline_region import (
+    dice_for_binary,
+    postprocess_regions,
+    reconstruct_multiclass_map,
+    tta_predict_probs,
+)
 from model import build_model_with_name
 from transforms import build_region_inference_transforms
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="GLI region-target inference (WT/TC/ET)")
-    parser.add_argument("--checkpoint", type=str, required=True)
+    parser = argparse.ArgumentParser(description="GLI region-target ensemble inference (WT/TC/ET)")
+    parser.add_argument("--checkpoints", type=str, nargs="+", required=True)
     parser.add_argument("--split", type=str, choices=["train", "val", "test"], default="val")
     parser.add_argument("--max-cases", type=int, default=0, help="0 means all cases in split")
-    parser.add_argument("--output-dir", type=str, default="results/gli_4mod_region_v2_boundary_ensemble_tta")
+    parser.add_argument("--output-dir", type=str, default="results/gli_4mod_region_v2_boundary_ensemble_3model_tta")
     parser.add_argument("--model-name", type=str, default="unet", choices=["unet", "swinunetr"])
     parser.add_argument("--patch-size", type=int, nargs=3, default=[128, 128, 128])
     parser.add_argument("--disable-tta", action="store_true")
@@ -32,136 +36,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--disable-keep-largest-wt", action="store_true")
     parser.add_argument("--min-et-component-size", type=int, default=75)
     return parser.parse_args()
-
-
-def dice_for_binary(pred_mask: torch.Tensor, target_mask: torch.Tensor) -> float:
-    inter = torch.logical_and(pred_mask, target_mask).sum().item()
-    den = pred_mask.sum().item() + target_mask.sum().item()
-    return float((2.0 * inter + 1e-6) / (den + 1e-6))
-
-
-def tta_predict_probs(model: torch.nn.Module, image: torch.Tensor, patch_size: tuple[int, int, int], enabled: bool = True) -> torch.Tensor:
-    if not enabled:
-        logits = sliding_window_inference(image, patch_size, 1, model, overlap=0.25)
-        return torch.sigmoid(logits)
-
-    flip_axes = [(), (2,), (3,), (4,), (2, 3), (2, 4), (3, 4), (2, 3, 4)]
-    prob_sum = None
-    for axes in flip_axes:
-        x = torch.flip(image, dims=axes) if axes else image
-        logits = sliding_window_inference(x, patch_size, 1, model, overlap=0.25)
-        probs = torch.sigmoid(logits)
-        if axes:
-            probs = torch.flip(probs, dims=axes)
-        prob_sum = probs if prob_sum is None else prob_sum + probs
-    return prob_sum / float(len(flip_axes))
-
-
-def _remove_small_components(mask: np.ndarray, min_size: int) -> np.ndarray:
-    if min_size <= 0 or not np.any(mask):
-        return mask
-
-    visited = np.zeros(mask.shape, dtype=bool)
-    out = np.zeros_like(mask, dtype=bool)
-    d, h, w = mask.shape
-    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
-
-    for z, y, x in np.argwhere(mask):
-        z = int(z)
-        y = int(y)
-        x = int(x)
-        if visited[z, y, x]:
-            continue
-
-        comp = []
-        q = deque([(z, y, x)])
-        visited[z, y, x] = True
-        while q:
-            cz, cy, cx = q.pop()
-            comp.append((cz, cy, cx))
-            for dz, dy, dx in neighbors:
-                nz, ny, nx = cz + dz, cy + dy, cx + dx
-                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
-                    continue
-                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
-                    continue
-                visited[nz, ny, nx] = True
-                q.append((nz, ny, nx))
-
-        if len(comp) >= min_size:
-            zz, yy, xx = zip(*comp)
-            out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
-
-    return out
-
-
-def _largest_component_mask(mask: np.ndarray) -> np.ndarray:
-    if not np.any(mask):
-        return mask
-
-    visited = np.zeros(mask.shape, dtype=bool)
-    d, h, w = mask.shape
-    neighbors = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
-
-    largest_comp = []
-    for z, y, x in np.argwhere(mask):
-        z = int(z)
-        y = int(y)
-        x = int(x)
-        if visited[z, y, x]:
-            continue
-
-        comp = []
-        q = deque([(z, y, x)])
-        visited[z, y, x] = True
-        while q:
-            cz, cy, cx = q.pop()
-            comp.append((cz, cy, cx))
-            for dz, dy, dx in neighbors:
-                nz, ny, nx = cz + dz, cy + dy, cx + dx
-                if nz < 0 or ny < 0 or nx < 0 or nz >= d or ny >= h or nx >= w:
-                    continue
-                if visited[nz, ny, nx] or not mask[nz, ny, nx]:
-                    continue
-                visited[nz, ny, nx] = True
-                q.append((nz, ny, nx))
-
-        if len(comp) > len(largest_comp):
-            largest_comp = comp
-
-    out = np.zeros_like(mask, dtype=bool)
-    if largest_comp:
-        zz, yy, xx = zip(*largest_comp)
-        out[np.asarray(zz), np.asarray(yy), np.asarray(xx)] = True
-    return out
-
-
-def postprocess_regions(
-    wt: np.ndarray,
-    tc: np.ndarray,
-    et: np.ndarray,
-    min_component_size: int,
-    keep_largest_wt: bool,
-    min_et_component_size: int,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    wt = _remove_small_components(wt, min_component_size)
-    tc = _remove_small_components(tc, min_component_size)
-    et = _remove_small_components(et, min_et_component_size)
-
-    if keep_largest_wt:
-        wt = _largest_component_mask(wt)
-
-    tc = np.logical_and(tc, wt)
-    et = np.logical_and(et, tc)
-    return wt, tc, et
-
-
-def reconstruct_multiclass_map(wt: np.ndarray, tc: np.ndarray, et: np.ndarray) -> np.ndarray:
-    out = np.zeros_like(wt, dtype=np.uint8)
-    out[wt] = 2
-    out[tc] = 1
-    out[et] = 3
-    return out
 
 
 def main() -> None:
@@ -194,7 +68,6 @@ def main() -> None:
         raise RuntimeError(f"No cases available for split={args.split}")
 
     include_label = args.split == "train" or any("label" in case for case in cases)
-
     ds = Dataset(
         data=cases,
         transform=build_region_inference_transforms(modalities=cfg.modalities, include_label=include_label),
@@ -202,18 +75,26 @@ def main() -> None:
     loader = DataLoader(ds, batch_size=1, shuffle=False, num_workers=cfg.num_workers)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model_with_name(
-        model_name=args.model_name,
-        in_channels=4,
-        out_channels=3,
-        patch_size=tuple(cfg.patch_size),
-    ).to(device)
 
-    checkpoint_path = Path(args.checkpoint)
-    if not checkpoint_path.is_absolute():
-        checkpoint_path = (cfg.repo_root / checkpoint_path).resolve()
-    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
-    model.eval()
+    models = []
+    resolved_checkpoints: list[str] = []
+    for ckpt in args.checkpoints:
+        ckpt_path = Path(ckpt)
+        if not ckpt_path.is_absolute():
+            ckpt_path = (cfg.repo_root / ckpt_path).resolve()
+        if not ckpt_path.exists():
+            raise FileNotFoundError(f"Checkpoint not found: {ckpt_path}")
+
+        model = build_model_with_name(
+            model_name=args.model_name,
+            in_channels=4,
+            out_channels=3,
+            patch_size=tuple(cfg.patch_size),
+        ).to(device)
+        model.load_state_dict(torch.load(ckpt_path, map_location=device))
+        model.eval()
+        models.append(model)
+        resolved_checkpoints.append(str(ckpt_path))
 
     out_dir = Path(args.output_dir)
     if not out_dir.is_absolute():
@@ -231,7 +112,11 @@ def main() -> None:
             if has_label:
                 label = label.to(device)
 
-            probs = tta_predict_probs(model, image, tuple(cfg.patch_size), enabled=not args.disable_tta)
+            prob_sum = None
+            for model in models:
+                probs = tta_predict_probs(model, image, tuple(cfg.patch_size), enabled=not args.disable_tta)
+                prob_sum = probs if prob_sum is None else prob_sum + probs
+            probs = prob_sum / float(len(models))
 
             wt = probs[:, 0] > args.wt_threshold
             tc = probs[:, 1] > args.tc_threshold
@@ -290,6 +175,8 @@ def main() -> None:
         "split": args.split,
         "num_cases": len(rows),
         "model_name": args.model_name,
+        "ensemble_size": len(models),
+        "checkpoints": resolved_checkpoints,
         "mean_dice": float(np.mean([r["mean_dice"] for r in valid_rows])) if valid_rows else None,
         "dice_wt": float(np.mean([r["dice_wt"] for r in valid_rows])) if valid_rows else None,
         "dice_tc": float(np.mean([r["dice_tc"] for r in valid_rows])) if valid_rows else None,
