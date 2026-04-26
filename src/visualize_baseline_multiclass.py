@@ -108,7 +108,7 @@ def main() -> None:
         if label is not None:
             fig, axes = plt.subplots(1, 4, figsize=(16, 4), dpi=160)
             plot_multiclass_panel(axes[0], t1c_slice, label[mid], "Ground Truth")
-            plot_multiclass_panel(axes[1], t1c_slice, pred[mid], "Prediction")
+            plot_multiclass_panel(axes[1], t1c_slice, pred[mid], "Prediction overlay")
             axes[2].imshow(label[mid], cmap=CLASS_CMAP, vmin=0, vmax=3)
             axes[2].set_title("GT mask")
             axes[2].axis("off")
@@ -117,7 +117,9 @@ def main() -> None:
             axes[3].axis("off")
         else:
             fig, axes = plt.subplots(1, 3, figsize=(12, 4), dpi=160)
-            plot_multiclass_panel(axes[0], t1c_slice, pred[mid], "Prediction")
+            axes[0].imshow(t1c_slice, cmap="gray")
+            axes[0].set_title("Input (T1c)")
+            axes[0].axis("off")
             axes[1].imshow(pred[mid], cmap=CLASS_CMAP, vmin=0, vmax=3)
             axes[1].set_title("Pred mask")
             axes[1].axis("off")

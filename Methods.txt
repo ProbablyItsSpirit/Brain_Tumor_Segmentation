@@ -51,6 +51,9 @@ Methods tried so far
 - Inference: independent thresholds for WT/TC/ET, hierarchy enforcement ET ⊆ TC ⊆ WT, then reconstruction to BraTS-style map
 - Post-processing: keep largest WT component and remove tiny ET components to reduce extra blobs
 - Goal: improve weak-class stability and reduce noisy false positives without changing backbone
+- Outcome: completed 100-epoch run with best mean Dice about 0.8373 on held-out labeled validation split
+- Observed behavior: test-split qualitative outputs are mostly clean with occasional imperfect cases/noise remaining
+- Artifact refs: results/gli_4mod_region_new/split_summary.json and results/gli_4mod_region_new_tta/visuals
 
 Notes
 - MEN was not the right target for the early baseline
