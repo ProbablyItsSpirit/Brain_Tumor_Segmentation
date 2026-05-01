@@ -1,0 +1,26 @@
+RUN FROM: repository root (d:\Brain_Tumor_Segmentation)
+
+1) Quick MVP train (50 epochs) — optimized defaults (AMP, loaders)
+python src/train_multimodal_gli.py --epochs 50 --batch-size 1 --learning-rate 5e-5 --checkpoint-dir checkpoints/gli_multimodal_mvp_seed42 --results-dir results/gli_multimodal_mvp_seed42 --device cuda:0 --num-workers 8 --pin-memory --persistent-workers --prefetch-factor 2 --amp
+
+2) If GPU memory allows, increase batch size (faster throughput):
+python src/train_multimodal_gli.py --epochs 50 --batch-size 2 --num-workers 10 --pin-memory --amp
+
+3) If you must keep small per-step batch, use gradient accumulation (simulate bigger batch):
+python src/train_multimodal_gli.py --epochs 50 --batch-size 1 --accum-steps 4 --num-workers 8 --pin-memory --amp
+
+4) Use channels-last memory layout (may improve conv3d perf on some drivers):
+python src/train_multimodal_gli.py --channels-last --amp --num-workers 8 --pin-memory
+
+5) View results and research-level outputs (after training completes):
+- Loss vs Dice plots: results/gli_multimodal_mvp_seed42/train_loss.png and val_dice.png
+- Visual samples for paper figures: results/gli_multimodal_mvp_seed42/visual_sample_*.png
+
+6) To run from inside src/ folder instead of root (alternative):
+cd src
+python train_multimodal_gli.py --epochs 50 --device cuda:0 --amp --num-workers 8 --pin-memory
+
+Notes:
+- Visual outputs are saved automatically to the `--results-dir` folder.
+- Use `nvidia-smi` or `nvidia-smi dmon` to monitor GPU utilization.
+- Adjust `--num-workers` to match host CPU cores. Start with 4-12 and profile.

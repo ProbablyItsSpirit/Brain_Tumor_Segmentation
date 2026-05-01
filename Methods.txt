@@ -55,13 +55,24 @@ Methods tried so far
 - Observed behavior: test-split qualitative outputs are mostly clean with occasional imperfect cases/noise remaining
 - Artifact refs: results/gli_4mod_region_new/split_summary.json and results/gli_4mod_region_new_tta/visuals
 
-9. Region v2 boundary + ensemble setup (new experiment)
+9. Region v2 boundary + ensemble setup [Cancelled]
 - Experiment name: gli_4mod_region_v2_boundary_ensemble
 - TTA: maintained flip-based TTA at inference (x/y/z flips averaged)
 - Boundary objective: added optional Hausdorff distance transform boundary loss on top of DiceFocal
 - Multi-seed ensemble: added dedicated ensemble inference script to average probabilities from multiple checkpoints
 - Optional transformer readiness: model builder now supports unet or swinunetr selection (default remains unet)
 - Status: implementation complete and pushed; training/inference metrics for this new experiment pending execution
+[Didn't try the above method ^^ ]
+
+10. Phase 1 multimodal GLI MVP
+- Dataset: BraTS-GLI only first
+- Modalities: T1, T1ce, T2, FLAIR stacked as 4 channels
+- Backbone: UNet with in_channels=4
+- Loss: keep DiceFocal style training first, no extra complexity yet
+- Goal: validate on RTX 5000 Ada with a clean multimodal baseline before expanding to PED+MEN
+- Validation: print batch shape, confirm per-channel normalization, compare against the binary baseline
+- Main file: train_multimodal_gli.py
+- Run command: python3 train_multimodal_gli.py --epochs 50 --seed 42 --learning-rate 5e-5 --batch-size 1 --checkpoint-dir checkpoints/gli_multimodal_mvp_seed42 --results-dir results/gli_multimodal_mvp_seed42
 
 Notes
 - MEN was not the right target for the early baseline

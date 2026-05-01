@@ -192,3 +192,16 @@ results/gli_4mod_multiclass_new/curves/curves.csv
 src/plot_multiclass_curves.py
 results/gli_4mod_multiclass_new/curves/metrics_text_report.txt
 results/gli_4mod_multiclass_new/curves/precision_accuracy_note.txt
+
+# Public-facing draft notes and planning docs
+00_START_HERE_ANALYSIS_COMPLETE.md
+ANALYSIS_BOTH_APPROACHES.md
+COMPLETE_RESEARCH_STRUCTURE.md
+MULTIMODAL_TWO_APPROACHES.md
+PHASE_1_MVP_DECISION_GUIDE.md
+RESEARCH_LEVEL_STRUCTURE.md
+RESEARCH_STRUCTURE_IMPLEMENTATION.md
+RESEARCH_STRUCTURE_MASTER_PLAN.md
+SYNTHESIS_BOTH_APPROACHES_EXPLAINED.md
+MULTIMODAL_TRAINING_GUIDE.md
+QUICK_REFERENCE.md

