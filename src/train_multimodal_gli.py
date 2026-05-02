@@ -6,7 +6,19 @@ Run this from the repository root as shown in `commands_to_run.txt`.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+
 from train_multimodal_gli_mvp import train_multimodal_gli
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def resolve_path(path: str) -> str:
+    candidate = Path(path)
+    if candidate.is_absolute():
+        return str(candidate)
+    return str((REPO_ROOT / candidate).resolve())
 
 
 def parse_args() -> argparse.Namespace:
@@ -33,15 +45,15 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     train_multimodal_gli(
-        data_root=args.data_root,
-        gli_list_train=args.gli_list_train,
-        gli_list_val=args.gli_list_val,
+        data_root=resolve_path(args.data_root),
+        gli_list_train=resolve_path(args.gli_list_train),
+        gli_list_val=resolve_path(args.gli_list_val),
         epochs=args.epochs,
         batch_size=args.batch_size,
         lr=args.learning_rate,
         device=args.device,
-        checkpoint_dir=args.checkpoint_dir,
-        results_dir=args.results_dir,
+        checkpoint_dir=resolve_path(args.checkpoint_dir),
+        results_dir=resolve_path(args.results_dir),
         num_workers=args.num_workers,
         pin_memory=args.pin_memory,
         persistent_workers=args.persistent_workers,

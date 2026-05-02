@@ -31,6 +31,16 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def resolve_repo_path(path: str) -> str:
+    candidate = Path(path)
+    if candidate.is_absolute():
+        return str(candidate)
+    return str((REPO_ROOT / candidate).resolve())
+
+
 class MultimodalGLIDataset(Dataset):
     """Load 4-channel multimodal data (T1, T1ce, T2, FLAIR).
 
@@ -73,6 +83,8 @@ class MultimodalGLIDataset(Dataset):
 
 
 def build_gli_case_dicts(data_root: str, list_file: str):
+    data_root = resolve_repo_path(data_root)
+    list_file = resolve_repo_path(list_file)
     cases = []
     with open(list_file, "r") as f:
         patient_ids = [l.strip() for l in f if l.strip()]
@@ -213,8 +225,8 @@ def train_multimodal_gli(
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-    checkpoint_dir = Path(checkpoint_dir)
-    results_dir = Path(results_dir)
+    checkpoint_dir = Path(resolve_repo_path(checkpoint_dir))
+    results_dir = Path(resolve_repo_path(results_dir))
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(parents=True, exist_ok=True)
 
