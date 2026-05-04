@@ -41,6 +41,13 @@ def resolve_repo_path(path: str) -> str:
     return str((REPO_ROOT / candidate).resolve())
 
 
+def _find_first_existing(path_candidates):
+    for candidate in path_candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return None
+
+
 class MultimodalGLIDataset(Dataset):
     """Load 4-channel multimodal data (T1, T1ce, T2, FLAIR).
 
@@ -85,23 +92,62 @@ class MultimodalGLIDataset(Dataset):
 def build_gli_case_dicts(data_root: str, list_file: str):
     data_root = resolve_repo_path(data_root)
     list_file = resolve_repo_path(list_file)
+    train_root = os.path.join(data_root, "BraTS-GLI", "train")
     cases = []
-    with open(list_file, "r") as f:
-        patient_ids = [l.strip() for l in f if l.strip()]
+
+    def make_case(case_dir: str):
+        case_name = os.path.basename(case_dir.rstrip(os.sep))
+        case = {
+            "t1": _find_first_existing([
+                os.path.join(case_dir, f"{case_name}-t1n.nii.gz"),
+                os.path.join(case_dir, f"{case_name}_t1.nii.gz"),
+            ]),
+            "t1ce": _find_first_existing([
+                os.path.join(case_dir, f"{case_name}-t1c.nii.gz"),
+                os.path.join(case_dir, f"{case_name}_t1ce.nii.gz"),
+            ]),
+            "t2": _find_first_existing([
+                os.path.join(case_dir, f"{case_name}-t2w.nii.gz"),
+                os.path.join(case_dir, f"{case_name}_t2.nii.gz"),
+            ]),
+            "flair": _find_first_existing([
+                os.path.join(case_dir, f"{case_name}-t2f.nii.gz"),
+                os.path.join(case_dir, f"{case_name}_flair.nii.gz"),
+            ]),
+            "seg": _find_first_existing([
+                os.path.join(case_dir, f"{case_name}-seg.nii.gz"),
+                os.path.join(case_dir, f"{case_name}_seg.nii.gz"),
+            ]),
+        }
+        if all(case.values()):
+            return case
+        return None
+
+    patient_ids = []
+    if os.path.exists(list_file):
+        with open(list_file, "r") as f:
+            patient_ids = [l.strip() for l in f if l.strip()]
 
     for patient_id in patient_ids:
-        case_dir = os.path.join(data_root, "BraTS-GLI", "train", patient_id)
-        case = {
-            "t1": os.path.join(case_dir, f"{patient_id}_t1.nii.gz"),
-            "t1ce": os.path.join(case_dir, f"{patient_id}_t1ce.nii.gz"),
-            "t2": os.path.join(case_dir, f"{patient_id}_t2.nii.gz"),
-            "flair": os.path.join(case_dir, f"{patient_id}_flair.nii.gz"),
-            "seg": os.path.join(case_dir, f"{patient_id}_seg.nii.gz"),
-        }
-        if all(os.path.exists(p) for p in case.values()):
-            cases.append(case)
-        else:
-            print(f"⚠️  Skipped {patient_id}: missing files")
+        case_dir = os.path.join(train_root, patient_id)
+        if os.path.isdir(case_dir):
+            case = make_case(case_dir)
+            if case:
+                cases.append(case)
+            else:
+                print(f"⚠️  Skipped {patient_id}: missing files")
+
+    if not cases:
+        print("⚠️  Split file yielded no usable GLI cases; scanning BraTS-GLI/train directly.")
+        if os.path.isdir(train_root):
+            for case_name in sorted(os.listdir(train_root)):
+                case_dir = os.path.join(train_root, case_name)
+                if not os.path.isdir(case_dir):
+                    continue
+                case = make_case(case_dir)
+                if case:
+                    cases.append(case)
+
     return cases
 
 
@@ -235,6 +281,14 @@ def train_multimodal_gli(
     print("[1] Loading data...")
     train_cases = build_gli_case_dicts(data_root, gli_list_train)
     val_cases = build_gli_case_dicts(data_root, gli_list_val)
+
+    if len(train_cases) == 0:
+        raise ValueError(
+            f"No training cases found. Check data_root={data_root} and list files, or let the loader scan BraTS-GLI/train."
+        )
+    if len(val_cases) == 0:
+        print("⚠️  Validation split is empty; using a small held-out slice from train for a smoke test.")
+        val_cases = train_cases[: max(1, min(4, len(train_cases) // 10))]
 
     train_ds = MultimodalGLIDataset(train_cases)
     val_ds = MultimodalGLIDataset(val_cases)
