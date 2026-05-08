@@ -20,7 +20,33 @@ python src/train_multimodal_gli.py --channels-last --amp --num-workers 8 --pin-m
 cd src
 python train_multimodal_gli.py --epochs 50 --device cuda:0 --amp --num-workers 8 --pin-memory
 
+================================================================================
+PAPER FIGURE GENERATION (after training completes)
+================================================================================
+
+7) Generate all publication-quality plots from training history:
+python scripts/generate_figures.py --results-dir results/gli_multimodal_mvp_seed42 --output-dir figures/
+
+This creates:
+  - figures/train_val_dice.png (Epochs vs Dice curves)
+  - figures/loss_curve.png (Epochs vs Loss curves)
+  - figures/exp_bar.png (Experimental configuration comparison bar chart)
+  - figures/wt_tc_et.png (WT/TC/ET region Dice comparison)
+
+8) Generate qualitative segmentation overlays (Input / GT / Prediction):
+python scripts/generate_qualitative.py --checkpoint-path checkpoints/gli_multimodal_mvp_seed42/best.pt --output-dir figures/ --n-samples 2
+
+This creates:
+  - figures/qualitative_1.png (Sample case 1: 3-panel overlay)
+  - figures/qualitative_2.png (Sample case 2: 3-panel overlay)
+
+9) Full pipeline: train + generate all figures:
+python src/train_multimodal_gli.py --epochs 50 --batch-size 1 --checkpoint-dir checkpoints/gli_multimodal_mvp_seed42 --results-dir results/gli_multimodal_mvp_seed42 --device cuda:0 --num-workers 8 --pin-memory --amp && python scripts/generate_figures.py --results-dir results/gli_multimodal_mvp_seed42 --output-dir figures/ && python scripts/generate_qualitative.py --checkpoint-path checkpoints/gli_multimodal_mvp_seed42/best.pt --output-dir figures/
+
+For more details on figure generation, see: scripts/FIGURE_GENERATION_GUIDE.md
+
 Notes:
 - Visual outputs are saved automatically to the `--results-dir` folder.
 - Use `nvidia-smi` or `nvidia-smi dmon` to monitor GPU utilization.
 - Adjust `--num-workers` to match host CPU cores. Start with 4-12 and profile.
+- All generated figures are DPI=300 PNG format, ready for submission.
